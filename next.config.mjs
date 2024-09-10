@@ -3,10 +3,16 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "https://image.tmdb.org/t/p/w500",
+        hostname: "image.tmdb.org",
       },
     ],
   },
+
+  env: {
+    NEXT_APP_APIKEY: process.env.NEXT_APP_APIKEY,
+    NEXT_APP_BASEURL: process.env.NEXT_APP_BASEURL,
+    NEXT_APP_BASEIMG: process.env.NEXT_APP_BASEIMG
+  }
 };
 
 export default nextConfig;

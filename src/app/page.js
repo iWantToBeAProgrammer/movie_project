@@ -1,15 +1,21 @@
-import Image from "next/image";
-import MovieList from "./MovieList";
+import ClientSideComponent from "@/components/ClientSideComponent";
+import MovieList from "../components/MovieList";
+import Hero from "@/components/Hero";
+import getMovieData from "@/libs/api-libs";
+
 export default async function Home() {
-  const response = await fetch(
-    `${process.env.NEXT_APP_BASEURL}/movie/top_rated?api_key=${process.env.NEXT_APP_APIKEY}`
+  const movie = await getMovieData(
+    "now_playing",
+    "&language=en-US&page=1&region=ID"
   );
 
-  const movie = await response.json();
-  const results = movie.results
+
   return (
     <>
-      <MovieList results={results}/>
+      <div className="flex font-raleway">
+        {/* <MovieList results={results} /> */}
+      </div>
+      <Hero movieResults={movie.results}/>
     </>
   );
 }

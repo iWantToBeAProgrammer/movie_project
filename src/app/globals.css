@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.card:hover > .card-overlay{
+    transform: translateY(0%);
+}
+
+@layer base {
+    @font-face {
+        font-family: "Bebas_Neue";
+        src: url("/assets/fonts/Bebas_Neue,Raleway/Bebas_Neue/BebasNeue-Regular.ttf");
+    }
+
+    @font-face {
+        font-family: "Raleway";
+        src: url("/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-VariableFont_wght.ttf");
+    }
+
+    @font-face {
+        font-family: "Raleway_italic";
+        src: url("/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-Italic-VariableFont_wght.ttf");
+
+    }
+}

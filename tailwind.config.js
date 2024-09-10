@@ -1,12 +1,21 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+
+    // Or if using `src` directory:
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
+      fontFamily: {
+        bebas_neue: "Bebas_Neue",
+        raleway: "Raleway",
+        raleway_italic: "Raleway_italic"
+      },
+
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -14,5 +23,19 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: "#AF0404",
+          secondary: "#FF0000",
+          accent: "#414141",
+          neutral: "#FCF8F3",
+          "base-100": "#141010",
+        },
+      },
+    ],
+  },
+  plugins: [require("daisyui")],
 };

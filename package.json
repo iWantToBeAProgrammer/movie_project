@@ -9,12 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.7",
     "axios": "^1.7.7",
-    "next": "14.2.7",
+    "dateformat": "^5.0.3",
+    "next": "^14.2.8",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-youtube": "^10.1.0"
   },
   "devDependencies": {
+    "@types/react": "^18.3.5",
+    "daisyui": "^4.12.10",
     "eslint": "^8",
     "eslint-config-next": "14.2.7",
     "postcss": "^8",
