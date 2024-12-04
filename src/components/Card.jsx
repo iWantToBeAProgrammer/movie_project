@@ -12,9 +12,9 @@ const Card = ({ result }) => {
           height={500}
         />
 
-        <div className="group card-overlay bg-black bg-opacity-70 w-full absolute bottom-0 h-52 transform translate-y-full transition duration-500 ease-in-out">
-          <div className="card-content flex items-center py-4 text-3xl text-white flex-col gap-6 justify-center h-full">
-            <div className="card-text text-center">
+        <div className="absolute bottom-0 w-full transition duration-500 ease-in-out transform translate-y-full bg-black group card-overlay bg-opacity-70 h-52">
+          <div className="flex flex-col items-center justify-center h-full gap-6 py-4 text-3xl text-white card-content">
+            <div className="text-center card-text">
               <h1 className="card-title ">{result.title}</h1>
               <p className="release-year">{`(${releaseYear})`}</p>
             </div>
