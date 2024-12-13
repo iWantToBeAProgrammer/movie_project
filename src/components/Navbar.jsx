@@ -3,9 +3,9 @@ import Link from "next/link";
 const Navbar = () => {
   return (
     <>
-      <div className="navbar h-0 lg:h-20 [text-shadow:_4px_5px_10px_rgba(0,0,0,0.67)] text-sm lg:text-4xl absolute -top-1 lg:top-0 text-neutral z-20">
-        <div className="flex justify-between w-11/12 mx-auto lg:w-9/12 navbar-wrapper">
-          <div className="px-3 py-1 bg-accent rounded-xl">
+      <div className="navbar h-16 2xl:h-20 [text-shadow:_4px_5px_10px_rgba(0,0,0,0.67)] text-xl 2xl:text-3xl absolute top-0 text-neutral z-20 flex justify-center">
+        <div className="navbar-wrapper flex items-center justify-between max-w-screen-xl w-full">
+          <div className="bg-accent px-3 py-1 rounded-xl">
             <h1 className="font-bebas_neue text-neutral">
               Cinema
               <span className="font-black text-transparent font-raleway_italic bg-gradient-to-r from-primary to-secondary bg-clip-text">
@@ -13,7 +13,7 @@ const Navbar = () => {
               </span>
             </h1>
           </div>
-          <div className="flex items-center gap-2 text-sm lg:gap-8 lg:text-2xl navbar-item font-bebas_neue">
+          <div className="navbar-item font-bebas_neue flex gap-8 items-center text-xl 2xl:text-3xl">
             <Link href="/movie-list">
               <h1>MOVIE LIST</h1>
             </Link>
@@ -21,7 +21,7 @@ const Navbar = () => {
               <h1>WATCHLIST</h1>
             </Link>
             <Link href="/login">
-              <button className="box-border px-4 py-3 bg-neutral bg-opacity-30 rounded-xl">
+              <button className="bg-neutral bg-opacity-30 px-4 py-2 xl:py-1 box-border rounded-xl">
                 sign in
               </button>
             </Link>

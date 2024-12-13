@@ -2,8 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'swiper/css'; /* Import core Swiper styles */
+@import 'swiper/css/navigation'; /* Import Swiper Navigation module styles */
+
 .card:hover > .card-overlay{
     transform: translateY(0%);
+}
+
+.header-icon{
+    transition: all 300ms ease-in-out;
+    
+}
+
+.navigate-button {
+    transition: all 300ms ease-in-out;
+}
+
+.list-wrapper:hover >  .navigate-wrapper > .navigate-button{
+   opacity: 100%;
+   z-index: 10;
+}
+
+.navigate-button:hover {
+    @apply bg-opacity-70
 }
 
 @layer base {
