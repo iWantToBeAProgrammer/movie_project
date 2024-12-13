@@ -11,6 +11,8 @@ export default async function Home() {
     "&language=en-US&page=1&region=ID"
   );
 
+
+
   const topRated = await getMovieData(
     "top_rated",
     "&language=en-US&page=1&region=ID"
