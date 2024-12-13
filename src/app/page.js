@@ -1,4 +1,5 @@
-
+import ClientSideComponent from "@/components/ClientSideComponent";
+import MovieList from "../components/MovieList";
 import Hero from "@/components/Hero";
 import MovieList from "@/components/MovieList";
 // import Header from "@/components/MovieList/Header";
@@ -24,22 +25,8 @@ export default async function Home() {
 
   return (
     <>
-      <Hero movieResults={nowPlaying.results} />
-      <div className="container max-w-screen-xl mx-auto overflow-hidden">
-        <div className="movie-list-wrapper flex flex-col gap-7">
-          <div className="now-playing flex">
-            {/* <Header title={"now playing"} linkHref={"/now_playing"} /> */}
-            <MovieList results={nowPlaying.results} />
-          </div>
-          <div className="top-rated flex">
-            {/* <Header title={"top rated"} linkHref={"/top_rated"} /> */}
-            <MovieList results={topRated.results} />
-          </div>
-          <div className="popular">
-            {/* <Header title={"popular viewed movies"} linkHref={"/popular"} /> */}
-            {/* <PopularList results={Popular.results} /> */}
-          </div>
-        </div>
+      <div className="flex font-raleway">
+        {/* <MovieList results={results} /> */}
       </div>
     </>
   );

@@ -69,36 +69,40 @@ const Hero = ({ movieResults }) => {
   return (
     <>
       <div
-        className={`w-full bg-[image:var(--backdrop-url)] h-screen bg-no-repeat bg-center bg-cover transition duration-300 ease-in-out md:mb-8 mb-4`}
+        className={`w-full bg-[image:var(--backdrop-url)] h-screen bg-no-repeat bg-center bg-cover transition duration-300 ease-in-out`}
         style={{ "--backdrop-url": `url(${backdropPath})` }}
       >
-        <div className="blur-overlay h-full w-full backdrop-blur-md absolute"></div>
-        <div className="hero w-full h-full flex items-center justify-center relative">
-          <div className="hero-wrapper w-full max-w-screen-xl h-[80%] bg-[image:var(--backdrop-url)] bg-center bg-cover bg-no-repeat px-8 pb-12 rounded-md font-bebas_neue text-3xl flex justify-between">
-            <div className="hero-left-content me-6 flex flex-col items-start w-[40%] justify-end h-full">
-              <h1 className="mb-2">
+        <div className="absolute w-full h-full blur-overlay backdrop-blur-md"></div>
+        <div className="relative flex items-center justify-center w-full h-full hero">
+          <div className="hero-wrapper w-11/12 lg:w-9/12 lg:h-[80%] h-[84%] bg-[image:var(--backdrop-url)] bg-center bg-cover bg-no-repeat px-4 lg:px-8 pb-4 lg:pb-12 lg:py-0 py-10 rounded-md font-bebas_neue text-4xl flex lg:justify-between justify-start ">
+            <div className="flex flex-col items-start justify-end w-full h-full lg:w-1/2 hero-left-content me-6 ">
+              <h1 className="mb-2 text-2xl lg:text-4xl">
                 {result.title} ({result.release_date.slice(0, 4)})
               </h1>
               <div className="flex items-center gap-4 text-2xl lg:text-4xl lg:gap-16">
                 <Certification result={certification} />
                 <span>{result.release_date}</span>
               </div>
-              <div className="genres font-raleway text-xl font-medium items-center flex gap-3 my-8">
-                <h1 className="me-6">Genre</h1>
-                {movieDetails.genres.map((data, index) => {
-                  return (
-                    <div key={data.id} className="flex items-center gap-2">
-                      <span
-                        className={`${index == 0 && "hidden"} text-secondary`}
-                      >
-                        /
-                      </span>
-                      <h1>{data.name}</h1>
-                    </div>
-                  );
-                })}
+              <div className="flex flex-col items-start w-full gap-3 my-2 text-base font-medium lg:items-center lg:flex-row lg:my-8 lg:text-xl genres font-raleway">
+                <h1 className="hidden lg:flex me-4">Genre</h1>
+                <div className="grid grid-cols-3 gap-2 lg:flex">
+                  {movieDetails.genres.map((data, index) => {
+                    return (
+                      <div key={data.id} className="flex items-center gap-2">
+                        <span
+                          className={`${
+                            index == 0 && "lg:hidden flex"
+                          } text-secondary`}
+                        >
+                          /
+                        </span>
+                        <h1>{data.name}</h1>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="hero-description font-raleway_italic font-light text-base line-clamp-3 hover:line-clamp-none">
+              <div className="text-base font-light lg:text-xl hero-description font-raleway_italic">
                 {result.overview}
               </div>
 
@@ -111,8 +115,9 @@ const Hero = ({ movieResults }) => {
                 </button>
               </div>
             </div>
-            <div className="hero-right-content w-1/2 h-full">
-                <Teaser movieTeaser={movieTeaser} />
+
+            <div className="hidden w-3/6 lg:flex hero-right-content">
+              <Teaser movieTeaser={movieTeaser} />
             </div>
           </div>
         </div>
