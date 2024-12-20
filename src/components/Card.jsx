@@ -7,7 +7,7 @@ const Card = ({ result }) => {
   const releaseYear = result.release_date.slice(0, 4);
   return (
     <>
-      <div className="card w-56 relative overflow-hidden">
+      <div className="relative w-56 overflow-hidden card">
         <Image
           src={`${process.env.NEXT_APP_BASEIMG}${result.poster_path}`}
           width={500}
@@ -20,7 +20,7 @@ const Card = ({ result }) => {
               <h1 className="card-title ">{result.title}</h1>
               <p className="release-year">{`(${releaseYear})`}</p>
             </div>
-            <button className="btn btn-sm rounded-badge bg-gradient-to-r from-primary to-secondary font-bold inline-flex items-center gap-2">
+            <button className="inline-flex items-center gap-2 font-bold btn btn-sm rounded-badge bg-gradient-to-r from-primary to-secondary">
               View Details <CaretCircleDoubleRight size={16} color="#FFFFFF" />
             </button>
           </div>

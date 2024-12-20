@@ -1,4 +1,3 @@
-
 import Hero from "@/components/Hero";
 import MovieList from "@/components/MovieList";
 // import Header from "@/components/MovieList/Header";
@@ -26,12 +25,12 @@ export default async function Home() {
     <>
       <Hero movieResults={nowPlaying.results} />
       <div className="container max-w-screen-xl mx-auto overflow-hidden">
-        <div className="movie-list-wrapper flex flex-col gap-7">
-          <div className="now-playing flex">
+        <div className="flex flex-col movie-list-wrapper gap-7">
+          <div className="flex now-playing">
             {/* <Header title={"now playing"} linkHref={"/now_playing"} /> */}
             <MovieList results={nowPlaying.results} />
           </div>
-          <div className="top-rated flex">
+          <div className="flex top-rated">
             {/* <Header title={"top rated"} linkHref={"/top_rated"} /> */}
             <MovieList results={topRated.results} />
           </div>
