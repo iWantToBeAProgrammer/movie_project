@@ -1,4 +1,3 @@
-// src/components/ClientSideComponent.js
 "use client"; // Make sure to use 'use client' to enable client-side features
 
 import { useState, useEffect } from "react";
@@ -9,17 +8,15 @@ export default function ClientSideComponent({ initialMovie }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    // Set the initial movie
     setCurrentMovie(initialMovie.results[currentIndex]);
   }, [initialMovie, currentIndex]);
 
-  // Fetch the next movie based on index
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => prevIndex + 1);
-    }, 5000); // Update every 5 seconds
+    }, 5000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval);
   }, []);
 
   if (!currentMovie) return <div>Loading...</div>;
