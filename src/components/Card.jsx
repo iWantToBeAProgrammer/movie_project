@@ -1,36 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { CaretCircleDoubleRight } from "@phosphor-icons/react";
-import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import CustomNavigation from "./CustomNavigation";
 import "swiper/css";
 import "swiper/css/navigation";
-
-const CustomNavigation = () => {
-  const swiper = useSwiper();
-
-  return (
-    <>
-      <button
-        onClick={() => swiper.slidePrev()}
-        className="absolute top-0 left-0 z-10 flex items-center justify-center h-full transition-opacity bg-black w-14 opacity-70 hover:opacity-100"
-        aria-label="Previous slide"
-      >
-        <CaretLeft size={50} className="text-secondary" weight="bold" />
-      </button>
-
-      <button
-        onClick={() => swiper.slideNext()}
-        className="absolute top-0 right-0 z-10 flex items-center justify-center h-full transition-opacity bg-black w-14 opacity-70 hover:opacity-100"
-        aria-label="Next slide"
-      >
-        <CaretRight size={50} className="text-secondary" weight="bold" />
-      </button>
-    </>
-  );
-};
+import { CaretCircleDoubleRight } from "@phosphor-icons/react";
 
 const Card = ({ results = [] }) => {
   if (!results || results.length === 0) {
@@ -42,26 +18,33 @@ const Card = ({ results = [] }) => {
       <Swiper
         modules={[Navigation]}
         spaceBetween={20}
+        slidesPerGroup={5}
+        slidesPerView={5}
         breakpoints={{
           320: {
             slidesPerView: 1,
             spaceBetween: 10,
+            slidesPerGroup: 1,
           },
           480: {
             slidesPerView: 2,
             spaceBetween: 15,
+            slidesPerGroup: 2,
           },
           768: {
             slidesPerView: 3,
             spaceBetween: 15,
+            slidesPerGroup: 3,
           },
           1024: {
             slidesPerView: 4,
             spaceBetween: 20,
+            slidesPerGroup: 4,
           },
           1280: {
             slidesPerView: 6,
             spaceBetween: 20,
+            slidesPerGroup: 6,
           },
         }}
         className="relative px-12"
