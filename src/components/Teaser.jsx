@@ -6,11 +6,11 @@ import YouTube from "react-youtube";
 
 const Teaser = ({ movieTeaser }) => {
   const opts = {
-    height: "150",
-    width: "250",
+    height: "175",
+    width: "325",
   };
 
-  console.log(movieTeaser);
+ 
   return (
     <>
       <div className="flex flex-col gap-2 mt-4">
@@ -27,10 +27,11 @@ const Teaser = ({ movieTeaser }) => {
                   videoId={teaser.key}
                   opts={opts}
                   onReady={(event) => event.target.pauseVideo()}
+                  
                 />
                 <div className="teaser-content">
-                    <h1 className="mb-2 text-2xl teaser-title">{teaser.name}</h1>
-                    <ul className="flex flex-row gap-2 text-sm list-disc list-inside font-raleway">
+                    <h1 className="teaser-title text-xl mb-4 ">{teaser.name}</h1>
+                    <ul className="list-disc list-inside flex items-center font-raleway gap-6 text-nowrap">
                         <li>{teaser.type}</li>
                         <li>{dateFormat(teaser.published_at, "mmmm dS, yyyy")}</li>
                     </ul>
