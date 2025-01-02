@@ -1,4 +1,4 @@
-async function getMovieData (endpoint, params) {
+export async function getMovieData(endpoint, params) {
   try {
     const response = await fetch(
       `${process.env.NEXT_APP_BASEURL}/movie/${endpoint}?api_key=${
@@ -14,4 +14,3 @@ async function getMovieData (endpoint, params) {
     return { results: [] };
   }
 }
-export default getMovieData;
