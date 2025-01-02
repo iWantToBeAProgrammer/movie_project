@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
+
   return (
     <>
-      <div className="navbar h-16 2xl:h-20 [text-shadow:_4px_5px_10px_rgba(0,0,0,0.67)] text-xl 2xl:text-3xl absolute top-0 text-neutral z-20 flex justify-center">
+      <div className={`navbar h-16 2xl:h-20 [text-shadow:_4px_5px_10px_rgba(0,0,0,0.67)] text-xl 2xl:text-3xl ${pathname === '/' ? "absolute" : "relative"} top-0 text-neutral z-20 flex justify-center`}>
         <div className="navbar-wrapper flex items-center justify-between max-w-screen-xl w-full">
           <div className="bg-accent px-3 py-1 rounded-xl">
             <h1 className="font-bebas_neue text-neutral">
