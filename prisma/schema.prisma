@@ -23,12 +23,13 @@ model User {
 }
 
 model Movie {
-  id         Int      @id @default(autoincrement())
-  tmdbId     String   @unique // TMDB movie ID
+  id         Int     @id @default(autoincrement())
+  tmdbId     String  @unique // TMDB movie ID
   title      String
   posterPath String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  overview   String  @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   watchlist Watchlist[]
@@ -49,7 +50,7 @@ model Watchlist {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())  
   userId    Int
   movieId   Int
   content   String
