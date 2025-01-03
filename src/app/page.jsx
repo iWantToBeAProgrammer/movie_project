@@ -1,7 +1,7 @@
 import Card from "@/components/Card";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import getMovieData from "@/libs/api-libs";
+import { getMovieData } from "@/libs/api-libs";
 
 export default async function Home() {
   const nowPlaying = await getMovieData(
