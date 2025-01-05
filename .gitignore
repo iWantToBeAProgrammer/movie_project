@@ -7,7 +7,6 @@
 .yarn/install-state.gz
 .env
 package-lock.json
-package.json
 
 # testing
 /coverage
