@@ -14,9 +14,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
-        <div className="font-raleway text-neutral">
-          {children}
-        </div>
+        <div className="font-raleway text-neutral">{children}</div>
       </body>
     </html>
   );

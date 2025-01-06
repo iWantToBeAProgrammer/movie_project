@@ -1,10 +1,20 @@
+import FormCard from "@/components/Auth/FormCard";
+import { supabase } from "@/libs/supabase";
 
 const login = () => {
+
+  const handleSubmit = async () => {
+    
+  }
+
+
   return (
     <>
-      <h1>login page</h1>
+      <div className="w-full h-screen flex justify-center items-center">
+        <FormCard />
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default login
+export default login;
