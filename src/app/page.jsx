@@ -1,4 +1,5 @@
 import Card from "@/components/Card";
+import PopularCard from "@/components/PopularCard";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import { getMovieData } from "@/libs/api-libs";
@@ -15,7 +16,10 @@ export default async function Home() {
     "top_rated",
     "&language=en-US&page=1&region=ID"
   );
-
+  const Popular = await getMovieData(
+    "popular",
+    "&language=en-US&page=1&region=ID"
+  );
   return (
     <>
       <Suspense fallback={<Loading />}>
@@ -36,8 +40,10 @@ export default async function Home() {
             </Suspense>
           </div>
           <div className="popular">
-            <Header title={"popular viewed movies"} linkHref={"/popular"} />
-            {/* <Card results={Popular.results} /> */}
+            <Suspense fallback={<Loading />}>
+              <Header title={"popular viewed movies"} linkHref={"/popular"} />
+              <PopularCard results={Popular.results} />
+            </Suspense>
           </div>
         </div>
       </div>
