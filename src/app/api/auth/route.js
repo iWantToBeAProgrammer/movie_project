@@ -1,48 +1,53 @@
 import { NextResponse } from "next/server";
-const authService = require("@/services/auth-service");
+import { prisma } from "@/libs/prisma";
+import { signUpWithEmail, signInWithEmail, signInWithOAuth } from "@/services/auth-service";
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const { action, email, password, provider } = await req.json();
+    const { action, email, password, username, provider } = await request.json();
 
-    let data;
+    if (action === "signUp") {
+      const { user } = await signUpWithEmail(email, password);
 
-    switch (action) {
-      case "signUp":
-        if (!email || !password) throw new Error("Email and password are required.");
-        data = await authService.signUpWithEmail(email, password);
-        break;
+      await prisma.user.create({
+        data: {
+          id: user.id, // Supabase user ID
+          email: user.email,
+          username, // Optional: username
+        },
+      });
 
-      case "signIn":
-        if (!email || !password) throw new Error("Email and password are required.");
-        data = await authService.signInWithEmail(email, password);
-        break;
-
-      case "signInWithOAuth":
-        if (!provider) throw new Error("Provider is required.");
-        data = await authService.signInWithOAuth(provider);
-        break;
-
-      case "signOut":
-        await authService.signOut();
-        data = { message: "Signed out successfully." };
-        break;
-
-      default:
-        throw new Error("Invalid action.");
+      return NextResponse.json({ message: "Signup successful!" });
     }
 
-    return NextResponse.json({ message: "Success", data }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-}
+    if (action === "signIn") {
+      // Supabase sign-in
+      const { user } = await signInWithEmail(email, password);
+      return NextResponse.json({ message: "Signin successful!", user });
+    }
 
-export async function GET(req) {
-  try {
-    const user = await authService.getUser();
-    return NextResponse.json({ user }, { status: 200 });
+    if (action === "oauth") {
+      const { user } = await signInWithOAuth(provider);
+      
+      const existingUser = await prisma.user.findUnique({
+        where: { id: user.id },
+      });
+
+      if (!existingUser) {
+        await prisma.user.create({
+          data: {
+            id: user.id, 
+            email: user.email,
+          },
+        });
+      }
+
+      return NextResponse.json({ message: `OAuth with ${provider} successful!`, user });
+    }
+
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Auth error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

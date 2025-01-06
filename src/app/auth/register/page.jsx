@@ -9,8 +9,8 @@ const register = () => {
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (email, password, passwordConfirmation) => {
-    setError(null); // Reset error state
-    setMessage(""); // Reset message state
+    setError(null); 
+    setMessage(""); 
 
     if (password !== passwordConfirmation) {
       setError("Passwords do not match");
@@ -19,11 +19,14 @@ const register = () => {
 
     try {
       const response = await authRequest("signUp", { email, password });
-      setMessage(
-        "Registration successful! Please check your email to verify your account."
-      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+
+      setMessage(result.message);
+      setError("");
     } catch (err) {
-      setError(err.message || "An error occurred. Please try again.");
+      setError(error);
+      setMessage("");
     }
   };
 
@@ -31,6 +34,10 @@ const register = () => {
     <>
       <div className="w-full h-screen flex justify-center items-center">
         <FormCard onSubmit={handleSubmit} />
+        <div className="absolute bottom-10 text-center">
+          {error && <p className="text-red-500">{error}</p>}
+          {message && <p className="text-green-500">{message}</p>}
+        </div>
       </div>
     </>
   );
