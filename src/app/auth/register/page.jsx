@@ -6,11 +6,11 @@ import { useState } from "react";
 
 const register = () => {
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (email, password, passwordConfirmation) => {
-    setError(null); 
-    setMessage(""); 
+    setError(null);
+    setSuccess("");
 
     if (password !== passwordConfirmation) {
       setError("Passwords do not match");
@@ -19,25 +19,18 @@ const register = () => {
 
     try {
       const response = await authRequest("signUp", { email, password });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-
-      setMessage(result.message);
+      setSuccess(response.message);
       setError("");
-    } catch (err) {
-      setError(error);
-      setMessage("");
+    } catch (error) {
+      setError(error.message);
+      setSuccess("");
     }
   };
 
   return (
     <>
-      <div className="w-full h-screen flex justify-center items-center">
-        <FormCard onSubmit={handleSubmit} />
-        <div className="absolute bottom-10 text-center">
-          {error && <p className="text-red-500">{error}</p>}
-          {message && <p className="text-green-500">{message}</p>}
-        </div>
+      <div className="w-full h-screen flex justify-center items-center relative">
+        <FormCard onSubmit={handleSubmit} error={error} success={success} />
       </div>
     </>
   );

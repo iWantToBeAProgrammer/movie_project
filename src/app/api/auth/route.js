@@ -11,9 +11,9 @@ export async function POST(request) {
 
       await prisma.user.create({
         data: {
-          id: user.id, // Supabase user ID
+          id: user.id, 
           email: user.email,
-          username, // Optional: username
+          username, 
         },
       });
 
@@ -21,7 +21,6 @@ export async function POST(request) {
     }
 
     if (action === "signIn") {
-      // Supabase sign-in
       const { user } = await signInWithEmail(email, password);
       return NextResponse.json({ message: "Signin successful!", user });
     }

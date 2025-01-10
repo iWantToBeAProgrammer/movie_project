@@ -9,7 +9,7 @@ export const authRequest = async (action, body = {}) => {
     const result = await response.json();
     if (!response.ok) throw new Error(result.error);
 
-    return result.data;
+    return result;
   } catch (error) {
     console.error(error.message);
     throw error;
