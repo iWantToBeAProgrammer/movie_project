@@ -52,7 +52,7 @@ const Hero = ({ movieResults }) => {
     fetchMovieDetails();
   }, [currentIndex, movieResults]);
 
-  if (movieResults.length === 0 || !movieDetails) return <div>Loading...</div>;
+  if (movieResults.length === 0 || !movieDetails) return;
 
   const result = movieResults[currentIndex];
   const bgBackdrop = result.backdrop_path;

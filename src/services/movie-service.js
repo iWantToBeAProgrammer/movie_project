@@ -1,5 +1,5 @@
-import { getMovieData } from "./api-libs";
-import { prisma } from "./prisma";
+import { getMovieData } from "../libs/api-libs";
+import { prisma } from "../libs/prisma";
 export async function getMovieDetails(tmdbId) {
   const movie = await prisma.movie.findUnique({
     where: { tmdbId },
@@ -18,6 +18,7 @@ export async function getMovieDetails(tmdbId) {
         tmdbId: tmdbMovie.id.toString(),
         title: tmdbMovie.title,
         posterPath: tmdbMovie.poster_path,
+        overview: tmdbMovie.overview
       },
     });
   }

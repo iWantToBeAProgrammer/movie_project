@@ -5,6 +5,10 @@
 @import 'swiper/css'; /* Import core Swiper styles */
 @import 'swiper/css/navigation'; /* Import Swiper Navigation module styles */
 
+
+h1 {
+    font-family: "Bebas_Neue";
+}
 .card:hover > .card-overlay{
     transform: translateY(0%);
 }

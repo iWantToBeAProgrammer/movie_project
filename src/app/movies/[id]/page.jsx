@@ -1,4 +1,4 @@
-import { getMovieDetails } from "@/libs/movie-service";
+import { getMovieDetails } from "@/services/movie-service";
 
 export default async function movieDetails({ params }) {
   const { id } = params;
