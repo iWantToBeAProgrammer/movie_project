@@ -1,9 +1,9 @@
 "use client";
 
 import Certification from "@/components/Certification";
-import getMovieData from "@/libs/api-libs";
 import Teaser from "./Teaser";
 import { useState, useEffect } from "react";
+import { getMovieData } from "@/libs/api-libs";
 
 const Hero = ({ movieResults }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -52,7 +52,7 @@ const Hero = ({ movieResults }) => {
     fetchMovieDetails();
   }, [currentIndex, movieResults]);
 
-  if (movieResults.length === 0 || !movieDetails) return <div>Loading...</div>;
+  if (movieResults.length === 0 || !movieDetails) return;
 
   const result = movieResults[currentIndex];
   const bgBackdrop = result.backdrop_path;
@@ -74,8 +74,8 @@ const Hero = ({ movieResults }) => {
       >
         <div className="blur-overlay h-full w-full backdrop-blur-md absolute"></div>
         <div className="hero w-full h-full flex items-center justify-center relative">
-          <div className="hero-wrapper w-full max-w-screen-xl h-[80%] bg-[image:var(--backdrop-url)] bg-center bg-cover bg-no-repeat px-8 pb-12 rounded-md font-bebas_neue text-3xl flex justify-between">
-            <div className="hero-left-content me-6 flex flex-col items-start w-[40%] justify-end h-full">
+          <div className="hero-wrapper w-full max-w-screen-xl h-[80%]  bg-[image:var(--backdrop-url)]  rounded-2xl bg-center bg-cover bg-no-repeat px-8 pb-12 font-bebas_neue text-3xl flex justify-between">
+            <div className="hero-left-content reltaive z-30 me-6 flex flex-col items-start w-[40%] justify-end h-full">
               <h1 className="mb-2">
                 {result.title} ({result.release_date.slice(0, 4)})
               </h1>
@@ -98,7 +98,7 @@ const Hero = ({ movieResults }) => {
                   );
                 })}
               </div>
-              <div className="hero-description font-raleway_italic font-light text-base line-clamp-3 hover:line-clamp-none">
+              <div className="hero-description font-raleway_italic text-base line-clamp-3 hover:line-clamp-none">
                 {result.overview}
               </div>
 
@@ -111,9 +111,11 @@ const Hero = ({ movieResults }) => {
                 </button>
               </div>
             </div>
-            <div className="hero-right-content w-1/2 h-full">
+            <div className="hero-right-content w-1/2 h-full reltaive z-30">
                 <Teaser movieTeaser={movieTeaser} />
             </div>
+
+              <div className="bottom-overlay h-full bg-gradient-to-b from-black/20 to-black/80 absolute bottom-0 w-full z-0 left-0"></div>
           </div>
         </div>
       </div>

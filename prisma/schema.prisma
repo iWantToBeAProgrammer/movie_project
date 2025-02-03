@@ -1,4 +1,3 @@
-// schema.prisma
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -10,12 +9,12 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(uuid()) @map("user_id")
+  email           String   @unique
+  username        String?  @unique
+  profilePicture  String?  @db.Text
+  role            String   @default("user")
+  createdAt       DateTime @default(now()) @map("created_at")
 
   // Relations
   watchlist Watchlist[]
@@ -47,7 +46,7 @@ model Movie {
 
 model Watchlist {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String   // Match the UUID type of User.id
   movieId   Int
   createdAt DateTime @default(now())
 
@@ -60,7 +59,7 @@ model Watchlist {
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String   // Match the UUID type of User.id
   movieId   Int
   content   String
   createdAt DateTime @default(now())
@@ -69,5 +68,5 @@ model Comment {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
-  @@index([movieId]) // Index for filtering comments by movie
+  @@index([movieId])
 }
