@@ -23,12 +23,22 @@ model User {
 }
 
 model Movie {
-  id         Int      @id @default(autoincrement())
-  tmdbId     String   @unique // TMDB movie ID
-  title      String
-  posterPath String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id            Int     @id @default(autoincrement())
+  tmdbId        String  @unique
+  title         String
+  posterPath    String?
+  backdropPath  String?
+  overview      String  @default("")
+  genres        String[]
+  certification String?
+  releaseDates  Json?
+  runtime       Int?
+  cast          Json?
+  directors     String[]
+  writers       String[]
+  companyNames  String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
   watchlist Watchlist[]
