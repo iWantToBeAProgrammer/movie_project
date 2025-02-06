@@ -1,72 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id              String   @id @default(uuid()) @map("user_id")
-  email           String   @unique
-  username        String?  @unique
-  profilePicture  String?  @db.Text
-  role            String   @default("user")
-  createdAt       DateTime @default(now()) @map("created_at")
-
-  // Relations
-  watchlist Watchlist[]
-  comments  Comment[]
+  email          String      @unique
+  createdAt      DateTime    @default(now()) @map("created_at")
+  profilePicture String?
+  role           String      @default("user")
+  id             String      @id @default(uuid()) @map("user_id")
+  username       String?     @unique
+  comments       Comment[]
+  watchlist      Watchlist[]
 }
 
 model Movie {
-  id            Int     @id @default(autoincrement())
-  tmdbId        String  @unique
+  id            Int         @id @default(autoincrement())
+  tmdbId        String      @unique
   title         String
   posterPath    String?
-  backdropPath  String?
-  overview      String  @default("")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  overview      String      @default("")
   genres        String[]
+  backdropPath  String?
   certification String?
   releaseDates  Json?
   runtime       Int?
   cast          Json?
-  directors     String[]
-  writers       String[]
   companyNames  String[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Relations
-  watchlist Watchlist[]
-  comments  Comment[]
+  writers       String[]
+  directors     String[]
+  comments      Comment[]
+  watchlist     Watchlist[]
 }
 
 model Watchlist {
   id        Int      @id @default(autoincrement())
-  userId    String   // Match the UUID type of User.id
-  movieId   Int
+  userId    String
   createdAt DateTime @default(now())
-
-  // Relations
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  movieId   Int
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, movieId])
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  userId    String   // Match the UUID type of User.id
-  movieId   Int
+  userId    String
   content   String
   createdAt DateTime @default(now())
-
-  // Relations
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  movieId   Int
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([movieId])
 }
