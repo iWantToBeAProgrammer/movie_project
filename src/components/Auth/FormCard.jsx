@@ -2,21 +2,76 @@
 
 import { CaretLeft, FacebookLogo } from "@phosphor-icons/react";
 import { GoogleLogo } from "@phosphor-icons/react/dist/ssr";
+import { IoMailUnreadOutline } from "react-icons/io5";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { supabase } from "@/libs/supabase";
 
-export default function FormCard({ onSubmit, error, success }) {
+export default function FormCard() {
   const router = useRouter();
-  const pathname = usePathname();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+  });
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleResendVerification = async () => {
+    if (!registeredEmail) {
+      setError("No registered email found.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: registeredEmail,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      alert("Verification email has been resent!");
+    }
+
+    setLoading(false);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onSubmit) onSubmit(email, password, passwordConfirmation);
+    setLoading(true);
+    setError("");
+
+    if (formData.password !== formData.passwordConfirmation) {
+      setError("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setSuccess(true);
+      setRegisteredEmail(formData.email);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -30,7 +85,7 @@ export default function FormCard({ onSubmit, error, success }) {
 
         <div className="form-card-left w-1/2 h-full">{/* Left assets */}</div>
         <div className="form-card-right w-1/2 h-full py-24">
-          <div className="form-right-wrapper mx-auto w-full h-full justify-center items-center flex flex-col">
+          <div className="form-right-wrapper mx-auto w-full h-full flex flex-col justify-center items-center">
             <div className="title-wrapper flex gap-3 items-center">
               <h1 className="text-4xl">
                 Welcome to CINEMA
@@ -46,31 +101,39 @@ export default function FormCard({ onSubmit, error, success }) {
                 className="form-control gap-6 px-12"
               >
                 <input
-                  type="text"
+                  type="email"
+                  name="email"
                   placeholder="Email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  required
                 />
                 <input
                   type="password"
+                  name="password"
                   placeholder="Password"
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  required
                 />
                 <input
                   type="password"
+                  name="passwordConfirmation"
                   placeholder="Confirm Password"
-                  onChange={(e) => setPasswordConfirmation(e.target.value)}
-                  className={`${
-                    pathname === "/auth/login" && "hidden"
-                  } border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none`}
+                  value={formData.passwordConfirmation}
+                  onChange={handleChange}
+                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  required
                 />
 
                 <button
                   type="submit"
                   className="form-button btn btn-outline font-bebas_neue text-3xl border-primary hover:text-white hover:bg-primary hover:border-primary tracking-wider"
+                  disabled={loading}
                 >
-                  {pathname === "/auth/login" ? "Sign in" : "Sign up"}
+                  {loading ? "Processing..." : "Sign Up"}
                 </button>
 
                 <div className="divider divider-accent font-raleway_italic">
@@ -78,20 +141,19 @@ export default function FormCard({ onSubmit, error, success }) {
                 </div>
 
                 <div className="social-links flex gap-12 items-center justify-center">
-                  <div className="border-2 border-primary rounded-full items-center flex justify-center h-16 w-16">
+                  <div className="border-2 border-primary rounded-full flex justify-center items-center h-16 w-16">
                     <GoogleLogo size={52} color="#AF0404" weight="bold" />
                   </div>
-
                   <FacebookLogo size={72} color="#3c72bc" weight="bold" />
                 </div>
 
                 <p className="text-center">
-                  {pathname === "/auth/login" ? "Don't have an account? " : "Already Have an Account? "}
+                  Already have an account?{" "}
                   <Link
                     className="uppercase underline text-white"
-                    href={pathname === "/auth/login" ? "/auth/register" : "/auth/login"}
+                    href="/auth/login"
                   >
-                    {pathname === "/auth/login" ? "Sign Up" : "Sign in"}
+                    Sign In
                   </Link>
                 </p>
               </form>
@@ -99,11 +161,59 @@ export default function FormCard({ onSubmit, error, success }) {
           </div>
         </div>
 
-        <div className="absolute bottom-10 text-center w-full">
-          {error && <p className="text-red-500">{error}</p>}
-          {success && <p className="text-green-500">{success}</p>}
-        </div>
+        {error && (
+          <div className="absolute bottom-10 text-center w-full">
+            <p className="text-red-500">{error}</p>
+          </div>
+        )}
       </div>
+
+      {success && (
+        <dialog
+          id="success_modal"
+          className="modal bg-black bg-opacity-75"
+          open
+        >
+          <div className="modal-box border-2 border-primary">
+            <div>
+              <form method="dialog">
+                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                  ✕
+                </button>
+              </form>
+            </div>
+            <div className="flex flex-col items-center">
+              <IoMailUnreadOutline size={100} />
+              <h3 className="font-bold text-2xl text-primary">
+                EMAIL VERIFICATION
+              </h3>
+              <p className="py-4 my-2 text-center">
+                We have sent an email to{" "}
+                <a
+                  href={`mailto:${registeredEmail}`}
+                  className="text-blue-500 underline"
+                >
+                  {registeredEmail}
+                </a>{" "}
+                to confirm its validity. Please check your email and click the
+                link to complete your registration.
+              </p>
+            </div>
+            <div>
+              <p className="py-2 text-xs text-center border-t border-t-slate-200 border-opacity-50">
+                Didn't get an email?
+                <a
+                  onClick={handleResendVerification}
+                  className="text-blue-500 underline ml-1 cursor-pointer"
+                  disabled={loading}
+                >
+                  {loading ? "Resending..." : "Resend verification mail"}
+                </a>{" "}
+              </p>
+            </div>
+          </div>
+        </dialog>
+      )}
     </>
   );
 }
