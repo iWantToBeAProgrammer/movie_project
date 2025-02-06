@@ -1,12 +1,13 @@
 "use client";
 
+import { authRequest } from "@/utility/auth";
 import { CaretLeft, FacebookLogo } from "@phosphor-icons/react";
-import { GoogleLogo } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { AiFillGoogleCircle } from "react-icons/ai";
 
-export default function FormCard({ onSubmit, error, success }) {
+export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -77,19 +78,23 @@ export default function FormCard({ onSubmit, error, success }) {
                   OR
                 </div>
 
-                <div className="social-links flex gap-12 items-center justify-center">
-                  <div className="border-2 border-primary rounded-full items-center flex justify-center h-16 w-16">
-                    <GoogleLogo size={52} color="#AF0404" weight="bold" />
+                <button type="button" className="btn btn-primary font-bebas_neue text-2xl tracking-wider uppercase" onClick={() => OAuthSubmit("google")}>
+                  <div className="flex items-center gap-2  h-full">
+                    <AiFillGoogleCircle size={32} /> Sign in with google
                   </div>
-
-                  <FacebookLogo size={72} color="#3c72bc" weight="bold" />
-                </div>
+                </button>
 
                 <p className="text-center">
-                  {pathname === "/auth/login" ? "Don't have an account? " : "Already Have an Account? "}
+                  {pathname === "/auth/login"
+                    ? "Don't have an account? "
+                    : "Already Have an Account? "}
                   <Link
                     className="uppercase underline text-white"
-                    href={pathname === "/auth/login" ? "/auth/register" : "/auth/login"}
+                    href={
+                      pathname === "/auth/login"
+                        ? "/auth/register"
+                        : "/auth/login"
+                    }
                   >
                     {pathname === "/auth/login" ? "Sign Up" : "Sign in"}
                   </Link>
