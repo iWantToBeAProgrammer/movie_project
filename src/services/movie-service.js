@@ -6,7 +6,6 @@ export async function getMovieDetails(tmdbId) {
   });
 
   if (!movie) {
-    // Fetch from TMDB if not in database
     const tmdbMovie = await getMovieData(tmdbId, "&language=en-US");
 
     if (!tmdbMovie || !tmdbMovie.id) {
