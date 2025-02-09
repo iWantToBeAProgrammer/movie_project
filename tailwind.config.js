@@ -1,3 +1,5 @@
+const { PT_Sans_Caption } = require('next/font/google');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -13,7 +15,8 @@ module.exports = {
       fontFamily: {
         bebas_neue: "Bebas_Neue",
         raleway: "Raleway",
-        raleway_italic: "Raleway_italic"
+        raleway_italic: "Raleway_italic",
+        sans_caption: "Sans_caption"
       },
 
       backgroundImage: {
