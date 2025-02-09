@@ -1,12 +1,14 @@
-const { supabase } = require("@/libs/supabase");
+const { createClient } = require("@/libs/supabaseServer");
 
 async function signUpWithEmail(email, password) {
+  const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) throw new Error(error.message);
   return data;
 }
 
 async function signInWithEmail(email, password) {
+  const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -16,6 +18,7 @@ async function signInWithEmail(email, password) {
 }
 
 async function signInWithOAuth(provider) {
+  const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {

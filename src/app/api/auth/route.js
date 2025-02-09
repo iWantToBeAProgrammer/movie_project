@@ -8,34 +8,41 @@ import {
 
 export async function POST(request) {
   try {
-    const { action, email, password, username, provider } =
-      await request.json();
+    const { action, email, password, username, provider } = await request.json();
 
     if (action === "signUp") {
-      const { user } = await signUpWithEmail(email, password);
+      const { user, error } = await signUpWithEmail(email, password);
+      if (error) throw new Error(error.message);
 
-      await prisma.user.create({
-        data: {
-          id: user.id,
-          email: user.email,
-          username,
-        },
-      });
+      const existingUser = await prisma.user.findUnique({ where: { email } });
 
-      return NextResponse.json({ message: "Signup successful!" });
+      if (!existingUser) {
+        await prisma.user.create({
+          data: {
+            id: user.id,
+            email: user.email,
+            username,
+          },
+        });
+      }
+
+      return NextResponse.json({ message: "Signup successful!", user: data.user });
     }
 
     if (action === "signIn") {
-      const { user } = await signInWithEmail(email, password);
-      return NextResponse.json({ message: "Signin successful!", user });
+      const { user, error } = await signInWithEmail(email, password);
+      if (error) throw new Error(error.message);
+
+      return NextResponse.json({ message: "Signin successful!", user: user });
     }
 
     if (action === "oauth") {
-      const { user } = await signInWithOAuth(provider);
+      const { user, error } = await signInWithOAuth(provider);
+      if (error) throw new Error(error.message);
 
       return NextResponse.json({
         message: `OAuth with ${provider} successful!`,
-        user,
+        user: user, 
       });
     }
 

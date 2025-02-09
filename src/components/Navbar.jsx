@@ -13,16 +13,15 @@ const Navbar = () => {
 
   const { user, setUser } = useAuth();
 
+  console.log(user);
 
   const handleLogout = async (e) => {
     e.preventDefault();
 
     await supabase.auth.signOut();
-
-    setUser(null)
-  }
-
-
+    router.refresh();
+    router.push('/')
+  };
 
   return (
     <>
@@ -55,7 +54,7 @@ const Navbar = () => {
                 sign in
               </button>
             ) : (
-              <button onClick={handleLogout}>
+              <button type="button" onClick={handleLogout}>
                 <UserCircle size={50} />
               </button>
             )}
