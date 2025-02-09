@@ -1,8 +1,10 @@
 import Card from "@/components/Card";
 import Certification from "@/components/Certification";
 import CustomButton from "@/components/CustomButton";
+import Trailer from "@/components/Trailer";
 import { getRecDetails } from "@/services/movie-rec";
 import { getMovieDetails } from "@/services/movie-service";
+import Image from "next/image";
 
 export default async function movieDetails({ params }) {
   const { id } = params;
@@ -29,16 +31,14 @@ export default async function movieDetails({ params }) {
   return (
     <div className="container max-w-screen-xl mx-auto h-fit">
       <div className="movie-details-wrapper flex flex-col">
-        <div className="video-section flex w-full">
-          <img
-            src={`${process.env.NEXT_APP_BASEIMG}${movie.backdropPath}`}
-            alt="image-details"
-            className="object-cover object-top rounded-lg"
-          />
+        <div className="video-section flex w-full h-full">
+          <Trailer movieTrailer={movie.movieTrailer} />
         </div>
         <div className="overview-cast-wrapper flex mt-10 gap-20">
-          <div className="left-content flex flex-col gap-4">
-            <h1 className="text-4xl tracking-wide">{movie.title}</h1>
+          <div className="left-content flex flex-col gap-4 font-sans_caption">
+            <h1 className="text-4xl font-bebas_neue tracking-wider">
+              {movie.title}
+            </h1>
             <div className="flex gap-5 ">
               <CustomButton type="add" size="large" />
               <CustomButton type="watched" size="large" />
@@ -73,9 +73,11 @@ export default async function movieDetails({ params }) {
           <div className="right-content flex flex-col w-1/2">
             <div className="gap-2 flex">
               <p className="border-l-8 border-secondary"></p>
-              <h2 className="text-4xl font-bold">CAST</h2>
+              <h2 className="text-4xl font-bold font-bebas_neue tracking-wider">
+                CAST
+              </h2>
             </div>
-            <div className="cast-list items-center grid grid-rows-2 grid-flow-col gap-5 overflow-x-auto mt-4">
+            <div className="cast-list items-center grid grid-rows-2 grid-flow-col gap-5 hover:overflow-x-auto mt-4 overflow-hidden">
               {cast.map((actor, index) => (
                 <div
                   key={index}
@@ -90,7 +92,12 @@ export default async function movieDetails({ params }) {
                       />
                     ) : (
                       <div className="w-40 h-40 rounded-2xl bg-gray-300 flex items-center justify-center">
-                        <span className="text-sm text-gray-600">No Image</span>
+                        <Image
+                          src={"/assets/images/noimage.jpeg"}
+                          width={150}
+                          height={150}
+                          className="rounded-2xl object-cover"
+                        />
                       </div>
                     )}
                   </div>
@@ -101,13 +108,48 @@ export default async function movieDetails({ params }) {
             </div>
           </div>
         </div>
-        <div className="flex flex-col mt-10 gap-4">
+        <div className="recommendation-section flex flex-col mt-10 gap-4">
           <div className="gap-2 flex">
             <p className="border-l-8 border-secondary"></p>
-            <h2 className="text-4xl font-bold">RECOMMENDATIONS</h2>
+            <h2 className="text-4xl font-bold font-bebas_neue tracking-wider">
+              RECOMMENDATIONS
+            </h2>
           </div>
           <div>
             <Card results={recommendations} />
+          </div>
+        </div>
+        <div className="review-section flex flex-col mt-10 w-1/2 gap-4 font-sans_caption">
+          <div className="gap-2 flex">
+            <p className="border-l-8 border-secondary"></p>
+            <h2 className="text-4xl font-bold font-bebas_neue tracking-wider">
+              Review
+            </h2>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="add a review"
+              className="p-3 w-full rounded-lg bg-transparent border-white border text-white"
+            />
+            <button className="p-3 bg-secondary rounded-lg">POST</button>
+          </div>
+          <div className="review-wrapper w-full h-fit flex flex-col bg-white text-black p-5 rounded-lg gap-4">
+            <p className="text-pretty">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <div className="user-date-wrapper flex items-center justify-between">
+              <div className="user-profile flex items-center gap-2">
+                <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
+                  <span className="text-sm text-gray-600">#</span>
+                </div>
+                <p className="user-name text-secondary">Putra</p>
+              </div>
+              <p className="date-created text-[#484848]">32 Januari 2099</p>
+            </div>
           </div>
         </div>
       </div>

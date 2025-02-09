@@ -36,6 +36,7 @@ model Movie {
   companyNames  String[]
   writers       String[]
   directors     String[]
+  movieTrailer  Json?
   comments      Comment[]
   watchlist     Watchlist[]
 }
