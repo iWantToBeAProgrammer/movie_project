@@ -10,7 +10,7 @@ export async function getMovieDetails(tmdbId) {
     // Fetch from TMDB if not in database
     const tmdbMovie = await getMovieData(
       tmdbId,
-      "&language=en-US&append_to_response=release_dates,credits"
+      "&language=en-US&append_to_response=release_dates,credits,videos"
     );
 
     if (!tmdbMovie || !tmdbMovie.id) {
@@ -42,6 +42,10 @@ export async function getMovieDetails(tmdbId) {
       (company) => company.name
     );
 
+    const movieTrailer = tmdbMovie.videos.results
+      .filter((result) => result.type === "Trailer")
+      .slice(0, 1);
+
     return await prisma.movie.create({
       data: {
         tmdbId: tmdbMovie.id.toString(),
@@ -57,6 +61,7 @@ export async function getMovieDetails(tmdbId) {
         directors: directors,
         writers: writers,
         companyNames: companyNames,
+        movieTrailer: movieTrailer,
       },
     });
   }
