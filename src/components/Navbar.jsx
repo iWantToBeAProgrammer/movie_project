@@ -13,16 +13,15 @@ const Navbar = () => {
 
   const { user, setUser } = useAuth();
 
+  console.log(user);
 
   const handleLogout = async (e) => {
     e.preventDefault();
 
     await supabase.auth.signOut();
-
-    setUser(null)
-  }
-
-
+    router.refresh();
+    router.push("/");
+  };
 
   return (
     <>
@@ -30,8 +29,8 @@ const Navbar = () => {
         className={`navbar h-16 2xl:h-20  text-xl 2xl:text-3xl ${
           pathname === "/" ? "absolute" : "relative"
         } top-0 text-neutral z-50 flex justify-center ${
-          pathname === "/auth/login" && "hidden"
-        } ${pathname === "/auth/register" && "hidden"}`}
+          pathname.startsWith("/auth") && "hidden"
+        }`}
       >
         <div className="navbar-wrapper flex items-center justify-between max-w-screen-xl w-full">
           <Image
@@ -55,7 +54,7 @@ const Navbar = () => {
                 sign in
               </button>
             ) : (
-              <button onClick={handleLogout}>
+              <button type="button" onClick={handleLogout}>
                 <UserCircle size={50} />
               </button>
             )}

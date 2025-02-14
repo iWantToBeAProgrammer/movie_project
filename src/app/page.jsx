@@ -20,6 +20,7 @@ export default async function Home() {
     "popular",
     "&language=en-US&page=1&region=ID"
   );
+
   return (
     <>
       <Suspense fallback={<Loading />}>
