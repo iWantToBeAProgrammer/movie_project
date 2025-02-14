@@ -8,7 +8,8 @@ import {
 
 export async function POST(request) {
   try {
-    const { action, email, password, username, provider } = await request.json();
+    const { action, email, password, username, provider } =
+      await request.json();
 
     if (action === "signUp") {
       const { user, error } = await signUpWithEmail(email, password);
@@ -26,7 +27,7 @@ export async function POST(request) {
         });
       }
 
-      return NextResponse.json({ message: "Signup successful!", user: data.user });
+      return NextResponse.json({ message: "Signup successful!", user: user });
     }
 
     if (action === "signIn") {
@@ -42,7 +43,7 @@ export async function POST(request) {
 
       return NextResponse.json({
         message: `OAuth with ${provider} successful!`,
-        user: user, 
+        user: user,
       });
     }
 
