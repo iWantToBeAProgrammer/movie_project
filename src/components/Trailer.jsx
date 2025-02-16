@@ -20,7 +20,7 @@ const Trailer = ({ movieTrailer }) => {
 
   return (
     <div className="flex flex-col">
-      {movieTrailer.map((trailer) => (
+      {movieTrailer?.map((trailer) => (
         <div className="relative aspect-video w-full h-full">
           {playingVideoId === trailer.id ? (
             <>

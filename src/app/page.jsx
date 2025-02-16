@@ -5,6 +5,7 @@ import Hero from "@/components/Hero";
 import { getMovieData } from "@/libs/api-libs";
 import { Suspense } from "react";
 import Loading from "./loading";
+import Navbar from "@/components/Navbar";
 
 export default async function Home() {
   const nowPlaying = await getMovieData(
@@ -23,6 +24,9 @@ export default async function Home() {
 
   return (
     <>
+      <Suspense fallback={<Loading />}>
+        <Navbar />
+      </Suspense>
       <Suspense fallback={<Loading />}>
         <Hero movieResults={nowPlaying.results} />
       </Suspense>

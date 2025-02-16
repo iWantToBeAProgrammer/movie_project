@@ -1,9 +1,11 @@
-const profile = () => {
-    return (
-        <>
-            <h1>Profile page</h1>
-        </>
-    )
-}   
+import BackNavigation from "@/components/Common/BackNavigation";
 
-export default profile;
+export default function Profile() {
+  return (
+    <>
+      <div className="profile-container">
+        <BackNavigation />
+      </div>
+    </>
+  );
+}
