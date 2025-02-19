@@ -20,13 +20,13 @@ model User {
 }
 
 model Movie {
-  id            Int         @id @default(autoincrement())
-  tmdbId        String      @unique
+  id            Int             @id @default(autoincrement())
+  tmdbId        String          @unique
   title         String
   posterPath    String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  overview      String      @default("")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  overview      String          @default("")
   genres        String[]
   backdropPath  String?
   certification String?
@@ -38,18 +38,22 @@ model Movie {
   directors     String[]
   movieTrailer  Json?
   comments      Comment[]
-  watchlist     Watchlist[]
+  WatchlistItem WatchlistItem[]
 }
 
 model Watchlist {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  createdAt DateTime @default(now())
-  movieId   Int
-  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            Int             @id @default(autoincrement())
+  userId        String
+  createdAt     DateTime        @default(now())
+  description   String?
+  name          String
+  picture       String?
+  title         String
+  updatedAt     DateTime
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  WatchlistItem WatchlistItem[]
 
-  @@unique([userId, movieId])
+  @@index([userId])
 }
 
 model Comment {
@@ -62,4 +66,15 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([movieId])
+}
+
+model WatchlistItem {
+  id          Int       @id @default(autoincrement())
+  watchlistId Int
+  movieId     Int
+  addedAt     DateTime  @default(now())
+  Movie       Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  Watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+
+  @@unique([watchlistId, movieId])
 }

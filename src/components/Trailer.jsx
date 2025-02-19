@@ -31,7 +31,9 @@ const Trailer = ({ movieTrailer }) => {
               <img
                 src={`https://i.ytimg.com/vi/${trailer.key}/maxresdefault.jpg`}
                 alt={trailer.name}
-                className="w-full h-full object-cover"
+                className="h-full object-cover"
+                width={1280}
+                height={720}
               />
               <button
                 className="button-overlay bg-black/50 w-full h-full flex items-center justify-center absolute top-0 group"
