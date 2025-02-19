@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/app/contexts/AuthContext";
 import { supabase } from "@/libs/supabase";
+import { CaretDown } from "@phosphor-icons/react";
 import { UserCircle } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,25 +35,64 @@ const Navbar = () => {
               height={150}
             />
           </Link>
-          <div className="navbar-item font-bebas_neue flex gap-8 items-center text-xl 2xl:text-3xl">
-            <Link href="/movies">
-              <h1>MOVIE LIST</h1>
-            </Link>
-            <Link href="/watchlist">
-              <h1>WATCHLIST</h1>
-            </Link>
+          <div className="navbar-item  flex gap-8 items-center text-xl 2xl:text-3xl">
+            <div className="dropdown dropdown-end dropdown-hover">
+              <div
+                tabIndex={0}
+                role="button"
+                className="flex items-center gap-2 font-bebas_neue"
+              >
+                Movie List{" "}
+                <CaretDown className="text-primary" size={28} weight="bold" />
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-white rounded-xl z-[1] w-44 p-2 shadow text-raleway text-[#333333] font-semibold"
+              >
+                <li>
+                  <Link href={"/movies"}>Popular Movies</Link>
+                </li>
+                <li>
+                  <Link href={"/movies/now-playing"}>Now Playing</Link>
+                </li>
+                <li>
+                  <Link href={"/movies/top-rated"}>Top Rated</Link>
+                </li>
+              </ul>
+            </div>
             {!user ? (
               <button
                 onClick={() => router.push("/auth/login")}
-                className="bg-gradient-to-t from-primary to-secondary hover:from-primary/50 hover:to-primary/50 hover:border-2 hover:border-primary px-6 btn  py-2 xl:py-1 rounded-xl text-3xl"
+                className="font-bebas_neue bg-gradient-to-t from-primary to-secondary hover:from-primary/50 hover:to-primary/50 hover:border-2 hover:border-primary px-6 btn  py-2 xl:py-1 rounded-xl text-3xl"
                 type="button"
               >
                 sign in
               </button>
             ) : (
-              <button type="button" onClick={() => router.push("/profile")}>
-                <UserCircle size={50} />
-              </button>
+              <div className="dropdown dropdown-end dropdown-hover">
+                <div
+                  tabIndex={0}
+                  role="button"
+                  className="flex items-center gap-2 font-bebas_neue"
+                >
+                  <button type="button" onClick={() => router.push("/profile")}>
+                    <UserCircle size={50} />
+                  </button>
+                </div>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu bg-white rounded-xl z-[1] w-44 p-2 shadow text-raleway text-[#333333] font-semibold"
+                >
+                  <li>
+                    <Link href={"/profile"}>My Profile</Link>
+                  </li>
+                  <li>
+                    <button type="button" onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
             )}
           </div>
         </div>

@@ -8,7 +8,7 @@ const BackNavigation = () => {
 
   return (
     <>
-      <div className="back-button absolute top-3 left-5 z-50">
+      <div className="back-button absolute top-7 left-5 z-50">
         <button type="button" onClick={() => router.back()}>
           <CaretLeft size={50} weight="bold" />
         </button>

@@ -6,6 +6,8 @@ import Loading from "@/app/loading";
 import CardMovieList from "@/components/MovieList/CardMovieList";
 import Pagination from "@/components/Pagination";
 import HeaderMovieList from "@/components/MovieList/HeaderMovieList";
+import Navbar from "@/components/Navbar";
+import BackNavigation from "@/components/Common/BackNavigation";
 
 export default async function MoviesPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,20 +26,23 @@ export default async function MoviesPage() {
   }, [currentPage]);
 
   return (
-    <div className="container max-w-screen-xl mx-auto overflow-hidden">
-      <div className="flex flex-col">
-        <HeaderMovieList title={"Popular Viewed Movies"}/>
-        <div className="grid grid-cols-5 gap-12">
-          <Suspense fallback={<Loading />}>
-            <CardMovieList results={movieData.results} />
-          </Suspense>
-        </div>
+    <>
+      <div className="container max-w-screen-xl mx-auto overflow-hidden">
+      <BackNavigation />
+        <div className="flex flex-col">
+          <HeaderMovieList title={"Popular Viewed Movies"} />
+          <div className="grid grid-cols-5 gap-12">
+            <Suspense fallback={<Loading />}>
+              <CardMovieList results={movieData.results} />
+            </Suspense>
+          </div>
 
-        <Pagination
-          totalPages={movieData.total_pages}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+          <Pagination
+            totalPages={movieData.total_pages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

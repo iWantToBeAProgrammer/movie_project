@@ -6,6 +6,8 @@ import Loading from "@/app/loading";
 import CardMovieList from "@/components/MovieList/CardMovieList";
 import Pagination from "@/components/Pagination";
 import HeaderMovieList from "@/components/MovieList/HeaderMovieList";
+import Navbar from "@/components/Navbar";
+import BackNavigation from "@/components/Common/BackNavigation";
 
 export default async function NowPlayingPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +27,7 @@ export default async function NowPlayingPage() {
 
   return (
     <div className="container max-w-screen-xl mx-auto overflow-hidden">
+      <BackNavigation />
       <div className="flex flex-col">
         <HeaderMovieList title={"Now Playing Movies"} />
         <div className="grid grid-cols-5 gap-12">
