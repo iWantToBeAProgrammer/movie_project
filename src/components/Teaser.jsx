@@ -43,7 +43,9 @@ const Teaser = ({ movieTeaser }) => {
                 <img
                   src={`https://i.ytimg.com/vi/${teaser.key}/maxresdefault.jpg`}
                   alt={teaser.name}
-                  className="w-full h-full object-cover"
+                  className="object-cover"
+                  width={360}
+                  height={200}
                 />
                 <div className="button-overlay bg-black/50 w-full h-full flex items-center justify-center absolute top-0 group">
                   <Play

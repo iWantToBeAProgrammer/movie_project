@@ -42,7 +42,7 @@ const PopularCard = ({ results = [] }) => {
         <Header title={"popular viewed movies"} linkHref={"/movies"} />
 
         <button
-          onClick={() => router.push("/popular")}
+          onClick={() => router.push("/movies")}
           className="h-10  px-6 py-2 text-sm font-bold bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:opacity-90 transition"
         >
           Explore More
@@ -65,12 +65,12 @@ const PopularCard = ({ results = [] }) => {
             return (
               <div
                 key={id}
-                className="relative bg-black text-white rounded-lg border border-secondary shadow-md group hover:bg-secondary hover:bg-opacity-50 transition-colors duration-300 flex flex-col"
+                className="relative bg-black text-white rounded-lg border border-secondary shadow-md group hover:bg-opacity-50 transition-all ease-in-out duration-300 flex flex-col"
                 style={{ height: "100%" }}
               >
                 {/* Poster */}
-                <div className="flex justify-center -mt-12">
-                  <div className="relative w-3/4 aspect-[2/3] overflow-hidden rounded-lg shadow-lg">
+                <div className="flex justify-center">
+                  <div className="relative w-3/4 aspect-[2/3] overflow-hidden rounded-lg shadow-lg transform -translate-y-8 group-hover:translate-y-28 transition-all duration-500 ease-in-out">
                     <Image
                       src={`https://image.tmdb.org/t/p/w500${poster_path}`}
                       fill
@@ -88,7 +88,7 @@ const PopularCard = ({ results = [] }) => {
                 </div>
 
                 {/* Content */}
-                <div className="mt-auto p-4">
+                <div className="mt-auto p-4 group-hover:opacity-0 transition-opacity duration-300 ease-in-out">
                   <p
                     id="rating"
                     className="text-sm font-semibold text-center group-hover:text-white mb-6"

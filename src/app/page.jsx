@@ -7,6 +7,8 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import Navbar from "@/components/Navbar";
 
+export const revalidate = 3600;
+
 export default async function Home() {
   const nowPlaying = await getMovieData(
     "now_playing",
