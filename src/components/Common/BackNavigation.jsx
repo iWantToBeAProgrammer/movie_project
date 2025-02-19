@@ -1,0 +1,20 @@
+"use client"
+
+import { CaretLeft } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+
+const BackNavigation = () => {
+  const router = useRouter();
+
+  return (
+    <>
+      <div className="back-button absolute top-3 left-5 z-50">
+        <button type="button" onClick={() => router.back()}>
+          <CaretLeft size={50} weight="bold" />
+        </button>
+      </div>
+    </>
+  );
+};
+
+export default BackNavigation;

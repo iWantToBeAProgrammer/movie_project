@@ -16,40 +16,55 @@ model User {
   id             String      @id @default(uuid()) @map("user_id")
   username       String?     @unique
   comments       Comment[]
-  watchlist      Watchlist[]
+  watchlists     Watchlist[]
 }
 
 model Movie {
-  id            Int         @id @default(autoincrement())
-  tmdbId        String      @unique
-  title         String
-  posterPath    String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  overview      String      @default("")
-  genres        String[]
-  backdropPath  String?
-  certification String?
-  releaseDates  Json?
-  runtime       Int?
-  cast          Json?
-  companyNames  String[]
-  writers       String[]
-  directors     String[]
-  movieTrailer  Json?
-  comments      Comment[]
-  watchlist     Watchlist[]
+  id             Int             @id @default(autoincrement())
+  tmdbId         String          @unique
+  title          String
+  posterPath     String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  overview       String          @default("")
+  genres         String[]
+  backdropPath   String?
+  certification  String?
+  releaseDates   Json?
+  runtime        Int?
+  cast           Json?
+  companyNames   String[]
+  writers        String[]
+  directors      String[]
+  movieTrailer   Json?
+  comments       Comment[]
+  watchlistItems WatchlistItem[]
 }
 
 model Watchlist {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  createdAt DateTime @default(now())
-  movieId   Int
-  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int             @id @default(autoincrement())
+  name        String
+  title       String
+  description String?
+  picture     String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       WatchlistItem[]
 
-  @@unique([userId, movieId])
+  @@index([userId])
+}
+
+model WatchlistItem {
+  id          Int       @id @default(autoincrement())
+  watchlistId Int
+  movieId     Int
+  addedAt     DateTime  @default(now())
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  movie       Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([watchlistId, movieId])
 }
 
 model Comment {

@@ -104,7 +104,7 @@ const Hero = ({ movieResults }) => {
 
               <div className="flex items-center gap-2 mt-4 lg:mt-8 lg:gap-8 hero-button-wrapper">
                 <button className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm">
-                  Add Watchlist
+                  Add To Watchlist
                 </button>
                 <button className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm">
                   Watch Trailer

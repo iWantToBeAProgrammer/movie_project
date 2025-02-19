@@ -1,5 +1,6 @@
 import Card from "@/components/Card";
 import Certification from "@/components/Certification";
+import BackNavigation from "@/components/Common/BackNavigation";
 import CustomButton from "@/components/CustomButton";
 import Trailer from "@/components/Trailer";
 import { getRecDetails } from "@/services/movie-rec";
@@ -30,6 +31,7 @@ export default async function movieDetails({ params }) {
 
   return (
     <div className="container max-w-screen-xl mx-auto h-fit">
+      <BackNavigation />
       <div className="movie-details-wrapper flex flex-col">
         <div className="video-section flex w-full h-full">
           <Trailer movieTrailer={movie.movieTrailer} />

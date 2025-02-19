@@ -77,7 +77,10 @@ const Card = ({ results = [] }) => {
                         <p className="text-sm text-gray-300">{`(${releaseYear})`}</p>
                       )}
                     </div>
-                    <button onClick={() => router.push(`/movies/${result.id}`)} className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90">
+                    <button
+                      onClick={() => router.push(`/movies/${result.id}`)}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+                    >
                       View Details
                       <CaretCircleDoubleRight size={16} color="#FFFFFF" />
                     </button>

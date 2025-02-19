@@ -6,7 +6,7 @@ import { PlusCircle, Eye } from "@phosphor-icons/react";
 const CustomButton = ({ type, size = "medium", className = "" }) => {
   const buttonConfig = {
     add: {
-      text: "Add Watchlist",
+      text: "Add To Watchlist",
       icon: <PlusCircle size={20} className="inline-block mr-2" />,
       className: "bg-white text-black hover:bg-secondary hover:text-white",
     },
