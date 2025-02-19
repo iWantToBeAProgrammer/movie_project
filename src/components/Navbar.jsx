@@ -27,13 +27,15 @@ const Navbar = () => {
         className={`navbar h-16 2xl:h-20  text-xl 2xl:text-3xl absolute top-0 left-0 text-neutral z-50 flex justify-center`}
       >
         <div className="navbar-wrapper flex items-center justify-between max-w-screen-xl w-full">
-          <Image
-            src={"/assets/images/logo/logo.svg"}
-            width={150}
-            height={150}
-          />
+          <Link href="/">
+            <Image
+              src={"/assets/images/logo/logo.svg"}
+              width={150}
+              height={150}
+            />
+          </Link>
           <div className="navbar-item font-bebas_neue flex gap-8 items-center text-xl 2xl:text-3xl">
-            <Link href="/movie-list">
+            <Link href="/movies">
               <h1>MOVIE LIST</h1>
             </Link>
             <Link href="/watchlist">

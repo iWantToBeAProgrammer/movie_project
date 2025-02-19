@@ -6,17 +6,21 @@ import "swiper/css/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getMovieData } from "@/libs/api-libs";
+import Header from "./Header";
 
 const PopularCard = ({ results = [] }) => {
   const [movieDetails, setMovieDetails] = useState([]);
-  
+
   const router = useRouter();
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       const movieData = await Promise.all(
         results.map(async (movie) => {
-          const details = await getMovieData(movie.id, "&append_to_response=genres");
+          const details = await getMovieData(
+            movie.id,
+            "&append_to_response=genres"
+          );
           return { ...movie, genres: details.genres || [] };
         })
       );
@@ -34,19 +38,28 @@ const PopularCard = ({ results = [] }) => {
 
   return (
     <>
-      <div className="flex justify-end mb-8">
+      <div className="flex justify-between mb-8 items-center">
+        <Header title={"popular viewed movies"} linkHref={"/movies"} />
+
         <button
           onClick={() => router.push("/popular")}
-          className="px-6 py-2 text-sm font-bold bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:opacity-90 transition"
+          className="h-10  px-6 py-2 text-sm font-bold bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:opacity-90 transition"
         >
           Explore More
         </button>
       </div>
 
-      <div className="w-full mt-20">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 gap-y-16">
-          {movieDetails.slice(0, 10).map((movie) => {
-            const { id, title, release_date, vote_average, poster_path, genres } = movie;
+      <div className="w-full mt-20 tracking-wider">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 gap-y-16 lg:px-0 px-6">
+          {movieDetails.slice(0, 6).map((movie) => {
+            const {
+              id,
+              title,
+              release_date,
+              vote_average,
+              poster_path,
+              genres,
+            } = movie;
             const releaseYear = release_date?.slice(0, 4) || "Unknown";
 
             return (
@@ -76,36 +89,44 @@ const PopularCard = ({ results = [] }) => {
 
                 {/* Content */}
                 <div className="mt-auto p-4">
-                  <p id="rating" className="text-sm font-semibold text-center group-hover:text-white mb-2">
-                    {(vote_average).toFixed(2)}/10
+                  <p
+                    id="rating"
+                    className="text-sm font-semibold text-center group-hover:text-white mb-6"
+                  >
+                    {vote_average.toFixed(2)}/10
                   </p>
 
                   <div className="flex justify-center items-center">
-                  <h1 id="title-year" className="text-sm font-bold uppercase flex-wrap text-center">
-                    {title}
-                  </h1>
+                    <h1
+                      id="title"
+                      className="text-xl uppercase flex-wrap text-center"
+                    >
+                      {title}
+                    </h1>
                   </div>
-                 
-                  <h1 id="title-year" className="text-sm font-bold uppercase flex justify-center items-center flex-wrap text-center">
+
+                  <h1
+                    id="title-year"
+                    className="text-lg uppercase flex justify-center items-center flex-wrap text-center"
+                  >
                     ({releaseYear})
                   </h1>
 
                   <div
                     id="genres"
-                    className="genres font-raleway text-xs font-medium items-center flex gap-3 my-8 justify-center flex-wrap"
-                    >
+                    className="genres text-sm px-4 font-semibold items-center flex gap-3 my-6 justify-center flex-wrap"
+                  >
                     {genres && genres.length > 0
-                        ? genres.map((genre, index) => (
-                            <span key={genre.id} className="flex items-center">
-                            <h1 className="text-xs">{genre.name}</h1>
+                      ? genres.map((genre, index) => (
+                          <span key={genre.id} className="flex items-center">
+                            <h1 className="font-raleway text-center">{genre.name}</h1>
                             {index < genres.length - 1 && (
-                                <span className="text-secondary ml-2">/</span>
+                              <span className="text-secondary ml-2">/</span>
                             )}
-                            </span>
+                          </span>
                         ))
-                        : "No genres"}
-                    </div>
-
+                      : "No genres"}
+                  </div>
                 </div>
               </div>
             );

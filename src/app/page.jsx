@@ -34,19 +34,18 @@ export default async function Home() {
         <div className="flex flex-col gap-20 movie-list-wrapper">
           <div className="flex flex-col now-playing">
             <Suspense fallback={<Loading />}>
-              <Header title={"Now Playing"} linkHref={"/now_playing"} />
+              <Header title={"Now Playing"} linkHref={"/movies/now-playing"} />
               <Card results={nowPlaying.results} />
             </Suspense>
           </div>
           <div className="flex flex-col top-rated">
             <Suspense fallback={<Loading />}>
-              <Header title={"top rated"} linkHref={"/top_rated"} />
+              <Header title={"top rated"} linkHref={"/movies/top-rated"} />
               <Card results={topRated.results} />
             </Suspense>
           </div>
           <div className="popular">
             <Suspense fallback={<Loading />}>
-              <Header title={"popular viewed movies"} linkHref={"/popular"} />
               <PopularCard results={Popular.results} />
             </Suspense>
           </div>
