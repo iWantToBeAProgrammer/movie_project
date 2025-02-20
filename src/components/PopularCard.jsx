@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getMovieData } from "@/libs/api-libs";
 import Header from "./Header";
+import { IoPlayCircleOutline } from "react-icons/io5";
 
 const PopularCard = ({ results = [] }) => {
   const [movieDetails, setMovieDetails] = useState([]);
@@ -78,10 +79,10 @@ const PopularCard = ({ results = [] }) => {
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
                       <button
+                        className="text-8xl hover:scale-125 transition-all duration-300 ease-in-out"
                         onClick={() => router.push(`/movies/${id}`)}
-                        className="px-4 py-2 text-sm font-bold rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
                       >
-                        View Details
+                        <IoPlayCircleOutline />
                       </button>
                     </div>
                   </div>
@@ -119,7 +120,9 @@ const PopularCard = ({ results = [] }) => {
                     {genres && genres.length > 0
                       ? genres.map((genre, index) => (
                           <span key={genre.id} className="flex items-center">
-                            <h1 className="font-raleway text-center">{genre.name}</h1>
+                            <h1 className="font-raleway text-center">
+                              {genre.name}
+                            </h1>
                             {index < genres.length - 1 && (
                               <span className="text-secondary ml-2">/</span>
                             )}

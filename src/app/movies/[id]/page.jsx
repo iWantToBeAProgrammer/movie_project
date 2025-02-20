@@ -2,6 +2,7 @@ import Card from "@/components/Card";
 import Certification from "@/components/Certification";
 import BackNavigation from "@/components/Common/BackNavigation";
 import CustomButton from "@/components/CustomButton";
+import SliderRecommendation from "@/components/MovieList/SliderRecommendation";
 import Trailer from "@/components/Trailer";
 import { getRecDetails } from "@/services/movie-rec";
 import { getMovieDetails } from "@/services/movie-service";
@@ -118,7 +119,7 @@ export default async function movieDetails({ params }) {
             </h2>
           </div>
           <div>
-            <Card results={recommendations} />
+            <SliderRecommendation results={recommendations} />
           </div>
         </div>
         <div className="review-section flex flex-col mt-10 w-1/2 gap-4 font-sans_caption">

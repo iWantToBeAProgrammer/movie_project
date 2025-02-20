@@ -4,11 +4,14 @@ import Certification from "@/components/Certification";
 import Teaser from "./Teaser";
 import { useState, useEffect } from "react";
 import { getMovieData } from "@/libs/api-libs";
+import { useRouter } from "next/navigation";
 
 const Hero = ({ movieResults }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [movieDetails, setMovieDetails] = useState(null);
   const [isIntervalActive, setIsIntervalActive] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     if (movieResults.length === 0) return;
@@ -106,16 +109,19 @@ const Hero = ({ movieResults }) => {
                 <button className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm">
                   Add To Watchlist
                 </button>
-                <button className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm">
+                <button
+                  className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm"
+                  onClick={() => router.push(`/movies/${result.id}`)}
+                >
                   Watch Trailer
                 </button>
               </div>
             </div>
             <div className="hero-right-content w-1/2 h-full reltaive z-30">
-                <Teaser movieTeaser={movieTeaser} />
+              <Teaser movieTeaser={movieTeaser} />
             </div>
 
-              <div className="bottom-overlay h-full bg-gradient-to-b from-black/20 to-black/80 absolute bottom-0 w-full z-0 left-0"></div>
+            <div className="bottom-overlay h-full bg-gradient-to-b from-black/20 to-black/80 absolute bottom-0 w-full z-0 left-0"></div>
           </div>
         </div>
       </div>
