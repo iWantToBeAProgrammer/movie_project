@@ -1,9 +1,48 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PlusCircle, Eye } from "@phosphor-icons/react";
+import toast from "react-hot-toast";
 
-const CustomButton = ({ type, size = "medium", className = "" }) => {
+const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
+  const [loading, setLoading] = useState(false);
+  const [watched, setWatched] = useState(false);
+
+  const checkIsWatched = async (movieId) => {
+    const res = await fetch(`/api/watched?movieId=${movieId}`, {
+      method: "GET",
+    });
+
+    const data = await res.json();
+    return data.watched;
+  };
+
+  useEffect(() => {
+    const fetchWatchedStatus = async () => {
+      const watched = await checkIsWatched(movieId);
+      setWatched(watched);
+    };
+
+    fetchWatchedStatus();
+  }, [movieId, watched]);
+
+  const MarkAsWatched = async () => {
+    setLoading(true);
+    const res = await fetch("/api/watched", {
+      method: "POST",
+      body: JSON.stringify({ movieId }),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+    if (res.ok) {
+      setWatched((prev) => !prev);
+      toast(data.message);
+    } else {
+      toast("Something went wrong. Please try again.");
+    }
+  };
+
   const buttonConfig = {
     add: {
       text: "Add To Watchlist",
@@ -11,7 +50,7 @@ const CustomButton = ({ type, size = "medium", className = "" }) => {
       className: "bg-white text-black hover:bg-secondary hover:text-white",
     },
     watched: {
-      text: "Watched It",
+      text: !watched ? "Watched It" : "Didn't Watched It",
       icon: <Eye size={20} className="inline-block mr-2" />,
       className:
         "bg-transparent border border-secondary border-4 text-secondary hover:bg-secondary hover:text-white",
@@ -28,6 +67,7 @@ const CustomButton = ({ type, size = "medium", className = "" }) => {
 
   return (
     <button
+      onClick={MarkAsWatched}
       className={` rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center    ${variantClassName} ${sizeClasses[size]} ${className}`}
     >
       {icon}
