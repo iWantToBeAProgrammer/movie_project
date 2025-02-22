@@ -36,14 +36,14 @@ const Navbar = () => {
             />
           </Link>
           <div className="navbar-item  flex gap-8 items-center text-xl 2xl:text-3xl">
-            <div className="dropdown dropdown-end dropdown-hover">
+            <div className="dropdown dropdown-end dropdown-hover group">
               <div
                 tabIndex={0}
                 role="button"
                 className="flex items-center gap-2 font-bebas_neue"
               >
                 Movie List{" "}
-                <CaretDown className="text-primary" size={28} weight="bold" />
+                <CaretDown className="text-primary transform group-hover:-rotate-180 duration-500 transition-transform" size={28} weight="bold"/>
               </div>
               <ul
                 tabIndex={0}
@@ -69,7 +69,7 @@ const Navbar = () => {
                 sign in
               </button>
             ) : (
-              <div className="dropdown dropdown-end dropdown-hover">
+              <div className="dropdown dropdown-end dropdown-hover ">
                 <div
                   tabIndex={0}
                   role="button"

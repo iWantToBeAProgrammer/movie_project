@@ -9,19 +9,20 @@ datasource db {
 }
 
 model User {
-  email          String      @unique
-  createdAt      DateTime    @default(now()) @map("created_at")
+  email          String         @unique
+  createdAt      DateTime       @default(now()) @map("created_at")
   profilePicture String?
-  role           String      @default("user")
-  id             String      @id @default(uuid()) @map("user_id")
-  username       String?     @unique
+  role           String         @default("user")
+  id             String         @id @default(uuid()) @map("user_id")
+  username       String?        @unique
   comments       Comment[]
   watchlists     Watchlist[]
+  watchedMovies  WatchedMovie[]
 }
 
 model Movie {
   id             Int             @id @default(autoincrement())
-  tmdbId         String          @unique
+  tmdbId         Int             @unique  
   title          String
   posterPath     String?
   createdAt      DateTime        @default(now())
@@ -39,6 +40,7 @@ model Movie {
   movieTrailer   Json?
   comments       Comment[]
   watchlistItems WatchlistItem[]
+  watchedMovies  WatchedMovie[]
 }
 
 model Watchlist {
@@ -72,9 +74,24 @@ model Comment {
   userId    String
   content   String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
   movieId   Int
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([movieId])
+}
+
+model WatchedMovie {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  movieId   Int
+  watchedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([userId])  
+  @@index([movieId]) 
 }
