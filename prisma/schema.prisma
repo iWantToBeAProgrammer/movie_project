@@ -22,7 +22,7 @@ model User {
 
 model Movie {
   id             Int             @id @default(autoincrement())
-  tmdbId         Int             @unique  
+  tmdbId         String             @unique  
   title          String
   posterPath     String?
   createdAt      DateTime        @default(now())
