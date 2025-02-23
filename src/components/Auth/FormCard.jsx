@@ -1,15 +1,18 @@
 "use client";
 
 import { CaretLeft, FacebookLogo } from "@phosphor-icons/react";
-import { GoogleLogo } from "@phosphor-icons/react/dist/ssr";
-import { IoMailUnreadOutline } from "react-icons/io5";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { IoMailUnreadOutline } from "react-icons/io5";
+import { AiFillGoogleCircle } from "react-icons/ai";
 import { useState } from "react";
 import { supabase } from "@/libs/supabase";
+import { authRequest } from "@/utility/auth";
 
-export default function FormCard() {
+export default function FormCard({}) {
   const router = useRouter();
+  const pathname = usePathname();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -124,36 +127,44 @@ export default function FormCard() {
                   placeholder="Confirm Password"
                   value={formData.passwordConfirmation}
                   onChange={handleChange}
-                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  className={`${
+                    pathname === "/auth/login" && "hidden"
+                  } border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none`}
                   required
                 />
+
 
                 <button
                   type="submit"
                   className="form-button btn btn-outline font-bebas_neue text-3xl border-primary hover:text-white hover:bg-primary hover:border-primary tracking-wider"
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : "Sign Up"}
+                  {pathname === "/auth/login" ? "Sign in" : "Sign up"}
                 </button>
 
                 <div className="divider divider-accent font-raleway_italic">
                   OR
                 </div>
 
-                <div className="social-links flex gap-12 items-center justify-center">
-                  <div className="border-2 border-primary rounded-full flex justify-center items-center h-16 w-16">
-                    <GoogleLogo size={52} color="#AF0404" weight="bold" />
+                <button type="button" className="btn btn-primary font-bebas_neue text-2xl tracking-wider uppercase" onClick={() => OAuthSubmit("google")}>
+                  <div className="flex items-center gap-2  h-full">
+                    <AiFillGoogleCircle size={32} /> Sign in with google
                   </div>
-                  <FacebookLogo size={72} color="#3c72bc" weight="bold" />
-                </div>
+                </button>
 
                 <p className="text-center">
-                  Already have an account?{" "}
+                  {pathname === "/auth/login"
+                    ? "Don't have an account? "
+                    : "Already Have an Account? "}
                   <Link
                     className="uppercase underline text-white"
-                    href="/auth/login"
+                    href={
+                      pathname === "/auth/login"
+                        ? "/auth/register"
+                        : "/auth/login"
+                    }
                   >
-                    Sign In
+                    {pathname === "/auth/login" ? "Sign Up" : "Sign in"}
                   </Link>
                 </p>
               </form>

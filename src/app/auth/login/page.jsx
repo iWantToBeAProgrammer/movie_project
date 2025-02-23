@@ -24,7 +24,7 @@ const login = () => {
       setUser(response.user);
       setError("");
 
-      router.push('/')
+      router.push("/");
     } catch (error) {
       setError(error.message);
 
@@ -32,12 +32,30 @@ const login = () => {
     }
   };
 
-  console.log(success);
+  const handleOAuthSubmit = async (provider) => {
+    setError(null);
+    setSuccess("");
+    try {
+      const response = await authRequest("oauth", { provider });
+
+      setSuccess(response.message);
+      setError("");
+    } catch (error) {
+      setError(error.message);
+
+      setSuccess("");
+    }
+  };
 
   return (
     <>
       <div className="w-full h-screen flex justify-center items-center relative">
-        <FormCard onSubmit={handleSubmit} error={error} success={success} />
+        <FormCard
+          onSubmit={handleSubmit}
+          error={error}
+          success={success}
+          OAuthSubmit={handleOAuthSubmit}
+        />
       </div>
     </>
   );
