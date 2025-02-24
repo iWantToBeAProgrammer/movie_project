@@ -42,9 +42,9 @@ export default async function movieDetails({ params }) {
             <h1 className="text-4xl font-bebas_neue tracking-wider">
               {movie.title}
             </h1>
-            <div className="flex gap-5 ">
-              <CustomButton type="add" size="large" />
-              <CustomButton type="watched" size="large" />
+            <div className="flex gap-5">
+              <CustomButton type="add" size="large" movieId={movie.id} />
+              <CustomButton type="watched" size="large" movieId={movie.id} />
             </div>
             <div className=" flex items-center gap-2">
               <Certification result={certification} />

@@ -25,6 +25,8 @@ export async function POST(request) {
             username,
           },
         });
+      } else {
+        throw new Error("User Already Registered")
       }
 
       return NextResponse.json({ message: "Signup successful!", user: user });
@@ -33,6 +35,18 @@ export async function POST(request) {
     if (action === "signIn") {
       const { user, error } = await signInWithEmail(email, password);
       if (error) throw new Error(error.message);
+
+      const existingUser = await prisma.user.findUnique({ where: { email } });
+
+      if (!existingUser) {
+        await prisma.user.create({
+          data: {
+            id: user.id,
+            email: user.email,
+            username,
+          },
+        });
+      }
 
       return NextResponse.json({ message: "Signin successful!", user: user });
     }

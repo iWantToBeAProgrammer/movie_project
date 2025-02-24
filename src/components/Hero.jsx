@@ -89,6 +89,7 @@ const Hero = ({ movieResults }) => {
               <div className="genres font-raleway text-xl font-medium items-center flex gap-3 my-8">
                 <h1 className="me-6">Genre</h1>
                 {movieDetails.genres.map((data, index) => {
+                  console.log(data)
                   return (
                     <div key={data.id} className="flex items-center gap-2">
                       <span

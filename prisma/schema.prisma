@@ -16,13 +16,12 @@ model User {
   id             String         @id @default(uuid()) @map("user_id")
   username       String?        @unique
   comments       Comment[]
-  watchlists     Watchlist[]
   watchedMovies  WatchedMovie[]
+  watchlists     Watchlist[]
 }
 
 model Movie {
   id             Int             @id @default(autoincrement())
-  tmdbId         String             @unique  
   title          String
   posterPath     String?
   createdAt      DateTime        @default(now())
@@ -38,20 +37,21 @@ model Movie {
   writers        String[]
   directors      String[]
   movieTrailer   Json?
+  tmdbId         String          @unique
   comments       Comment[]
-  watchlistItems WatchlistItem[]
   watchedMovies  WatchedMovie[]
+  watchlistItems WatchlistItem[]
 }
 
 model Watchlist {
   id          Int             @id @default(autoincrement())
-  name        String
-  title       String
-  description String?
-  picture     String?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
   userId      String
+  createdAt   DateTime        @default(now())
+  description String?
+  name        String
+  picture     String?
+  title       String
+  updatedAt   DateTime        @updatedAt
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       WatchlistItem[]
 
@@ -63,8 +63,8 @@ model WatchlistItem {
   watchlistId Int
   movieId     Int
   addedAt     DateTime  @default(now())
-  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
   movie       Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
 
   @@unique([watchlistId, movieId])
 }
@@ -74,8 +74,8 @@ model Comment {
   userId    String
   content   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
   movieId   Int
+  updatedAt DateTime @updatedAt
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -87,11 +87,10 @@ model WatchedMovie {
   userId    String
   movieId   Int
   watchedAt DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, movieId])
-  @@index([userId])  
-  @@index([movieId]) 
+  @@index([userId])
+  @@index([movieId])
 }
