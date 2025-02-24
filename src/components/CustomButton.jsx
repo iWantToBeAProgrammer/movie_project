@@ -54,10 +54,16 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
       icon: <Eye size={20} className="inline-block mr-2" />,
       className:
         "bg-transparent border border-secondary border-4 text-secondary hover:bg-secondary hover:text-white",
+      onClick: MarkAsWatched,
     },
   };
 
-  const { text, icon, className: variantClassName } = buttonConfig[type] || {};
+  const {
+    text,
+    icon,
+    className: variantClassName,
+    onClick,
+  } = buttonConfig[type] || {};
 
   const sizeClasses = {
     small: "py-1 w-10 text-sm",
@@ -66,13 +72,41 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   };
 
   return (
-    <button
-      onClick={MarkAsWatched}
-      className={` rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center    ${variantClassName} ${sizeClasses[size]} ${className}`}
-    >
-      {icon}
-      {text}
-    </button>
+    <>
+      {type === "watched" ? (
+        <button
+          onClick={onClick}
+          className={`rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center    ${variantClassName} ${sizeClasses[size]} ${className}`}
+        >
+          {icon}
+          {text}
+        </button>
+      ) : (
+        <div className="dropdown dropdown-bottom">
+          <div
+            tabIndex={0}
+            role="button"
+            className={`h-12 rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center    ${variantClassName} ${sizeClasses[size]} ${className}`}
+          >
+            {icon}
+            {text}
+          </div>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-white text-black rounded-xl mt-2 z-[1] w-52 p-2 shadow hover:*:*:bg-secondary transition-colors duration-200 ease-in-out *:rounded-xl gap-1"
+          >
+            <li className="border-b border-black/50">
+              <button className="focus:text-black">
+                {icon} Create Watchlist
+              </button>
+            </li>
+            <li>
+              <a>Item 2</a>
+            </li>
+          </ul>
+        </div>
+      )}
+    </>
   );
 };
 
