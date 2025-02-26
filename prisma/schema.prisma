@@ -50,7 +50,6 @@ model Watchlist {
   description String?
   name        String
   picture     String?
-  title       String
   updatedAt   DateTime        @updatedAt
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       WatchlistItem[]

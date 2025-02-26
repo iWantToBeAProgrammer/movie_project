@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
+import Footer from "@/components/Common/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <Toaster position="bottom-center" />
           <div className="font-raleway text-neutral">{children}</div>
+          <Footer />
         </AuthProvider>
       </body>
     </html>
