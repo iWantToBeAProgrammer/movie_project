@@ -51,7 +51,7 @@ model Watchlist {
   picture     String?
   updatedAt   DateTime        @updatedAt
   userId      String          @map("user_id") @db.Uuid
-  User        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       WatchlistItem[]
 
   @@index([userId])

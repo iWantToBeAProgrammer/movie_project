@@ -12,7 +12,7 @@ export const GET = async (req) => {
 
     if (error || !user)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
+    
     if (!movieId)
       return NextResponse.json(
         { error: "Movie ID is required" },

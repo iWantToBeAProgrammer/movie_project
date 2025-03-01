@@ -2,22 +2,41 @@ import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
 import { NextResponse } from "next/server";
 
-export const GET = async () => {
+export const GET = async (req) => {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.auth.getUser();
-    const user = data?.user;
+    const { searchParams } = new URL(req.url);
+    const movieId = searchParams.get("movieId");
 
-    if (error || !user) {
+    if (!movieId) {
+      return NextResponse.json(
+        { error: "Movie ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = data.user.id;
+
     const watchlists = await prisma.watchlist.findMany({
-      where: { userId: user.id },
-      include: { items: true },
+      where: { userId: userId },
     });
 
-    return NextResponse.json({ watchlists });
+    const watchedMovie = await prisma.watchedMovie.findFirst({
+      where: {
+        userId: userId,
+        movieId: parseInt(movieId, 10),
+      },
+    });
+
+    return NextResponse.json({
+      watchlists,
+      watched: !!watchedMovie,
+    });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -34,15 +53,18 @@ export const POST = async (req) => {
     }
 
     const formData = await req.formData();
-    const watchlistId = formData.get("watchlistId") || null;
+    const watchlistId = formData.get("watchlistId")
+      ? parseInt(formData.get("watchlistId"), 10)
+      : null;
     const name = formData.get("name");
     const description = formData.get("description") || null;
-    const movieId = parseInt(formData.get("movieId"), 10) || null;
+    const rawMovieId = formData.get("movieId");
+    const movieId = rawMovieId ? parseInt(rawMovieId, 10) : null;
     const picture = formData.get("picture");
 
     let imageUrl = null;
 
-    if (picture) {
+    if (picture instanceof File) {
       const fileExt = picture.name.split(".").pop();
       const filePath = `watchlists/${user.id}-${Date.now()}.${fileExt}`;
 
@@ -99,7 +121,7 @@ export const POST = async (req) => {
       selectedWatchlistId = newWatchlist.id;
     } else {
       const existingWatchlist = await prisma.watchlist.findFirst({
-        where: { id: watchlistId, userId: user.id },
+        where: { userId: user.id, id: parseInt(watchlistId) },
       });
 
       if (!existingWatchlist) {
@@ -108,16 +130,31 @@ export const POST = async (req) => {
           { status: 403 }
         );
       }
-    }
 
-    if (!movieId) {
+      if (!movieId) {
+        return NextResponse.json(
+          { error: "Movie ID is required" },
+          { status: 400 }
+        );
+      }
+    }
+    const existingItem = await prisma.watchlistItem.findUnique({
+      where: {
+        watchlistId_movieId: {
+          watchlistId: selectedWatchlistId,
+          movieId,
+        },
+      },
+    });
+
+    if (existingItem) {
       return NextResponse.json(
-        { error: "Movie ID is required" },
+        { error: "Movie is already in the watchlist" },
         { status: 400 }
       );
     }
 
-    await prisma.watchlistItem.create({
+    const watchlistItem = await prisma.watchlistItem.create({
       data: {
         watchlistId: selectedWatchlistId,
         movieId,

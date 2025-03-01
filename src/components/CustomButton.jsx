@@ -1,54 +1,49 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { PlusCircle, Eye } from "@phosphor-icons/react";
+import { PlusCircle, Eye, Pencil } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchWatchlistData, markAsWatched } from "@/libs/api";
 
 const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
-  const [loading, setLoading] = useState(false);
-  const [watched, setWatched] = useState(false);
   const [watchlistData, setWatchlistData] = useState({
+    watchlistId: null,
     name: "",
     description: "",
     picture: null,
     movieId: movieId,
   });
 
-  const checkIsWatched = async (movieId) => {
-    const res = await fetch(`/api/watched?movieId=${movieId}`, {
-      method: "GET",
-    });
+  const queryClient = useQueryClient();
 
-    const data = await res.json();
-    return data.watched;
-  };
+  const { data, isPending } = useQuery({
+    queryKey: ["watchlist"],
+    queryFn: () => fetchWatchlistData(movieId),
+  });
 
-  useEffect(() => {
-    const fetchWatchedStatus = async () => {
-      const watched = await checkIsWatched(movieId);
-      setWatched(watched);
-    };
-
-    fetchWatchedStatus();
-  }, [movieId, watched]);
-
-  const MarkAsWatched = async () => {
-    setLoading(true);
-    const res = await fetch("/api/watched", {
-      method: "POST",
-      body: JSON.stringify({ movieId }),
-    });
-
-    const data = await res.json();
-    setLoading(false);
-    if (res.ok) {
-      setWatched((prev) => !prev);
-      toast(data.message);
-    } else {
-      toast("Something went wrong. Please try again.");
-    }
-  };
+  const mutation = useMutation({
+    mutationFn: () => markAsWatched(movieId),
+    onMutate: async () => {
+      await queryClient.cancelQueries(["watched", movieId]);
+      const previousWatched = queryClient.getQueryData(["watched", movieId]);
+      queryClient.setQueryData(["watched", movieId], {
+        watched: !previousWatched?.watched,
+      });
+      return { previousWatched };
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(["watched", movieId], context.previousWatched);
+      toast.error(err.message);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(["watched", movieId]);
+    },
+    onSuccess: (data) => {
+      toast.success(data?.message);
+    },
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,46 +55,57 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
     setWatchlistData((prev) => ({ ...prev, picture: file }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const createWatchlist = async (watchlistData) => {
+    const formData = new FormData();
+    if (watchlistData.watchlistId)
+      formData.append("watchlistId", watchlistData.watchlistId);
+    if (watchlistData.name) formData.append("name", watchlistData.name);
+    if (watchlistData.movieId)
+      formData.append("movieId", watchlistData.movieId);
+    if (watchlistData.description)
+      formData.append("description", watchlistData.description);
+    if (watchlistData.picture)
+      formData.append("picture", watchlistData.picture);
 
-    try {
-      const formData = new FormData();
-      if (watchlistData.watchlistId)
-        formData.append("watchlistId", watchlistData.watchlistId);
-      if (watchlistData.name) formData.append("name", watchlistData.name);
-      if (watchlistData.movieId)
-        formData.append("movieId", watchlistData.movieId);
-      if (watchlistData.description)
-        formData.append("description", watchlistData.description);
-      if (watchlistData.picture)
-        formData.append("picture", watchlistData.picture);
+    const res = await fetch("/api/watchlist", {
+      method: "POST",
+      body: formData,
+    });
 
-      const res = await fetch("/api/watchlist", {
-        method: "POST",
-        body: formData,
-      });
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Something went wrong");
+    }
 
-      const result = await res.json();
+    return res.json();
+  };
 
-      if (!res.ok) {
-        throw new Error(result.error || "Something went wrong");
-      }
-
-      toast.success(result.message);
+  const { mutate, isLoading } = useMutation({
+    mutationFn: createWatchlist,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      queryClient.invalidateQueries(["watchlist"]);
       setWatchlistData({
+        watchlistId: null,
         name: "",
         description: "",
         picture: null,
         movieId: movieId,
       });
       document.getElementById("watchlist_modal").close();
-    } catch (error) {
+    },
+    onError: (error) => {
       toast.error(error.message || "Failed to create watchlist");
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutate(watchlistData);
+  };
+
+  const handleSubmitToExistingWatchlist = (watchlistId) => {
+    mutate({ ...watchlistData, watchlistId });
   };
 
   const buttonConfig = {
@@ -109,11 +115,11 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
       className: "bg-white text-black hover:bg-secondary hover:text-white",
     },
     watched: {
-      text: !watched ? "Watched It" : "Didn't Watched It",
+      text: data?.watched ? "Didn't Watched It" : "Watched It",
       icon: <Eye size={20} className="inline-block mr-2" />,
       className:
         "bg-transparent border border-secondary border-4 text-secondary hover:bg-secondary hover:text-white",
-      onClick: MarkAsWatched,
+      onClick: () => mutation.mutate(),
     },
   };
 
@@ -164,20 +170,31 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
                 {icon} Create Watchlist
               </button>
             </li>
-            <li>
-              <a>Item 2</a>
-            </li>
+            {data?.watchlists.map((watchlist, key) => {
+              return (
+                <li key={key}>
+                  <button
+                    className="focus:text-black"
+                    onClick={() =>
+                      handleSubmitToExistingWatchlist(watchlist.id)
+                    }
+                  >
+                    {watchlist.name}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
 
       <dialog id="watchlist_modal" className="modal">
         <div className="modal-box">
-          <form method="dialog">
+          <form method="dialog" className="mb-4">
             {/* if there is a button in form, it will close the modal */}
             <h1 className="text-2xl">Create Watchlist</h1>
 
-            <button className="btn btn-sm btn-circle btn-ghost absolute top-2 right-2">
+            <button className="btn btn-sm btn-circle btn-ghost absolute top-6 right-2">
               ✕
             </button>
           </form>
@@ -186,16 +203,17 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
             onSubmit={handleSubmit}
             encType="multipart/form-data"
           >
-            <div className="flex justify-between">
+            <div className="grid grid-cols-3 gap-4">
               <div className="watchlist-image">
-                <label htmlFor="picture">
+                <label htmlFor="picture" className="relative">
                   <img
                     width={150}
                     height={150}
+                    className="w-40 h-40"
                     src={
                       watchlistData.picture
                         ? URL.createObjectURL(watchlistData.picture)
-                        : "/assets/images/noimage.jpeg"
+                        : "/assets/images/watchlist-default.jpg"
                     }
                     alt="Watchlist Preview"
                   />
@@ -207,19 +225,24 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
                     accept="image/*"
                     onChange={handleImageChange}
                   />
+
+                  <div className="w-full h-full absolute justify-center items-center top-0 z-10 *:hidden hover:bg-black/50 *:hover:block flex flex-col">
+                    <Pencil size={50} weight="bold" />
+                    <p className="font-raleway font-semibold">Choose a photo</p>
+                  </div>
                 </label>
               </div>
-              <div className="watchlist-form-content form-control justify-between">
+              <div className="watchlist-form-content col-span-2 h-full gap-2 flex flex-col">
                 <input
                   type="text"
                   placeholder="Add a name"
-                  className="input input-bordered w-full max-w-xs"
+                  className="input input-bordered w-full max-w-xs py-5"
                   name="name"
                   value={watchlistData.name}
                   onChange={handleChange}
                 />
                 <textarea
-                  className="textarea textarea-bordered resize-none"
+                  className="textarea textarea-bordered resize-none h-full w-full"
                   placeholder="Add an optional description here"
                   name="description"
                   value={watchlistData.description}
