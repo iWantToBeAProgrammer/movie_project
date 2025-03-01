@@ -6,6 +6,8 @@ import { getMovieData } from "@/libs/api-libs";
 import { Suspense } from "react";
 import Loading from "./loading";
 import Navbar from "@/components/Navbar";
+import PrintDesc from "@/components/Homepage/PrintDesc";
+import Faq from "@/components/Homepage/Faq";
 
 export const revalidate = 3600;
 
@@ -23,7 +25,6 @@ export default async function Home() {
     "popular",
     "&language=en-US&page=1&region=ID"
   );
-
 
   return (
     <>
@@ -52,6 +53,12 @@ export default async function Home() {
               <PopularCard results={Popular.results} />
             </Suspense>
           </div>
+        </div>
+        <div className="print-desc mt-24 flex justify-center">
+          <PrintDesc />
+        </div>
+        <div className="faq mt-24 flex mx-auto max-w-screen-lg">
+          <Faq />
         </div>
       </div>
     </>
