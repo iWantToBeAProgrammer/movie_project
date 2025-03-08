@@ -30,13 +30,14 @@ model Movie {
   genres         String[]
   backdropPath   String?
   certification  String?
-  releaseDates   Json?
+  releaseDates   String?
   runtime        Int?
   cast           Json?
   companyNames   String[]
   writers        String[]
   directors      String[]
   movieTrailer   Json?
+  rating         Int?
   tmdbId         String          @unique
   comments       Comment[]
   watchedMovies  WatchedMovie[]

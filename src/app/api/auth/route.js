@@ -26,7 +26,7 @@ export async function POST(request) {
           },
         });
       } else {
-        throw new Error("User Already Registered")
+        throw new Error("User Already Registered");
       }
 
       return NextResponse.json({ message: "Signup successful!", user: user });

@@ -4,13 +4,12 @@ import { NextResponse } from "next/server";
 
 export const GET = async (req) => {
   try {
-    const supabase = await createClient();
     const { searchParams } = new URL(req.url);
-    const movieId = searchParams.get("movieId");
+    const watchlistId = searchParams.get("watchlistId");
 
-    if (!movieId) {
+    if (!watchlistId) {
       return NextResponse.json(
-        { error: "Movie ID is required" },
+        { error: "Watchlist ID is required" },
         { status: 400 }
       );
     }
@@ -20,23 +19,41 @@ export const GET = async (req) => {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = data.user.id;
-
-    const watchlists = await prisma.watchlist.findMany({
-      where: { userId: userId },
-    });
-
-    const watchedMovie = await prisma.watchedMovie.findFirst({
-      where: {
-        userId: userId,
-        movieId: parseInt(movieId, 10),
+    const watchlist = await prisma.watchlist.findUnique({
+      where: { id: parseInt(watchlistId, 10) },
+      include: {
+        user: {
+          select: {
+            username: true,
+            profilePicture: true,
+          },
+        },
+        items: {
+          include: {
+            movie: {
+              select: {
+                id: true,
+                title: true,
+                posterPath: true,
+                overview: true,
+                genres: true,
+                runtime: true,
+                rating: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    return NextResponse.json({
-      watchlists,
-      watched: !!watchedMovie,
-    });
+    if (!watchlist) {
+      return NextResponse.json(
+        { error: "Watchlist not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(watchlist);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

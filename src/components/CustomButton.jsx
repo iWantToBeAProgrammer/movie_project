@@ -5,7 +5,7 @@ import { PlusCircle, Eye, Pencil } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchWatchlistData, markAsWatched } from "@/libs/api";
+import { fetchMovieDetails, markAsWatched } from "@/libs/api";
 
 const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const [watchlistData, setWatchlistData] = useState({
@@ -19,8 +19,8 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const queryClient = useQueryClient();
 
   const { data, isPending } = useQuery({
-    queryKey: ["watchlist"],
-    queryFn: () => fetchWatchlistData(movieId),
+    queryKey: ["movie-details"],
+    queryFn: () => fetchMovieDetails(movieId),
   });
 
   const mutation = useMutation({

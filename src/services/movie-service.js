@@ -46,6 +46,12 @@ export async function getMovieDetails(tmdbId) {
       .filter((result) => result.type === "Trailer")
       .slice(0, 1);
 
+    const rating = parseInt(tmdbMovie.vote_average.toFixed(2), 10);
+
+    const releaseDates = tmdbMovie.release_dates?.results.find(
+      (result) => result.iso_3166_1 === "ID"
+    )?.release_dates[0]?.release_date;
+
     return await prisma.movie.create({
       data: {
         tmdbId: tmdbMovie.id.toString(),
@@ -55,13 +61,14 @@ export async function getMovieDetails(tmdbId) {
         overview: tmdbMovie.overview,
         genres: genres,
         certification: certification,
-        releaseDates: tmdbMovie.release_dates || null,
+        releaseDates: releaseDates || null,
         runtime: tmdbMovie.runtime || null,
         cast: cast,
         directors: directors,
         writers: writers,
         companyNames: companyNames,
         movieTrailer: movieTrailer,
+        rating: rating,
       },
     });
   }
