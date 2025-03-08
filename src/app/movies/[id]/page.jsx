@@ -17,10 +17,7 @@ export default async function movieDetails({ params }) {
   const certification = movie.certification || "";
   const cast = movie.cast ? movie.cast : [];
 
-  const indonesiaData = movie.releaseDates?.results?.find(
-    (result) => result.iso_3166_1 === "ID"
-  );
-  const releaseDate = indonesiaData?.release_dates[0]?.release_date || "";
+  const releaseDate = movie.releaseDates;
   const releaseYear = releaseDate ? releaseDate.substring(0, 4) : "N/A";
 
   function formatRuntime(minutes) {
