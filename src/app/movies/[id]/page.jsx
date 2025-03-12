@@ -42,6 +42,7 @@ export default async function movieDetails({ params }) {
             <div className="flex gap-5">
               <CustomButton type="add" size="large" movieId={movie.id} />
               <CustomButton type="watched" size="large" movieId={movie.id} />
+              <CustomButton type="favorite" size="small" movieId={movie.id} />
             </div>
             <div className=" flex items-center gap-2">
               <Certification result={certification} />

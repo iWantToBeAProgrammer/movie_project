@@ -5,14 +5,17 @@ const nextConfig = {
       {
         hostname: "image.tmdb.org",
       },
+      {
+        hostname: "zxedgqllnwqzxbpiitxm.supabase.co",
+      },
     ],
   },
 
   env: {
     NEXT_APP_APIKEY: process.env.NEXT_APP_APIKEY,
     NEXT_APP_BASEURL: process.env.NEXT_APP_BASEURL,
-    NEXT_APP_BASEIMG: process.env.NEXT_APP_BASEIMG
-  }
+    NEXT_APP_BASEIMG: process.env.NEXT_APP_BASEIMG,
+  },
 };
 
 export default nextConfig;

@@ -8,16 +8,23 @@ import { IoPlayCircleOutline } from "react-icons/io5";
 
 const CardMovieList = ({ results = [] }) => {
   const router = useRouter();
+
   return (
     <>
       {results.map((result) => {
-        const releaseYear = result.release_date?.slice(0, 4) || "";
+        console.log(result);
+        const releaseYear =
+          result.release_date?.slice(0, 4) ||
+          result.releaseDates?.slice(0, 4) ||
+          "";
 
         return (
           <div key={result.id} className="w-full">
             <div className="relative group w-full aspect-[2/3] overflow-hidden rounded-lg">
               <Image
-                src={`${process.env.NEXT_APP_BASEIMG}${result.poster_path}`}
+                src={`${process.env.NEXT_APP_BASEIMG}${
+                  result.poster_path || result.posterPath
+                }`}
                 fill
                 className="object-cover"
                 alt={result.title || "Movie poster"}
