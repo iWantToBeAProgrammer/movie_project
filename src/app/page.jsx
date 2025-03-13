@@ -32,29 +32,31 @@ export default async function Home() {
       <Suspense fallback={<Loading />}>
         <Navbar />
       </Suspense>
+
       <Suspense fallback={<Loading />}>
         <Hero movieResults={nowPlaying.results} />
       </Suspense>
+
       <div className="container max-w-screen-xl mx-auto overflow-hidden mt-28">
         <div className="flex flex-col gap-20 movie-list-wrapper">
-          <div className="flex flex-col now-playing">
-            <Suspense fallback={<Loading />}>
-              <Header title={"Now Playing"} linkHref={"/movies/now-playing"} />
+          <Suspense fallback={<Loading />}>
+            <div className="flex flex-col now-playing">
+              <Header title="Now Playing" linkHref="/movies/now-playing" />
               <Card results={nowPlaying.results} />
-            </Suspense>
-          </div>
-          <div className="flex flex-col top-rated">
-            <Suspense fallback={<Loading />}>
-              <Header title={"top rated"} linkHref={"/movies/top-rated"} />
+            </div>
+
+            <div className="flex flex-col top-rated">
+              <Header title="Top Rated" linkHref="/movies/top-rated" />
               <Card results={topRated.results} />
-            </Suspense>
-          </div>
-          <div className="popular">
-            <Suspense fallback={<Loading />}>
+            </div>
+
+            <div className="popular">
               <PopularCard results={Popular.results} />
-            </Suspense>
-          </div>
+            </div>
+          </Suspense>
         </div>
+
+        {/* Other components that don't need Suspense */}
         <div className="print-desc mt-24 flex justify-center">
           <PrintDesc />
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Play } from "@phosphor-icons/react";
+import Image from "next/image";
 import { useState } from "react";
 import YouTube from "react-youtube";
 
@@ -28,7 +29,7 @@ const Trailer = ({ movieTrailer }) => {
             </>
           ) : (
             <>
-              <img
+              <Image
                 src={`https://i.ytimg.com/vi/${trailer.key}/maxresdefault.jpg`}
                 alt={trailer.name}
                 className="h-full object-cover"
