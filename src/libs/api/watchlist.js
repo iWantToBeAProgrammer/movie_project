@@ -4,13 +4,25 @@ export const fetchWatchlistData = async (watchlistId) => {
   return res.json();
 };
 
-export const addToWatchlist = async (watchlistData) => {
-  const res = await fetch(`/api/watchlist`, {
+export const createWatchlist = async (watchlistData) => {
+  const formData = new FormData();
+  if (watchlistData.watchlistId)
+    formData.append("watchlistId", watchlistData.watchlistId);
+  if (watchlistData.name) formData.append("name", watchlistData.name);
+  if (watchlistData.movieId) formData.append("movieId", watchlistData.movieId);
+  if (watchlistData.description)
+    formData.append("description", watchlistData.description);
+  if (watchlistData.picture) formData.append("picture", watchlistData.picture);
+
+  const res = await fetch("/api/watchlist", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(watchlistData),
+    body: formData,
   });
 
-  if (!res.ok) throw new Error("Failed to add to watchlist");
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Something went wrong");
+  }
+
   return res.json();
 };

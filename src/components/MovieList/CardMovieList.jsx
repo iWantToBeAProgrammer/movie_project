@@ -12,7 +12,6 @@ const CardMovieList = ({ results = [] }) => {
   return (
     <>
       {results.map((result) => {
-        console.log(result);
         const releaseYear =
           result.release_date?.slice(0, 4) ||
           result.releaseDates?.slice(0, 4) ||

@@ -8,6 +8,9 @@ const nextConfig = {
       {
         hostname: "zxedgqllnwqzxbpiitxm.supabase.co",
       },
+      {
+        hostname: "i.ytimg.com",
+      },
     ],
   },
 

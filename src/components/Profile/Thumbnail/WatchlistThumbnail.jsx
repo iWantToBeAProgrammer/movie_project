@@ -5,7 +5,10 @@ const WatchlistThumbnail = ({ movies }) => {
   const [thumbnail, setThumbnail] = useState(null);
 
   useEffect(() => {
-    if (!movies || movies.length === 0) return;
+    if (!movies || movies.length === 0) {
+      setThumbnail("/assets/images/watchlist-default.jpg"); // ✅ Set default image if empty
+      return;
+    }
 
     const canvas = canvasRef.current;
     if (!canvas) return; // ✅ Prevent null errors
@@ -26,7 +29,7 @@ const WatchlistThumbnail = ({ movies }) => {
     imagesToLoad.forEach((movie, index) => {
       const img = new Image();
       img.crossOrigin = "anonymous"; // Prevent CORS issues
-      img.src = `${process.env.NEXT_APP_BASEIMG}${movie.movie.posterPath}`; // Make sure this is a valid URL
+      img.src = `${process.env.NEXT_APP_BASEIMG}${movie.movie.posterPath}`; // ✅ Use `NEXT_PUBLIC_` for env vars in Next.js
 
       img.onload = () => {
         images[index] = img;
@@ -56,17 +59,14 @@ const WatchlistThumbnail = ({ movies }) => {
 
   return (
     <>
-      {thumbnail ? (
-        <img
-          src={thumbnail}
-          alt="Watchlist Thumbnail"
-          width={230}
-          height={230}
-          className="object-cover object-center rounded-2xl aspect-square"
-        />
-      ) : (
-        <canvas ref={canvasRef} className="hidden" />
-      )}
+      <img
+        src={thumbnail || "/assets/images/watchlist-default.jpg"} // ✅ Fallback to default image
+        alt="Watchlist Thumbnail"
+        width={230}
+        height={230}
+        className="object-cover object-center rounded-2xl aspect-square"
+      />
+      <canvas ref={canvasRef} className="hidden" />
     </>
   );
 };

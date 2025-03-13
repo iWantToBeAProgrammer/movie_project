@@ -7,6 +7,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useRouter } from "next/navigation";
 import CardMovieList from "./CardMovieList";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 const SliderRecommendation = ({ results = [] }) => {
   if (!results || results.length === 0) {
@@ -55,7 +57,9 @@ const SliderRecommendation = ({ results = [] }) => {
 
         {results.map((result) => (
           <SwiperSlide key={result.id} className="w-full">
-            <CardMovieList results={[result]} />
+            <Suspense fallback={<Loading />}>
+              <CardMovieList results={[result]} />
+            </Suspense>
           </SwiperSlide>
         ))}
       </Swiper>
