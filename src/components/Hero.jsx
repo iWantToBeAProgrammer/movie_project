@@ -78,7 +78,7 @@ const Hero = ({ movieResults }) => {
         <div className="blur-overlay h-full w-full backdrop-blur-md absolute"></div>
         <div className="hero w-full h-full flex items-center justify-center relative">
           <div className="hero-wrapper w-full max-w-screen-xl h-[80%]  bg-[image:var(--backdrop-url)]  rounded-2xl bg-center bg-cover bg-no-repeat px-8 pb-12 font-bebas_neue text-3xl flex justify-between">
-            <div className="hero-left-content reltaive z-30 me-6 flex flex-col items-start w-[40%] justify-end h-full">
+            <div className="hero-left-content relative z-30 me-6 flex flex-col items-start w-[40%] justify-end h-full">
               <h1 className="mb-2">
                 {result.title} ({result.release_date.slice(0, 4)})
               </h1>

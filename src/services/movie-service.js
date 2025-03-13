@@ -7,7 +7,6 @@ export async function getMovieDetails(tmdbId) {
   });
 
   if (!movie) {
-    // Fetch from TMDB if not in database
     const tmdbMovie = await getMovieData(
       tmdbId,
       "&language=en-US&append_to_response=release_dates,credits,videos"
@@ -46,7 +45,7 @@ export async function getMovieDetails(tmdbId) {
       .filter((result) => result.type === "Trailer")
       .slice(0, 1);
 
-    const rating = parseInt(tmdbMovie.vote_average.toFixed(2), 10);
+    const vote_average = parseInt(tmdbMovie.vote_average.toFixed(2), 10);
 
     const releaseDates = tmdbMovie.release_dates?.results.find(
       (result) => result.iso_3166_1 === "ID"
@@ -68,7 +67,7 @@ export async function getMovieDetails(tmdbId) {
         writers: writers,
         companyNames: companyNames,
         movieTrailer: movieTrailer,
-        rating: rating,
+        vote_average: vote_average,
       },
     });
   }

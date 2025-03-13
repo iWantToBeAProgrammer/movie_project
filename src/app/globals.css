@@ -27,6 +27,19 @@ h1 {
    z-index: 10;
 }
 
+.tab:is(.tab-active, [aria-selected="true"]):not(.tab-disabled):not([disabled]), .tab:is(input:checked) {
+    border-color: #AF0404;
+    --tw-border-opacity: 1;
+    --tw-text-opacity: 1;
+}
+
+.tabs-bordered > .tab {
+    border-color: var(--fallback-bc,oklch(var(--bc)/var(--tw-border-opacity)));
+    --tw-border-opacity: 0;
+    border-style: solid;
+    border-bottom-width: calc(var(--tab-border, 1px) + 1px);
+}
+
 .navigate-button:hover {
     @apply bg-opacity-70
 }

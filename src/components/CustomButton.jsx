@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { PlusCircle, Eye, Pencil } from "@phosphor-icons/react";
+import { Suspense, useState } from "react";
+import { PlusCircle, Eye, Pencil, Star } from "@phosphor-icons/react";
+import { IoStarOutline, IoStar } from "react-icons/io5";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchMovieDetails, markAsWatched } from "@/libs/api";
+import { fetchMovieDetails, markAsWatched, toggleFavorite } from "@/libs/api";
+import Loading from "@/app/loading";
 
 const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const [watchlistData, setWatchlistData] = useState({
@@ -16,34 +18,42 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
     movieId: movieId,
   });
 
+  const [isFavoriteHovered, setIsFavoriteHovered] = useState(false);
+
   const queryClient = useQueryClient();
 
   const { data, isPending } = useQuery({
-    queryKey: ["movie-details"],
+    queryKey: ["movie-details", movieId],
     queryFn: () => fetchMovieDetails(movieId),
+    suspense: true,
   });
 
-  const mutation = useMutation({
-    mutationFn: () => markAsWatched(movieId),
-    onMutate: async () => {
-      await queryClient.cancelQueries(["watched", movieId]);
-      const previousWatched = queryClient.getQueryData(["watched", movieId]);
-      queryClient.setQueryData(["watched", movieId], {
-        watched: !previousWatched?.watched,
-      });
-      return { previousWatched };
-    },
-    onError: (err, variables, context) => {
-      queryClient.setQueryData(["watched", movieId], context.previousWatched);
-      toast.error(err.message);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(["watched", movieId]);
-    },
-    onSuccess: (data) => {
-      toast.success(data?.message);
-    },
-  });
+  const createToggleMutation = (actionFn, queryKey) => {
+    return useMutation({
+      mutationFn: () => actionFn(movieId),
+      onMutate: async () => {
+        await queryClient.cancelQueries([queryKey, movieId]);
+        const previousState = queryClient.getQueryData([queryKey, movieId]);
+        queryClient.setQueryData([queryKey, movieId], {
+          [queryKey]: !previousState?.[queryKey],
+        });
+        return { previousState };
+      },
+      onError: (err, variables, context) => {
+        queryClient.setQueryData([queryKey, movieId], context.previousState);
+        toast.error(err.message);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries([queryKey, movieId]);
+      },
+      onSuccess: (data) => {
+        toast.success(data?.message);
+      },
+    });
+  };
+
+  const watchedMutation = createToggleMutation(markAsWatched, "watched");
+  const favoriteMutation = createToggleMutation(toggleFavorite, "favorite");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,92 +118,107 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
     mutate({ ...watchlistData, watchlistId });
   };
 
+  const getFavoriteIcon = () => {
+    if (data?.favoriteMovie || isFavoriteHovered) {
+      return <IoStar size={24} className="inline-block text-yellow-400" />;
+    }
+    return <IoStarOutline size={24} className="inline-block" />;
+  };
+
   const buttonConfig = {
     add: {
       text: "Add To Watchlist",
       icon: <PlusCircle size={20} className="inline-block mr-2" />,
       className: "bg-white text-black hover:bg-secondary hover:text-white",
+      renderAsDropdown: true,
     },
     watched: {
-      text: data?.watched ? "Didn't Watched It" : "Watched It",
+      text: data?.watched ? "Didn't Watch It" : "Watched It",
       icon: <Eye size={20} className="inline-block mr-2" />,
       className:
         "bg-transparent border border-secondary border-4 text-secondary hover:bg-secondary hover:text-white",
-      onClick: () => mutation.mutate(),
+      onClick: () => watchedMutation.mutate(),
+      renderAsDropdown: false,
+    },
+    favorite: {
+      icon: getFavoriteIcon(),
+      className:
+        "bg-transparent border border-yellow-400 border-4 text-yellow-400",
+      onClick: () => favoriteMutation.mutate(),
+      renderAsDropdown: false,
+      onMouseEnter: () => setIsFavoriteHovered(true),
+      onMouseLeave: () => setIsFavoriteHovered(false),
     },
   };
 
-  const {
-    text,
-    icon,
-    className: variantClassName,
-    onClick,
-  } = buttonConfig[type] || {};
+  const config = buttonConfig[type] || buttonConfig.add;
 
   const sizeClasses = {
-    small: "py-1 w-10 text-sm",
+    small: "py-1 w-14 text-base",
     medium: "py-2 w-20 text-base",
     large: "py-1 w-52 text-2xl",
   };
 
+  if (!config.renderAsDropdown) {
+    return (
+      <button
+        onClick={config.onClick}
+        onMouseEnter={config.onMouseEnter}
+        onMouseLeave={config.onMouseLeave}
+        className={`rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center ${config.className} ${sizeClasses[size]} ${className}`}
+      >
+        {config.icon}
+        {config.text}
+      </button>
+    );
+  }
+
   return (
     <>
-      {type === "watched" ? (
-        <button
-          onClick={onClick}
-          className={`rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center    ${variantClassName} ${sizeClasses[size]} ${className}`}
+      <div className="dropdown dropdown-bottom">
+        <div
+          tabIndex={0}
+          role="button"
+          className={`h-12 rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center ${config.className} ${sizeClasses[size]} ${className}`}
         >
-          {icon}
-          {text}
-        </button>
-      ) : (
-        <div className="dropdown dropdown-bottom">
-          <div
-            tabIndex={0}
-            role="button"
-            className={`h-12 rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center    ${variantClassName} ${sizeClasses[size]} ${className}`}
-          >
-            {icon}
-            {text}
-          </div>
-          <ul
-            tabIndex={0}
-            className="dropdown-content menu bg-white text-black rounded-xl mt-2 z-[1] w-52 p-2 shadow hover:*:*:bg-secondary transition-colors duration-200 ease-in-out *:rounded-xl gap-1"
-          >
-            <li className="border-b border-black/50">
-              <button
-                className="focus:text-black"
-                onClick={() =>
-                  document.getElementById("watchlist_modal").showModal()
-                }
-              >
-                {icon} Create Watchlist
-              </button>
-            </li>
-            {data?.watchlists.map((watchlist, key) => {
-              return (
-                <li key={key}>
-                  <button
-                    className="focus:text-black"
-                    onClick={() =>
-                      handleSubmitToExistingWatchlist(watchlist.id)
-                    }
-                  >
-                    {watchlist.name}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          {config.icon}
+          {config.text}
         </div>
-      )}
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu bg-white text-black rounded-xl mt-2 z-[1] w-52 p-2 shadow hover:*:*:bg-secondary transition-colors duration-200 ease-in-out *:rounded-xl gap-1"
+        >
+          <li className="border-b border-black/50">
+            <button
+              className="focus:text-black"
+              onClick={() =>
+                document.getElementById("watchlist_modal").showModal()
+              }
+            >
+              <PlusCircle size={20} /> Create Watchlist
+            </button>
+          </li>
+          {isPending ? (
+            <Loading />
+          ) : (
+            data?.watchlists?.map((watchlist, key) => (
+              <li key={key}>
+                <button
+                  className="focus:text-black"
+                  onClick={() => handleSubmitToExistingWatchlist(watchlist.id)}
+                >
+                  {watchlist.name}
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
 
       <dialog id="watchlist_modal" className="modal">
-        <div className="modal-box">
+        <div className="modal-box max-w-2xl">
           <form method="dialog" className="mb-4">
-            {/* if there is a button in form, it will close the modal */}
             <h1 className="text-2xl">Create Watchlist</h1>
-
             <button className="btn btn-sm btn-circle btn-ghost absolute top-6 right-2">
               ✕
             </button>
@@ -206,10 +231,10 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
             <div className="grid grid-cols-3 gap-4">
               <div className="watchlist-image">
                 <label htmlFor="picture" className="relative">
-                  <img
-                    width={150}
-                    height={150}
-                    className="w-40 h-40"
+                  <Image
+                    width={600}
+                    height={600}
+                    className="object-cover aspect-square object-center"
                     src={
                       watchlistData.picture
                         ? URL.createObjectURL(watchlistData.picture)
@@ -236,7 +261,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
                 <input
                   type="text"
                   placeholder="Add a name"
-                  className="input input-bordered w-full max-w-xs py-5"
+                  className="input input-bordered w-full py-5"
                   name="name"
                   value={watchlistData.name}
                   onChange={handleChange}

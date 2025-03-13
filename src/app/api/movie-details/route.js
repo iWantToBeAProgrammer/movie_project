@@ -33,9 +33,17 @@ export const GET = async (req) => {
       },
     });
 
+    const favoriteMovie = await prisma.favoriteMovie.findFirst({
+      where: {
+        userId: userId,
+        movieId: parseInt(movieId, 10),
+      },
+    });
+
     return NextResponse.json({
       watchlists,
       watched: !!watchedMovie,
+      favoriteMovie: !!favoriteMovie,
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

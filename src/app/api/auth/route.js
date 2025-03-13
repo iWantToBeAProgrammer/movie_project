@@ -18,11 +18,13 @@ export async function POST(request) {
       const existingUser = await prisma.user.findUnique({ where: { email } });
 
       if (!existingUser) {
+        const username = email.substring(0, email.indexOf("@"));
+
         await prisma.user.create({
           data: {
             id: user.id,
             email: user.email,
-            username,
+            username: username,
           },
         });
       } else {
@@ -39,11 +41,13 @@ export async function POST(request) {
       const existingUser = await prisma.user.findUnique({ where: { email } });
 
       if (!existingUser) {
+        const username = email.substring(0, email.indexOf("@"));
+
         await prisma.user.create({
           data: {
             id: user.id,
             email: user.email,
-            username,
+            username: username,
           },
         });
       }
