@@ -31,15 +31,17 @@ export const GET = async (req) => {
           },
         },
         items: {
-          movie: {
-            select: {
-              id: true,
-              title: true,
-              posterPath: true,
-              overview: true,
-              genres: true,
-              runtime: true,
-              vote_average: true,
+          select: {
+            movie: {
+              select: {
+                id: true,
+                title: true,
+                posterPath: true,
+                overview: true,
+                genres: true,
+                runtime: true,
+                vote_average: true,
+              },
             },
           },
         },

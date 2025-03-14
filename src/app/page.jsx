@@ -8,7 +8,6 @@ import Loading from "./loading";
 import Navbar from "@/components/Navbar";
 import PrintDesc from "@/components/Homepage/PrintDesc";
 import Faq from "@/components/Homepage/Faq";
-import Footer from "@/components/Common/Footer";
 
 export const revalidate = 3600;
 
@@ -64,8 +63,6 @@ export default async function Home() {
           <Faq />
         </div>
       </div>
-
-      <Footer />
     </>
   );
 }

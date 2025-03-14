@@ -22,6 +22,7 @@ export default function RootLayout({ children }) {
             <div className="font-raleway text-neutral">{children}</div>
           </QueryProvider>
         </AuthProvider>
+      <Footer />
       </body>
     </html>
   );
