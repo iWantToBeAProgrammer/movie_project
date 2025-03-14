@@ -17,7 +17,11 @@ export const GET = async (req) => {
 
     const { data, error } = await supabase.auth.getUser();
     if (error || !data?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({
+        watchlists: [],
+        watched: false,
+        favoriteMovie: false,
+      });
     }
 
     const userId = data.user.id;

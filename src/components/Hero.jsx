@@ -11,6 +11,8 @@ const Hero = ({ movieResults }) => {
   const [movieDetails, setMovieDetails] = useState(null);
   const [isIntervalActive, setIsIntervalActive] = useState(true);
 
+  
+
   const router = useRouter();
 
   useEffect(() => {

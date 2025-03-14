@@ -1,11 +1,13 @@
 import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
+import { getMovieDetails } from "@/services/movie-service";
 import { NextResponse } from "next/server";
 
 export const GET = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
     const watchlistId = searchParams.get("watchlistId");
+    const supabase = await createClient();
 
     if (!watchlistId) {
       return NextResponse.json(
@@ -29,17 +31,15 @@ export const GET = async (req) => {
           },
         },
         items: {
-          include: {
-            movie: {
-              select: {
-                id: true,
-                title: true,
-                posterPath: true,
-                overview: true,
-                genres: true,
-                runtime: true,
-                rating: true,
-              },
+          movie: {
+            select: {
+              id: true,
+              title: true,
+              posterPath: true,
+              overview: true,
+              genres: true,
+              runtime: true,
+              vote_average: true,
             },
           },
         },
@@ -155,11 +155,27 @@ export const POST = async (req) => {
         );
       }
     }
+
+    let finalMovieId = movieId;
+
+    if (!movieId) {
+      const tmdbId = formData.get("tmdbId"); // Get TMDB ID from form data
+      if (!tmdbId) {
+        return NextResponse.json(
+          { error: "Either movieId or tmdbId is required" },
+          { status: 400 }
+        );
+      }
+
+      const movie = await getMovieDetails(parseInt(tmdbId, 10)); // Fetch and store movie
+      finalMovieId = movie.id; // Use the generated primary key
+    }
+
     const existingItem = await prisma.watchlistItem.findUnique({
       where: {
         watchlistId_movieId: {
           watchlistId: selectedWatchlistId,
-          movieId,
+          movieId: finalMovieId,
         },
       },
     });
@@ -171,10 +187,10 @@ export const POST = async (req) => {
       );
     }
 
-    const watchlistItem = await prisma.watchlistItem.create({
+    await prisma.watchlistItem.create({
       data: {
         watchlistId: selectedWatchlistId,
-        movieId,
+        movieId: finalMovieId,
       },
     });
 
