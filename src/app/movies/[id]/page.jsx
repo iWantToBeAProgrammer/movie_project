@@ -1,5 +1,3 @@
-import Loading from "@/app/loading";
-import Card from "@/components/Card";
 import Certification from "@/components/Certification";
 import BackNavigation from "@/components/Common/BackNavigation";
 import CustomButton from "@/components/CustomButton";
@@ -8,7 +6,6 @@ import Trailer from "@/components/Trailer";
 import { getRecDetails } from "@/services/movie-rec";
 import { getMovieDetails } from "@/services/movie-service";
 import Image from "next/image";
-import { Suspense } from "react";
 
 export default async function movieDetails({ params }) {
   const { id } = params;

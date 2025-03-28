@@ -1,6 +1,7 @@
 import Image from "next/image";
 import WatchlistThumbnail from "./Thumbnail/WatchlistThumbnail";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const WatchlistCard = ({ watchlists = [], username }) => {
   const router = useRouter();
@@ -11,12 +12,10 @@ const WatchlistCard = ({ watchlists = [], username }) => {
         {watchlists.length !== 0 ? (
           watchlists.map((watchlist, key) => {
             return (
-              <div
+              <Link
                 key={key}
                 className="watchlist-card cursor-pointer px-4 pt-4 h-80 w-60 font-sans_caption rounded-2xl hover:bg-white/10 transition-colors duration-200 ease-out"
-                onClick={() =>
-                  router.push(`/profile/watchlist/${watchlist.id}`)
-                }
+                href={`/profile/watchlist/${watchlist.id}`}
               >
                 <div className="watchlist-card-wrapper flex flex-col gap-3">
                   {watchlist.picture ? (
@@ -38,7 +37,7 @@ const WatchlistCard = ({ watchlists = [], username }) => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })
         ) : (

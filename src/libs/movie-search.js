@@ -1,11 +1,9 @@
-export async function getMovieData(endpoint, params = {}) {
+export async function getSearchData(params = {}) {
   try {
-    // Convert params object to URLSearchParams
-    const queryString = new URLSearchParams(params).toString();
+    const queryString = params;
 
-    // Fetch data from the dynamic API route
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASEURL}/api/movies/${endpoint}?${queryString}`
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/search?query=${queryString}`
     );
 
     if (!response.ok) {

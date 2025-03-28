@@ -2,6 +2,7 @@ import { CaretRight, Play } from "@phosphor-icons/react";
 import dateFormat from "dateformat";
 import { useState } from "react";
 import VideoModal from "./Video/VideoModal";
+import Image from "next/image";
 
 const Teaser = ({ movieTeaser }) => {
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -40,12 +41,12 @@ const Teaser = ({ movieTeaser }) => {
                 className="teaser-img-wrapper relative"
                 onClick={() => handleOpenModal(teaser)}
               >
-                <img
+                <Image
                   src={`https://i.ytimg.com/vi/${teaser.key}/maxresdefault.jpg`}
                   alt={teaser.name}
-                  className="object-cover"
-                  width={360}
-                  height={200}
+                  className="object-cover w-80"
+                  width={400}
+                  height={180}
                 />
                 <div className="button-overlay bg-black/50 w-full h-full flex items-center justify-center absolute top-0 group">
                   <Play
@@ -58,7 +59,10 @@ const Teaser = ({ movieTeaser }) => {
               </button>
 
               {/* Individual modal for each teaser */}
-              <dialog id={`video_modal_${teaser.id}`} className="modal bg-black/70">
+              <dialog
+                id={`video_modal_${teaser.id}`}
+                className="modal bg-black/70"
+              >
                 <VideoModal
                   isOpen={selectedVideo?.id === teaser.id ? true : false}
                   isClose={handleCloseModal}
@@ -70,7 +74,7 @@ const Teaser = ({ movieTeaser }) => {
                 </form>
               </dialog>
 
-              <div className="teaser-content">
+              <div className="teaser-content w-1/2">
                 <h1 className="teaser-title text-xl mb-4">{teaser.name}</h1>
                 <ul className="list-disc list-inside flex items-center font-raleway gap-6 text-nowrap">
                   <li>{teaser.type}</li>

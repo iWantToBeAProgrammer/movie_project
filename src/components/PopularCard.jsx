@@ -3,16 +3,14 @@
 import Image from "next/image";
 import "swiper/css";
 import "swiper/css/navigation";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getMovieData } from "@/libs/api-libs";
 import Header from "./Header";
 import { IoPlayCircleOutline } from "react-icons/io5";
+import Link from "next/link";
 
 const PopularCard = ({ results = [] }) => {
   const [movieDetails, setMovieDetails] = useState([]);
-
-  const router = useRouter();
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -42,12 +40,12 @@ const PopularCard = ({ results = [] }) => {
       <div className="flex justify-between mb-8 items-center">
         <Header title={"popular viewed movies"} linkHref={"/movies"} />
 
-        <button
-          onClick={() => router.push("/movies")}
+        <Link
+          href={"/movies"}
           className="h-10  px-6 py-2 text-sm font-bold bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:opacity-90 transition"
         >
           Explore More
-        </button>
+        </Link>
       </div>
 
       <div className="w-full mt-20 tracking-wider">
@@ -78,12 +76,12 @@ const PopularCard = ({ results = [] }) => {
                       alt={title || "Movie poster"}
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                      <button
+                      <Link
                         className="text-8xl hover:scale-125 transition-all duration-300 ease-in-out"
-                        onClick={() => router.push(`/movies/${id}`)}
+                        href={`/movies/${id}`}
                       >
                         <IoPlayCircleOutline />
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>

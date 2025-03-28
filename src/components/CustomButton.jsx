@@ -5,18 +5,20 @@ import { PlusCircle, Eye } from "@phosphor-icons/react";
 import { IoStarOutline, IoStar } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createWatchlist, fetchMovieDetails, markAsWatched, toggleFavorite } from "@/libs/api";
+import {
+  createWatchlist,
+  fetchMovieDetails,
+  markAsWatched,
+  toggleFavorite,
+} from "@/libs/api";
 import WatchlistModal from "./Watchlist/WatchlistModal";
 import WatchlistDropdown from "./Watchlist/WatchlistDropdown";
+import { useAuth } from "@/app/contexts/AuthContext";
+import ErrorNotification from "./Auth/ErrorNotification";
+import { useWatchlistMutation } from "@/hooks/useFormMutation";
 
 const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
-  const [watchlistData, setWatchlistData] = useState({
-    watchlistId: null,
-    name: "",
-    description: "",
-    picture: null,
-    movieId: movieId,
-  });
+  const { user } = useAuth();
 
   const queryClient = useQueryClient();
 
@@ -64,52 +66,51 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const watchedMutation = createToggleMutation(markAsWatched, "watched");
   const favoriteMutation = createToggleMutation(toggleFavorite, "favorite");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setWatchlistData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setWatchlistData((prev) => ({ ...prev, picture: file }));
-  };
-
-  const { mutate, isLoading } = useMutation({
+  const {
+    formData: watchlistData,
+    handleChange,
+    handleImageChange,
+    handleSubmit,
+    handleSubmitWithId,
+    isLoading,
+  } = useWatchlistMutation({
+    initialData: {
+      watchlistId: null,
+      name: "",
+      description: "",
+      picture: null,
+      movieId: movieId,
+    },
     mutationFn: createWatchlist,
-    onSuccess: (data) => {
-      toast.success(data.message);
-      queryClient.invalidateQueries(["watchlist"]);
-      setWatchlistData({
-        watchlistId: null,
-        name: "",
-        description: "",
-        picture: null,
-        movieId: movieId,
-      });
-      document.getElementById("watchlist_modal").close();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create watchlist");
-    },
+    queryKey: "watchlist",
+    modalId: "watchlist_modal",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    mutate(watchlistData);
+  const handleSubmitToExistingWatchlist = (watchlistId) => {
+    handleSubmitWithId(watchlistId);
+  };
+  const handleAddToWatchlistClick = () => {
+    !user
+      ? document.getElementById("error-notification").showModal()
+      : document.getElementById("watchlist_modal").showModal();
   };
 
   const handleFavoriteClick = () => {
-    setIsFavorite((prev) => !prev); // Instantly update local state
-    favoriteMutation.mutate();
+    if (!user) {
+      document.getElementById("error-notification").showModal();
+    } else {
+      setIsFavorite((prev) => !prev); // Instantly update local state
+      favoriteMutation.mutate();
+    }
   };
 
   const handleWatchedClick = () => {
-    setIsWatched((prev) => !prev);
-    watchedMutation.mutate();
-  };
-
-  const handleSubmitToExistingWatchlist = (watchlistId) => {
-    mutate({ ...watchlistData, watchlistId });
+    if (!user) {
+      document.getElementById("error-notification").showModal();
+    } else {
+      setIsWatched((prev) => !prev);
+      watchedMutation.mutate();
+    }
   };
 
   const getFavoriteIcon = () => {
@@ -179,9 +180,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
           {config.text}
         </div>
         <WatchlistDropdown
-          showModal={() =>
-            document.getElementById("watchlist_modal").showModal()
-          }
+          showModal={handleAddToWatchlistClick}
           handleSubmitToExistingWatchlist={handleSubmitToExistingWatchlist}
           watchlists={data?.watchlists}
         />
@@ -194,6 +193,10 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
           handleSubmit={handleSubmit}
           watchlistData={watchlistData}
         />
+      </dialog>
+
+      <dialog id="error-notification" className="modal">
+        <ErrorNotification />
       </dialog>
     </>
   );
