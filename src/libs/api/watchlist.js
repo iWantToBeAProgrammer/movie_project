@@ -13,6 +13,7 @@ export const createWatchlist = async (watchlistData) => {
   if (watchlistData.description)
     formData.append("description", watchlistData.description);
   if (watchlistData.picture) formData.append("picture", watchlistData.picture);
+  if (watchlistData.tmdbId) formData.append("tmdbId", watchlistData.tmdbId);
 
   const res = await fetch("/api/watchlist", {
     method: "POST",

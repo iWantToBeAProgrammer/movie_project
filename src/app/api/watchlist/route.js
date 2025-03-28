@@ -31,15 +31,17 @@ export const GET = async (req) => {
           },
         },
         items: {
-          movie: {
-            select: {
-              id: true,
-              title: true,
-              posterPath: true,
-              overview: true,
-              genres: true,
-              runtime: true,
-              vote_average: true,
+          select: {
+            movie: {
+              select: {
+                id: true,
+                title: true,
+                posterPath: true,
+                overview: true,
+                genres: true,
+                runtime: true,
+                vote_average: true,
+              },
             },
           },
         },
@@ -81,11 +83,12 @@ export const POST = async (req) => {
 
     let imageUrl = null;
 
+    // Handle picture upload
     if (picture instanceof File) {
       const fileExt = picture.name.split(".").pop();
       const filePath = `watchlists/${user.id}-${Date.now()}.${fileExt}`;
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("watchlist-pictures")
         .upload(filePath, picture, {
           cacheControl: "3600",
@@ -107,70 +110,63 @@ export const POST = async (req) => {
       imageUrl = publicURLData.publicUrl;
     }
 
-    if (!watchlistId && !movieId) {
-      const newWatchlist = await prisma.watchlist.create({
-        data: {
-          userId: user.id,
-          name,
-          description,
-          picture: imageUrl,
-        },
-      });
+    let finalMovieId = movieId;
 
-      return NextResponse.json({
-        message: "New empty watchlist created",
-        watchlist: newWatchlist,
-      });
+    // Create a new watchlist if no watchlistId and no movieId are provided
+    if (!watchlistId && !movieId) {
+      const tmdbId = formData.get("tmdbId");
+      if (!tmdbId) {
+        const newWatchlist = await prisma.watchlist.create({
+          data: {
+            userId: user.id,
+            name,
+            description,
+            picture: imageUrl,
+          },
+        });
+        return NextResponse.json({
+          message: "New empty watchlist created",
+          watchlist: newWatchlist,
+        });
+      }
+
+      const movie = await getMovieDetails(tmdbId);
+      finalMovieId = movie.id;
     }
 
     let selectedWatchlistId = watchlistId;
 
+    // Handle creating or validating an existing watchlist
     if (!watchlistId) {
       const newWatchlist = await prisma.watchlist.create({
-        data: {
-          userId: user.id,
-          name,
-          description,
-          picture: imageUrl,
-        },
+        data: { userId: user.id, name, description, picture: imageUrl },
       });
-
       selectedWatchlistId = newWatchlist.id;
     } else {
       const existingWatchlist = await prisma.watchlist.findFirst({
         where: { userId: user.id, id: parseInt(watchlistId) },
       });
-
-      if (!existingWatchlist) {
+      if (!existingWatchlist)
         return NextResponse.json(
           { error: "Invalid watchlist ID" },
           { status: 403 }
         );
-      }
-
-      if (!movieId) {
-        return NextResponse.json(
-          { error: "Movie ID is required" },
-          { status: 400 }
-        );
-      }
     }
 
-    let finalMovieId = movieId;
-
-    if (!movieId) {
-      const tmdbId = formData.get("tmdbId"); // Get TMDB ID from form data
-      if (!tmdbId) {
+    // Handle adding movie logic
+    if (!finalMovieId) {
+      const tmdbId = formData.get("tmdbId");
+      if (!tmdbId)
         return NextResponse.json(
           { error: "Either movieId or tmdbId is required" },
           { status: 400 }
         );
-      }
 
-      const movie = await getMovieDetails(parseInt(tmdbId, 10)); // Fetch and store movie
-      finalMovieId = movie.id; // Use the generated primary key
+      const movie = await getMovieDetails(tmdbId);
+      finalMovieId = movie.id;
     }
 
+    // Check if movie already exists in the watchlist
     const existingItem = await prisma.watchlistItem.findUnique({
       where: {
         watchlistId_movieId: {
@@ -187,11 +183,9 @@ export const POST = async (req) => {
       );
     }
 
+    // Add movie to the watchlist
     await prisma.watchlistItem.create({
-      data: {
-        watchlistId: selectedWatchlistId,
-        movieId: finalMovieId,
-      },
+      data: { watchlistId: selectedWatchlistId, movieId: finalMovieId },
     });
 
     return NextResponse.json({

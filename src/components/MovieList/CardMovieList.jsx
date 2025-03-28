@@ -5,6 +5,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { FaRegStar } from "react-icons/fa";
 import { IoPlayCircleOutline } from "react-icons/io5";
+import Link from "next/link";
 
 const CardMovieList = ({ results = [] }) => {
   const router = useRouter();
@@ -31,12 +32,12 @@ const CardMovieList = ({ results = [] }) => {
 
               <div className="w-full group-hover:translate-y-0 bg-black/0 hover:bg-black/70 transition-colors duration-300 ease-in-out h-full">
                 <div className="flex flex-col items-center justify-center h-full gap-4 p-4 text-white">
-                  <button
+                  <Link
                     className="text-6xl hover:scale-125 transition-all duration-300 ease-in-out"
-                    onClick={() => router.push(`/movies/${result.id}`)}
+                    href={`/movies/${result?.id}`}
                   >
                     <IoPlayCircleOutline />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

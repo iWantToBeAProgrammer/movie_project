@@ -3,20 +3,34 @@
 import Certification from "@/components/Certification";
 import Teaser from "./Teaser";
 import { useState, useEffect } from "react";
-import { getMovieData } from "@/libs/api-libs";
 import { useRouter } from "next/navigation";
+import { useFormMutation, useWatchlistMutation } from "@/hooks/useFormMutation";
+import { createWatchlist, fetchMovieDetails } from "@/libs/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import WatchlistDropdown from "./Watchlist/WatchlistDropdown";
+import WatchlistModal from "./Watchlist/WatchlistModal";
+import Loading from "@/app/loading";
+import { getMovieData } from "@/libs/api-libs";
 
 const Hero = ({ movieResults }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [movieDetails, setMovieDetails] = useState(null);
   const [isIntervalActive, setIsIntervalActive] = useState(true);
-
-  
-
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const result = movieResults[currentIndex] || {};
+
+  const [watchlistData, setWatchlistData] = useState({
+    watchlistId: null,
+    name: "",
+    description: "",
+    picture: null,
+    tmdbId: result.id,
+  });
 
   useEffect(() => {
     if (movieResults.length === 0) return;
+
+    setWatchlistData((prev) => ({ ...prev, tmdbId: result.id }));
 
     const handleMouseMove = () => {
       setIsIntervalActive(false);
@@ -42,24 +56,63 @@ const Hero = ({ movieResults }) => {
     };
   }, [movieResults, isIntervalActive]);
 
+  const { data: movieDetails, isPending: isLoadingTMDB } = useQuery({
+    queryKey: ["tmdb-movie-details", result.id],
+    queryFn: () =>
+      getMovieData(result.id, "&append_to_response=videos,release_dates"),
+    enabled: !!result.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data, isPending } = useQuery({
+    queryKey: ["movie-details", result.id],
+    queryFn: () => fetchMovieDetails(null, result.id),
+    enabled: !!result.id,
+    suspense: true,
+  });
+
+  const {
+    formData,
+    handleChange,
+    handleImageChange,
+    handleSubmit,
+    handleSubmitWithId,
+    isLoading,
+  } = useWatchlistMutation({
+    initialData: watchlistData,
+    mutationFn: createWatchlist,
+    queryKey: "watchlist",
+    modalId: "watchlist_modal",
+  });
+
+  const handleSubmitToExistingWatchlist = (watchlistId) => {
+    handleSubmitWithId(watchlistId, "watchlistId", { tmdbId: result.id });
+  };
+
   useEffect(() => {
-    if (movieResults.length === 0) return;
+    if (movieResults.length <= 1) return;
 
-    const fetchMovieDetails = async () => {
-      const result = movieResults[currentIndex];
-      const details = await getMovieData(
-        result.id,
-        "&append_to_response=videos,release_dates"
-      );
-      setMovieDetails(details);
-    };
+    const nextIndex = (currentIndex + 1) % movieResults.length;
+    const nextMovieId = movieResults[nextIndex]?.id;
 
-    fetchMovieDetails();
-  }, [currentIndex, movieResults]);
+    if (nextMovieId) {
+      queryClient.prefetchQuery({
+        queryKey: ["tmdb-movie-details", nextMovieId],
+        queryFn: () =>
+          getMovieData(nextMovieId, "&append_to_response=videos,release_dates"),
+        staleTime: 5 * 60 * 1000,
+      });
 
-  if (movieResults.length === 0 || !movieDetails) return;
+      queryClient.prefetchQuery({
+        queryKey: ["movie-details", nextMovieId],
+        queryFn: () => fetchMovieDetails(null, nextMovieId),
+        staleTime: 5 * 60 * 1000,
+      });
+    }
+  }, [currentIndex, movieResults, queryClient]);
 
-  const result = movieResults[currentIndex];
+  if (movieResults.length === 0 || !movieDetails) return null;
+
   const bgBackdrop = result.backdrop_path;
   const backdropPath = `${process.env.NEXT_APP_BASEIMG}${bgBackdrop}`;
 
@@ -91,7 +144,6 @@ const Hero = ({ movieResults }) => {
               <div className="genres font-raleway text-xl font-medium items-center flex gap-3 my-8">
                 <h1 className="me-6">Genre</h1>
                 {movieDetails.genres.map((data, index) => {
-                  console.log(data)
                   return (
                     <div key={data.id} className="flex items-center gap-2">
                       <span
@@ -109,9 +161,26 @@ const Hero = ({ movieResults }) => {
               </div>
 
               <div className="flex items-center gap-2 mt-4 lg:mt-8 lg:gap-8 hero-button-wrapper">
-                <button className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm">
-                  Add To Watchlist
-                </button>
+                <div className="dropdown dropdown-bottom">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm"
+                  >
+                    Add To Watchlist
+                  </div>
+
+                  <WatchlistDropdown
+                    showModal={() =>
+                      document.getElementById("watchlist_modal").showModal()
+                    }
+                    handleSubmitToExistingWatchlist={
+                      handleSubmitToExistingWatchlist
+                    }
+                    watchlists={data?.watchlists}
+                  />
+                </div>
+
                 <button
                   className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm"
                   onClick={() => router.push(`/movies/${result.id}`)}
@@ -128,6 +197,15 @@ const Hero = ({ movieResults }) => {
           </div>
         </div>
       </div>
+
+      <dialog id="watchlist_modal" className="modal">
+        <WatchlistModal
+          handleChange={handleChange}
+          handleImageChange={handleImageChange}
+          handleSubmit={(e) => handleSubmit(e, result.id)}
+          watchlistData={formData}
+        />
+      </dialog>
     </>
   );
 };

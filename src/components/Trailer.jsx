@@ -21,8 +21,8 @@ const Trailer = ({ movieTrailer }) => {
 
   return (
     <div className="flex flex-col">
-      {movieTrailer?.map((trailer) => (
-        <div className="relative aspect-video w-full h-full">
+      {movieTrailer?.map((trailer, key) => (
+        <div key={key} className="relative aspect-video w-full h-full">
           {playingVideoId === trailer.id ? (
             <>
               <YouTube videoId={trailer.key} opts={opts} />

@@ -1,35 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 
-const WatchlistThumbnail = ({ movies }) => {
+const WatchlistThumbnail = ({ movies, setThumbnailUrl = () => {} }) => {
   const canvasRef = useRef(null);
   const [thumbnail, setThumbnail] = useState(null);
 
   useEffect(() => {
     if (!movies || movies.length === 0) {
-      setThumbnail("/assets/images/watchlist-default.jpg"); // ✅ Set default image if empty
+      const defaultImg = "/assets/images/watchlist-default.jpg";
+      setThumbnail(defaultImg);
+      setThumbnailUrl(defaultImg); // ✅ Send default image to parent
       return;
     }
 
     const canvas = canvasRef.current;
-    if (!canvas) return; // ✅ Prevent null errors
+    if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return; // ✅ Extra safeguard
+    if (!ctx) return;
 
-    const imgSize = 300; // Canvas size
+    const imgSize = 300;
     canvas.width = imgSize;
     canvas.height = imgSize;
 
-    const imagesToLoad = movies.slice(0, 4); // Take max 4 movies
-    const gridSize = imagesToLoad.length === 4 ? 2 : 1; // 2x2 grid if 4 images
+    const imagesToLoad = movies.slice(0, 4);
+    const gridSize = imagesToLoad.length === 4 ? 2 : 1;
 
     let loadedImages = 0;
     const images = [];
 
     imagesToLoad.forEach((movie, index) => {
       const img = new Image();
-      img.crossOrigin = "anonymous"; // Prevent CORS issues
-      img.src = `${process.env.NEXT_APP_BASEIMG}${movie.movie.posterPath}`; // ✅ Use `NEXT_PUBLIC_` for env vars in Next.js
+      img.crossOrigin = "anonymous";
+      img.src = `${process.env.NEXT_APP_BASEIMG}${movie.movie.posterPath}`;
 
       img.onload = () => {
         images[index] = img;
@@ -39,10 +41,8 @@ const WatchlistThumbnail = ({ movies }) => {
           ctx.clearRect(0, 0, imgSize, imgSize);
 
           if (gridSize === 1) {
-            // Single full-size image
             ctx.drawImage(images[0], 0, 0, imgSize, imgSize);
           } else {
-            // 2x2 grid
             const tileSize = imgSize / 2;
             images.forEach((image, i) => {
               const x = (i % 2) * tileSize;
@@ -51,7 +51,11 @@ const WatchlistThumbnail = ({ movies }) => {
             });
           }
 
-          setThumbnail(canvas.toDataURL("image/png"));
+          const imageUrl = canvas.toDataURL("image/png"); // ✅ Get base64 image URL
+          setThumbnail(imageUrl);
+          if (typeof setThumbnailUrl === "function") {
+            setThumbnailUrl(imageUrl);
+          }
         }
       };
     });
@@ -60,7 +64,7 @@ const WatchlistThumbnail = ({ movies }) => {
   return (
     <>
       <img
-        src={thumbnail || "/assets/images/watchlist-default.jpg"} // ✅ Fallback to default image
+        src={thumbnail || "/assets/images/watchlist-default.jpg"}
         alt="Watchlist Thumbnail"
         width={230}
         height={230}

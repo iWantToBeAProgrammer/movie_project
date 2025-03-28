@@ -9,12 +9,12 @@ datasource db {
 }
 
 model User {
-  id             String          @id @default(uuid()) @map("id") @db.Uuid
   email          String          @unique
   createdAt      DateTime        @default(now()) @map("created_at")
   profilePicture String?
   role           String          @default("user")
   username       String?         @unique
+  id             String          @id @default(uuid()) @map("id") @db.Uuid
   comments       Comment[]
   watchedMovies  WatchedMovie[]
   Watchlist      Watchlist[]
@@ -24,7 +24,6 @@ model User {
 model Movie {
   id             Int             @id @default(autoincrement())
   title          String
-  posterPath     String?         @map("poster_path")
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   overview       String          @default("")
@@ -38,8 +37,9 @@ model Movie {
   writers        String[]
   directors      String[]
   movieTrailer   Json?
-  vote_average   Int?
   tmdbId         String          @unique
+  posterPath     String?         @map("poster_path")
+  vote_average   Int?
   comments       Comment[]
   watchedMovies  WatchedMovie[]
   watchlistItems WatchlistItem[]
@@ -73,11 +73,11 @@ model WatchlistItem {
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  userId    String   @map("user_id") @db.Uuid
   content   String
   createdAt DateTime @default(now())
   movieId   Int
   updatedAt DateTime @updatedAt
+  userId    String   @map("user_id") @db.Uuid
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -86,9 +86,9 @@ model Comment {
 
 model WatchedMovie {
   id        Int      @id @default(autoincrement())
-  userId    String   @map("user_id") @db.Uuid
   movieId   Int
   watchedAt DateTime @default(now())
+  userId    String   @map("user_id") @db.Uuid
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

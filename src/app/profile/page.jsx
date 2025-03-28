@@ -76,7 +76,7 @@ export default function Profile() {
   return (
     <>
       <BackNavigation />
-      <div className="profile-container w-full">
+      <div className="profile-container w-full max-w-screen-xl overflow-hidden mx-auto mt-24">
         <div className="profile-wrapper flex gap-4">
           <div className="profile-content-left w-3/4">
             <header className="flex gap-8">
@@ -174,7 +174,7 @@ export default function Profile() {
                 className="tab-content py-10 border-t-white/30"
               >
                 <div className="grid grid-cols-3 gap-4">
-                  <Suspense fallback={<Loading/>}>
+                  <Suspense fallback={<Loading />}>
                     <CardMovieList results={formattedData.watchedMovies} />
                   </Suspense>
                 </div>
