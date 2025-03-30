@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const Footer = () => {
@@ -13,8 +13,8 @@ const Footer = () => {
   }
 
   return (
-    <div className="w-full bg-black pt-10 mt-16">
-      <div className="container max-w-(--breakpoint-xl) mx-auto">
+    <footer className="mt-16 w-full bg-black pt-10">
+      <div className="container mx-auto max-w-(--breakpoint-xl)">
         <div className="flex gap-20">
           <div className="flex flex-col">
             <Link href="/">
@@ -24,7 +24,7 @@ const Footer = () => {
           </div>
           <div className="flex flex-col">
             <h3 className="text-lg font-semibold">Movies List</h3>
-            <ul className="space-y-4 mt-4">
+            <ul className="mt-4 space-y-4">
               <li className="text-slate-600 hover:text-white hover:underline">
                 <Link href={"/movies/top-rated"}>Top Rated</Link>
               </li>
@@ -38,7 +38,7 @@ const Footer = () => {
           </div>
           <div className="flex flex-col">
             <h3 className="text-lg font-semibold">Services</h3>
-            <ul className="space-y-4 mt-4">
+            <ul className="mt-4 space-y-4">
               <li className="text-slate-600 hover:text-white hover:underline">
                 <Link href={"/profile"}>Watchlist</Link>
               </li>
@@ -52,7 +52,7 @@ const Footer = () => {
           </div>
           <div className="flex flex-col">
             <h3 className="text-lg font-semibold">Pages</h3>
-            <ul className="space-y-4 mt-4">
+            <ul className="mt-4 space-y-4">
               <li className="text-slate-600 hover:text-white hover:underline">
                 <Link href={"/"}>Home</Link>
               </li>
@@ -65,14 +65,14 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        <div className="flex mt-24">
-          <div className="flex justify-between w-full pt-4 border-t border-slate-600">
+        <div className="mt-24 flex">
+          <div className="flex w-full justify-between border-t border-slate-600 pt-4">
             <h3>© 2020 CINEMATix project.All right reserved</h3>
             <ul className="flex gap-4">
-              <li className=" hover:underline">
+              <li className="hover:underline">
                 <Link href={"/"}>Terms & Conditions</Link>
               </li>
-              <li className=" hover:underline">
+              <li className="hover:underline">
                 <Link href={"/"}>Privacy Policy</Link>
               </li>
               <li className="hover:underline">
@@ -82,7 +82,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 

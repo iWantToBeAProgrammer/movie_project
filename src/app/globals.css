@@ -1,21 +1,52 @@
 @import 'tailwindcss';
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(0.18 0.0067 17.8);
+  --color-base-200: oklch(40% 0.123 38.172);
+  --color-base-300: oklch(47% 0.157 37.304);
+  --color-base-content: oklch(98% 0.002 247.839);
+  --color-primary: oklch(0.47 0.1929 29);
+  --color-primary-content: oklch(97% 0.021 166.113);
+  --color-secondary: oklch(0.63 0.2577 29.23);
+  --color-secondary-content: oklch(98% 0.018 155.826);
+  --color-accent: oklch(0.38 0 0);
+  --color-accent-content: oklch(98% 0.031 120.757);
+  --color-neutral: oklch(0.98 0.0079 73.75);
+  --color-neutral-content: oklch(13% 0.028 261.692);
+  --color-info: oklch(58% 0.158 241.966);
+  --color-info-content: oklch(97% 0.013 236.62);
+  --color-success: oklch(62% 0.194 149.214);
+  --color-success-content: oklch(98% 0.018 155.826);
+  --color-warning: oklch(64% 0.222 41.116);
+  --color-warning-content: oklch(98% 0.016 73.684);
+  --color-error: oklch(57% 0.245 27.325);
+  --color-error-content: oklch(97% 0.013 17.38);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 1;
+}
+
 
 @import 'swiper/css' layer(utilities); /* Import core Swiper styles */
 @import 'swiper/css/navigation' layer(utilities);
 
+
 @theme {
-  --font-bebas_neue: Bebas_Neue;
-  --font-raleway: Raleway;
-  --font-raleway_italic: Raleway_italic;
-  --font-sans_caption: Sans_caption;
-
-  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
-  --background-image-gradient-conic: conic-gradient(
-    from 180deg at 50% 50%,
-    var(--tw-gradient-stops)
-  );
+  --font-bebas_neue: "Bebas_Neue";
+  --font-raleway: "Raleway";
+  --font-raleway_italic: "Raleway_italic";
+  --font-sans_caption: "Sans_caption";
 }
-
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -77,29 +108,29 @@
   }
 
   .navigate-button:hover {
-    @apply bg-opacity-70;
+    @apply opacity-70;
   }
 }
 
 @layer base {
     @font-face {
         font-family: "Bebas_Neue";
-        src: url("/assets/fonts/Bebas_Neue,Raleway/Bebas_Neue/BebasNeue-Regular.ttf");
+        src: url(/assets/fonts/Bebas_Neue,Raleway/Bebas_Neue/BebasNeue-Regular.ttf) format("truetype");
     }
 
     @font-face {
         font-family: "Raleway";
-        src: url("/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-VariableFont_wght.ttf");
+        src: url(/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-VariableFont_wght.ttf) format("truetype");
     }
 
     @font-face {
         font-family: "Raleway_italic";
-        src: url("/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-Italic-VariableFont_wght.ttf");
+        src: url(/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-Italic-VariableFont_wght.ttf) format("truetype");
 
     }
     @font-face {
         font-family: "Sans_caption";
-        src: url("/assets/fonts/PT_Sans_Caption/PTSansCaption-Regular.ttf");
+        src: url(/assets/fonts/PT_Sans_Caption/PTSansCaption-Regular.ttf) format("truetype");
 
     }
 }

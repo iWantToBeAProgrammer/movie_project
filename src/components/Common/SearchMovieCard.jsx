@@ -67,7 +67,7 @@ const SearchMovieCard = ({ results }) => {
             <Link
               tabIndex={0}
               href={`/movies/${result.id}`}
-              className="card card-side text-base-100 px-0 mx-0 transition-colors duration-300 ease-in"
+              className="card mx-0 card-side px-0 text-base-100 transition-colors duration-300 ease-in"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor =
                   movieColor.dominantColor)
@@ -89,25 +89,25 @@ const SearchMovieCard = ({ results }) => {
                 <h2 className="card-title line-clamp-1 text-base font-semibold">
                   {result.title}
                 </h2>
-                <div className="flex gap-4 items-center">
-                  <div className="px-1 py-0.5 font-bebas_neue font-black border-primary border rounded-lg">
+                <div className="flex items-center gap-4">
+                  <div className="rounded-lg border border-primary px-1 py-0.5 font-bebas_neue font-black">
                     {result.certification !== "" ? (
                       result.certification
                     ) : (
                       <Minus />
                     )}
                   </div>
-                  <p className="list-item list-disc list-inside font-sans_caption">
+                  <p className="list-item list-inside list-disc font-sans_caption">
                     {result.release_date}
                   </p>
-                  <p className="list-disc list-inside font-sans_caption gap-2 flex items-center">
+                  <p className="flex list-inside list-disc items-center gap-2 font-sans_caption">
                     <Star weight="fill" color="orange" />
                     {result.vote_average}
                   </p>
                 </div>
               </div>
             </Link>
-            <div className="divider divider-accent mx-0"></div>
+            <div className="divider mx-0 divider-accent"></div>
           </div>
         );
       })}

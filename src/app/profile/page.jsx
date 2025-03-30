@@ -76,7 +76,7 @@ export default function Profile() {
   return (
     <>
       <BackNavigation />
-      <div className="profile-container w-full max-w-(--breakpoint-xl) overflow-hidden mx-auto mt-24">
+      <div className="profile-container mx-auto mt-24 w-full max-w-(--breakpoint-xl) overflow-hidden">
         <div className="profile-wrapper flex gap-4">
           <div className="profile-content-left w-3/4">
             <header className="flex gap-8">
@@ -90,19 +90,19 @@ export default function Profile() {
               <div className="header-content flex flex-col justify-between py-2">
                 <h1 className="profile-name text-4xl">{username}</h1>
                 <div className="profile-data flex gap-4">
-                  <div className="watchlist-total font-sans_caption flex flex-col items-center">
+                  <div className="watchlist-total flex flex-col items-center font-sans_caption">
                     <h3 className="watchlist-total-data text-xl">
                       {totalWatchlist}
                     </h3>
                     <p className="watchlist-total-text">Watchlists</p>
                   </div>
-                  <div className="favorite-total font-sans_caption flex flex-col items-center">
+                  <div className="favorite-total flex flex-col items-center font-sans_caption">
                     <h3 className="favorite-total-data text-xl">
                       {totalFavorites}
                     </h3>
                     <p className="favorite-total-text">Favorites</p>
                   </div>
-                  <div className="watched-total font-sans_caption flex flex-col items-center">
+                  <div className="watched-total flex flex-col items-center font-sans_caption">
                     <h3 className="watched-total-data text-xl">
                       {totalWatched}
                     </h3>
@@ -112,26 +112,26 @@ export default function Profile() {
               </div>
             </header>
 
-            <div role="tablist" className="tabs tabs-bordered w-full mt-12 ">
+            <div role="tablist" className="tabs-bordered mt-12 tabs w-full">
               <button
                 role="tab"
                 className={`tab ${
                   tabValue === "watchlist" ? "tab-active" : ""
-                } font-bebas_neue text-2xl h-12`}
+                } h-12 font-bebas_neue text-2xl`}
                 onClick={() => setTabValue("watchlist")}
               >
                 Watchlists
               </button>
               <div
                 role="tabpanel"
-                className="tab-content py-8 border-t-white/30"
+                className="tab-content border-t-white/30 py-8"
               >
-                <div className="flex justify-end mb-4">
+                <div className="mb-4 flex justify-end">
                   <button
                     onClick={() =>
                       document.getElementById("watchlist-modal").showModal()
                     }
-                    className="add-watchlist-button rounded-2xl bg-neutral/90 p-4 btn btn-lg hover:bg-neutral hover:scale-110 transition-all duration-200 ease-in-out"
+                    className="add-watchlist-button btn rounded-2xl bg-neutral/90 p-4 transition-all duration-200 ease-in-out btn-lg hover:scale-110 hover:bg-neutral"
                   >
                     <Plus size={32} className="text-primary" weight="bold" />
                   </button>
@@ -146,13 +146,13 @@ export default function Profile() {
                 onClick={() => setTabValue("favorites")}
                 className={`tab ${
                   tabValue === "favorites" ? "tab-active" : ""
-                }  font-bebas_neue text-2xl h-12`}
+                } h-12 font-bebas_neue text-2xl`}
               >
                 Favorites
               </button>
               <div
                 role="tabpanel"
-                className="tab-content py-10 border-t-white/30"
+                className="tab-content border-t-white/30 py-10"
               >
                 <div className="grid grid-cols-3 gap-4">
                   <Suspense fallback={<Loading />}>
@@ -165,13 +165,13 @@ export default function Profile() {
                 role="tab"
                 className={`tab ${
                   tabValue === "watched" ? "tab-active" : ""
-                } font-bebas_neue text-2xl h-12 `}
+                } h-12 font-bebas_neue text-2xl`}
               >
                 Watched
               </button>
               <div
                 role="tabpanel"
-                className="tab-content py-10 border-t-white/30"
+                className="tab-content border-t-white/30 py-10"
               >
                 <div className="grid grid-cols-3 gap-4">
                   <Suspense fallback={<Loading />}>
