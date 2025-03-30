@@ -22,12 +22,12 @@ export default function SearchMovie() {
     <div className="dropdown">
       <div className="mb-2 join">
         <input
-          className="input-bordered input join-item w-96 glass bg-accent/80 font-raleway text-xl font-semibold text-white focus:outline-hidden"
+          className="input input-lg join-item w-96 glass bg-accent/80 font-raleway text-xl font-semibold text-white focus:outline-hidden"
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button className="btn join-item btn-primary">
+        <button className="btn join-item btn-primary btn-lg">
           <MagnifyingGlass size={24} />
         </button>
       </div>
