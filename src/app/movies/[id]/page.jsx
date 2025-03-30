@@ -27,7 +27,7 @@ export default async function movieDetails({ params }) {
   const runtimeFormatted = movie.runtime ? formatRuntime(movie.runtime) : "N/A";
 
   return (
-    <div className="container max-w-screen-xl mx-auto h-fit">
+    <div className="container max-w-(--breakpoint-xl) mx-auto h-fit">
       <BackNavigation />
       <div className="movie-details-wrapper flex flex-col">
         <div className="video-section flex w-full h-full">

@@ -67,7 +67,7 @@ const Card = ({ results = [] }) => {
 
           return (
             <SwiperSlide key={result.id} className="w-full">
-              <div className="relative group w-full aspect-[2/3] overflow-hidden rounded-lg">
+              <div className="relative group w-full aspect-2/3 overflow-hidden rounded-lg">
                 {result.poster_path && (
                   <Image
                     src={`${process.env.NEXT_APP_BASEIMG}${result.poster_path}`}
@@ -93,7 +93,7 @@ const Card = ({ results = [] }) => {
                     </div>
                     <Link
                       href={`/movies/${result.id}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold transition-colors rounded-full bg-linear-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
                     >
                       View Details
                       <CaretCircleDoubleRight size={16} color="#FFFFFF" />

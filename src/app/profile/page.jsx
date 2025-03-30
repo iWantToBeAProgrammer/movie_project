@@ -76,7 +76,7 @@ export default function Profile() {
   return (
     <>
       <BackNavigation />
-      <div className="profile-container w-full max-w-screen-xl overflow-hidden mx-auto mt-24">
+      <div className="profile-container w-full max-w-(--breakpoint-xl) overflow-hidden mx-auto mt-24">
         <div className="profile-wrapper flex gap-4">
           <div className="profile-content-left w-3/4">
             <header className="flex gap-8">

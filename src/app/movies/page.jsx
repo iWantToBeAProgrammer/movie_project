@@ -27,7 +27,7 @@ export default async function MoviesPage() {
 
   return (
     <>
-      <div className="container max-w-screen-xl mx-auto overflow-hidden">
+      <div className="container max-w-(--breakpoint-xl) mx-auto overflow-hidden">
       <BackNavigation />
         <div className="flex flex-col">
           <HeaderMovieList title={"Popular Viewed Movies"} />

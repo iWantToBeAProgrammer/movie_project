@@ -35,7 +35,7 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
             <div className="title-wrapper flex gap-3 items-center">
               <h1 className="text-4xl">
                 Welcome to CINEMA
-                <span className="font-raleway_italic bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-black">
+                <span className="font-raleway_italic bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent font-black">
                   Tix
                 </span>
               </h1>
@@ -50,13 +50,13 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
                   type="text"
                   placeholder="Email"
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-hidden"
                 />
                 <input
                   type="password"
                   placeholder="Password"
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-hidden"
                 />
                 <input
                   type="password"
@@ -64,7 +64,7 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
                   onChange={(e) => setPasswordConfirmation(e.target.value)}
                   className={`${
                     pathname === "/auth/login" && "hidden"
-                  } border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none`}
+                  } border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-hidden`}
                 />
 
                 <button

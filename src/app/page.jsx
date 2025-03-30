@@ -35,7 +35,7 @@ export default async function Home() {
 
       <Hero movieResults={nowPlaying.results} />
 
-      <div className="container max-w-screen-xl mx-auto overflow-hidden">
+      <div className="container max-w-(--breakpoint-xl) mx-auto overflow-hidden">
         <div className="flex flex-col gap-20 movie-list-wrapper">
           <div className="flex flex-col now-playing">
             <Header title="Now Playing" linkHref="/movies/now-playing" />
@@ -55,7 +55,7 @@ export default async function Home() {
         <div className="print-desc mt-24 flex justify-center">
           <PrintDesc />
         </div>
-        <div className="faq mt-24 flex mx-auto max-w-screen-lg">
+        <div className="faq mt-24 flex mx-auto max-w-(--breakpoint-lg)">
           <Faq />
         </div>
       </div>

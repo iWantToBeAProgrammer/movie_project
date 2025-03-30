@@ -20,7 +20,7 @@ const CardMovieList = ({ results = [] }) => {
 
         return (
           <div key={result.id} className="w-full">
-            <div className="relative group w-full aspect-[2/3] overflow-hidden rounded-lg">
+            <div className="relative group w-full aspect-2/3 overflow-hidden rounded-lg">
               <Image
                 src={`${process.env.NEXT_APP_BASEIMG}${
                   result.poster_path || result.posterPath

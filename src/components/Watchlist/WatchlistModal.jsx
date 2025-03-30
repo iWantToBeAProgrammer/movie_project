@@ -43,7 +43,7 @@ const WatchlistModal = ({
                 onChange={handleImageChange}
               />
 
-              <div className="w-full h-full absolute justify-center items-center top-0 z-10 *:hidden hover:bg-black/50 *:hover:block flex flex-col">
+              <div className="w-full h-full absolute justify-center items-center top-0 z-10 *:hidden hover:bg-black/50 hover:*:block flex flex-col">
                 <Pencil size={50} weight="bold" />
                 <p className="font-raleway font-semibold">Choose a photo</p>
               </div>

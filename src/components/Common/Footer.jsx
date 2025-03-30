@@ -14,7 +14,7 @@ const Footer = () => {
 
   return (
     <div className="w-full bg-black pt-10 mt-16">
-      <div className="container max-w-screen-xl mx-auto">
+      <div className="container max-w-(--breakpoint-xl) mx-auto">
         <div className="flex gap-20">
           <div className="flex flex-col">
             <Link href="/">

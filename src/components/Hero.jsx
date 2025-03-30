@@ -132,7 +132,7 @@ const Hero = ({ movieResults }) => {
       >
         <div className="blur-overlay h-full w-full backdrop-blur-md absolute"></div>
         <div className="hero w-full h-full flex items-center justify-center relative">
-          <div className="hero-wrapper w-full max-w-screen-xl h-[80%]  bg-[image:var(--backdrop-url)]  rounded-2xl bg-center bg-cover bg-no-repeat px-8 pb-12 font-bebas_neue text-3xl flex justify-between">
+          <div className="hero-wrapper w-full max-w-(--breakpoint-xl) h-[80%]  bg-[image:var(--backdrop-url)]  rounded-2xl bg-center bg-cover bg-no-repeat px-8 pb-12 font-bebas_neue text-3xl flex justify-between">
             <div className="hero-left-content relative z-30 me-6 flex flex-col items-start w-[40%] justify-end h-full">
               <h1 className="mb-2">
                 {result.title} ({result.release_date.slice(0, 4)})
@@ -193,7 +193,7 @@ const Hero = ({ movieResults }) => {
               <Teaser movieTeaser={movieTeaser} />
             </div>
 
-            <div className="bottom-overlay h-full bg-gradient-to-b from-black/20 to-black/80 absolute bottom-0 w-full z-0 left-0"></div>
+            <div className="bottom-overlay h-full bg-linear-to-b from-black/20 to-black/80 absolute bottom-0 w-full z-0 left-0"></div>
           </div>
         </div>
       </div>

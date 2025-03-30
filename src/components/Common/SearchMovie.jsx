@@ -22,7 +22,7 @@ export default function SearchMovie() {
     <div className="dropdown">
       <div className="join mb-2">
         <input
-          className="input w-96 focus:outline-none bg-accent/80 glass text-white font-raleway text-xl font-semibold input-bordered join-item"
+          className="input w-96 focus:outline-hidden bg-accent/80 glass text-white font-raleway text-xl font-semibold input-bordered join-item"
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -32,7 +32,7 @@ export default function SearchMovie() {
         </button>
       </div>
       {debouncedQuery.length > 2 && (
-        <div className="dropdown-content card card-compact bg-[#D9D9D9] text-primary-content z-[1] p-0 w-full shadow">
+        <div className="dropdown-content card card-compact bg-[#D9D9D9] text-primary-content z-1 p-0 w-full shadow-sm">
           <div className="card-body text-black">
             {isLoading ? (
               <span className="loading loading-spinner"></span>
