@@ -29,8 +29,19 @@ async function signInWithOAuth(provider) {
   return data;
 }
 
+async function resendEmailVerification(email) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOtp({ email });
+
+  if (error) throw new Error(error.message);
+
+  return data;
+}
+
 module.exports = {
   signUpWithEmail,
   signInWithEmail,
   signInWithOAuth,
+  resendEmailVerification,
 };

@@ -128,15 +128,15 @@ export default async function movieDetails({ params }) {
               Review
             </h2>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 font-raleway font-semibold">
             <input
               type="text"
               placeholder="add a review"
               className="p-3 w-full rounded-lg bg-transparent border-white border text-white"
             />
-            <button className="p-3 bg-secondary rounded-lg">POST</button>
+            <button className="p-3 bg-secondary rounded-lg">Post</button>
           </div>
-          <div className="review-wrapper w-full h-fit flex flex-col bg-white text-black p-5 rounded-lg gap-4">
+          <div className="review-wrapper w-full h-fit flex flex-col text-black bg-neutral p-5 rounded-lg gap-4">
             <p className="text-pretty">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
