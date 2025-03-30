@@ -12,15 +12,15 @@ export const revalidate = 3600;
 export default async function Home() {
   const nowPlayingPromise = getMovieData(
     "now_playing",
-    "language=en-US&page=1&region=ID"
+    "language=en-US&page=1&region=ID",
   );
   const topRatedPromise = getMovieData(
     "top_rated",
-    "language=en-US&page=1&region=ID"
+    "language=en-US&page=1&region=ID",
   );
   const popularPromise = getMovieData(
     "popular",
-    "language=en-US&page=1&region=ID"
+    "language=en-US&page=1&region=ID",
   );
 
   const [nowPlaying, topRated, popular] = await Promise.all([
@@ -35,14 +35,14 @@ export default async function Home() {
 
       <Hero movieResults={nowPlaying.results} />
 
-      <div className="container max-w-screen-xl mx-auto overflow-hidden">
-        <div className="flex flex-col gap-20 movie-list-wrapper">
-          <div className="flex flex-col now-playing">
+      <div className="container mx-auto max-w-(--breakpoint-xl) overflow-hidden">
+        <div className="movie-list-wrapper flex flex-col gap-20">
+          <div className="now-playing flex flex-col">
             <Header title="Now Playing" linkHref="/movies/now-playing" />
             <Card results={nowPlaying.results} />
           </div>
 
-          <div className="flex flex-col top-rated">
+          <div className="top-rated flex flex-col">
             <Header title="Top Rated" linkHref="/movies/top-rated" />
             <Card results={topRated.results} />
           </div>
@@ -55,7 +55,7 @@ export default async function Home() {
         <div className="print-desc mt-24 flex justify-center">
           <PrintDesc />
         </div>
-        <div className="faq mt-24 flex mx-auto max-w-screen-lg">
+        <div className="faq mx-auto mt-24 flex max-w-(--breakpoint-lg)">
           <Faq />
         </div>
       </div>

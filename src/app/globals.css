@@ -1,68 +1,136 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin "daisyui";
 
-@import 'swiper/css'; /* Import core Swiper styles */
-@import 'swiper/css/navigation'; /* Import Swiper Navigation module styles */
-
-
-h1 {
-    font-family: "Bebas_Neue";
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(0.18 0.0067 17.8);
+  --color-base-200: oklch(40% 0.123 38.172);
+  --color-base-300: oklch(47% 0.157 37.304);
+  --color-base-content: oklch(98% 0.002 247.839);
+  --color-primary: oklch(0.47 0.1929 29);
+  --color-primary-content: oklch(97% 0.021 166.113);
+  --color-secondary: oklch(0.63 0.2577 29.23);
+  --color-secondary-content: oklch(98% 0.018 155.826);
+  --color-accent: oklch(0.38 0 0);
+  --color-accent-content: oklch(98% 0.031 120.757);
+  --color-neutral: oklch(0.98 0.0079 73.75);
+  --color-neutral-content: oklch(13% 0.028 261.692);
+  --color-info: oklch(58% 0.158 241.966);
+  --color-info-content: oklch(97% 0.013 236.62);
+  --color-success: oklch(62% 0.194 149.214);
+  --color-success-content: oklch(98% 0.018 155.826);
+  --color-warning: oklch(64% 0.222 41.116);
+  --color-warning-content: oklch(98% 0.016 73.684);
+  --color-error: oklch(57% 0.245 27.325);
+  --color-error-content: oklch(97% 0.013 17.38);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 1;
 }
-.card:hover > .card-overlay{
+
+
+@import 'swiper/css' layer(utilities); /* Import core Swiper styles */
+@import 'swiper/css/navigation' layer(utilities);
+
+
+@theme {
+  --font-bebas_neue: "Bebas_Neue";
+  --font-raleway: "Raleway";
+  --font-raleway_italic: "Raleway_italic";
+  --font-sans_caption: "Sans_caption";
+}
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer utilities {
+  /* Import Swiper Navigation module styles */
+
+  h1 {
+    font-family: 'Bebas_Neue';
+  }
+  .card:hover > .card-overlay {
     transform: translateY(0%);
-}
+  }
 
-.header-icon{
+  .header-icon {
     transition: all 300ms ease-in-out;
-    
-}
+  }
 
-.navigate-button {
+  .navigate-button {
     transition: all 300ms ease-in-out;
-}
+  }
 
-.list-wrapper:hover >  .navigate-wrapper > .navigate-button{
-   opacity: 100%;
-   z-index: 10;
-}
+  .list-wrapper:hover > .navigate-wrapper > .navigate-button {
+    opacity: 100%;
+    z-index: 10;
+  }
 
-.tab:is(.tab-active, [aria-selected="true"]):not(.tab-disabled):not([disabled]), .tab:is(input:checked) {
-    border-color: #AF0404;
+  .tab:is(.tab-active, [aria-selected='true']):not(.tab-disabled):not(
+      [disabled]
+    ),
+  .tab:is(input:checked) {
+    border-color: #af0404;
     --tw-border-opacity: 1;
     --tw-text-opacity: 1;
-}
+  }
 
-.tabs-bordered > .tab {
-    border-color: var(--fallback-bc,oklch(var(--bc)/var(--tw-border-opacity)));
+  .tabs-bordered > .tab {
+    border-color: var(
+      --fallback-bc,
+      oklch(var(--bc) / var(--tw-border-opacity))
+    );
     --tw-border-opacity: 0;
     border-style: solid;
     border-bottom-width: calc(var(--tab-border, 1px) + 1px);
-}
+  }
 
-.navigate-button:hover {
-    @apply bg-opacity-70
+  .navigate-button:hover {
+    @apply opacity-70;
+  }
 }
 
 @layer base {
     @font-face {
         font-family: "Bebas_Neue";
-        src: url("/assets/fonts/Bebas_Neue,Raleway/Bebas_Neue/BebasNeue-Regular.ttf");
+        src: url(/assets/fonts/Bebas_Neue,Raleway/Bebas_Neue/BebasNeue-Regular.ttf) format("truetype");
     }
 
     @font-face {
         font-family: "Raleway";
-        src: url("/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-VariableFont_wght.ttf");
+        src: url(/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-VariableFont_wght.ttf) format("truetype");
     }
 
     @font-face {
         font-family: "Raleway_italic";
-        src: url("/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-Italic-VariableFont_wght.ttf");
+        src: url(/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-Italic-VariableFont_wght.ttf) format("truetype");
 
     }
     @font-face {
         font-family: "Sans_caption";
-        src: url("/assets/fonts/PT_Sans_Caption/PTSansCaption-Regular.ttf");
+        src: url(/assets/fonts/PT_Sans_Caption/PTSansCaption-Regular.ttf) format("truetype");
 
     }
 }

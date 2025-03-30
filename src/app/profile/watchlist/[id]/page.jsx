@@ -44,7 +44,7 @@ export default function WatchlistDetail({ params }) {
     <div className="flex flex-col mx-auto items-center justify-center">
       <BackNavigation />
       <WatchlistBackdrop imageUrl={watchlist.picture || thumbnailUrl}>
-        <div className="flex gap-4 max-w-screen-xl w-full">
+        <div className="flex gap-4 max-w-(--breakpoint-xl) w-full">
           {watchlist.picture ? (
             <Image
               src={`${watchlist.picture}`}
@@ -91,7 +91,7 @@ export default function WatchlistDetail({ params }) {
         </div>
       </WatchlistBackdrop>
 
-      <div className="flex flex-col max-w-screen-xl h-full w-full gap-5 my-24">
+      <div className="flex flex-col max-w-(--breakpoint-xl) h-full w-full gap-5 my-24">
         <div className="flex space-x-10 py-2 border-b border-slate-500 text-slate-500    ">
           <h1 className="text-4xl">#</h1>
           <h1 className="text-4xl">Movies</h1>

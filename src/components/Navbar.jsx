@@ -28,7 +28,7 @@ const Navbar = () => {
       <div
         className={`navbar h-16 2xl:h-20  text-xl 2xl:text-3xl absolute top-2 left-0 text-neutral z-50 flex justify-center`}
       >
-        <div className="navbar-wrapper flex items-center justify-between max-w-screen-xl w-full">
+        <div className="navbar-wrapper flex items-center justify-between max-w-(--breakpoint-xl) w-full">
           <Link href="/">
             <Image
               src={"/assets/images/logo/logo.svg"}
@@ -54,7 +54,7 @@ const Navbar = () => {
               </div>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu bg-white rounded-xl z-[1] w-44 p-2 shadow text-raleway text-[#333333] font-semibold"
+                className="dropdown-content menu bg-white rounded-xl z-1 w-44 p-2 shadow-sm text-raleway text-[#333333] font-semibold"
               >
                 <li>
                   <Link href={"/movies"}>Popular Movies</Link>
@@ -70,7 +70,7 @@ const Navbar = () => {
             {!user ? (
               <Link
                 href={"/auth/login"}
-                className="font-bebas_neue bg-gradient-to-t from-primary to-secondary hover:from-primary/50 hover:to-primary/50 hover:border-2 hover:border-primary px-6 btn  py-2 xl:py-1 rounded-xl text-3xl"
+                className="font-bebas_neue bg-linear-to-t from-primary to-secondary hover:from-primary/50 hover:to-primary/50 hover:border-2 hover:border-primary px-6 btn  py-2 xl:py-1 rounded-xl text-3xl"
                 type="button"
               >
                 sign in
@@ -86,7 +86,7 @@ const Navbar = () => {
                 </div>
                 <ul
                   tabIndex={0}
-                  className="dropdown-content menu bg-white rounded-xl z-[1] w-44 p-2 shadow text-raleway text-[#333333] font-semibold"
+                  className="dropdown-content menu bg-white rounded-xl z-1 w-44 p-2 shadow-sm text-raleway text-[#333333] font-semibold"
                 >
                   <li>
                     <Link href={"/profile"}>My Profile</Link>

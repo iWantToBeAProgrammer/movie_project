@@ -26,7 +26,7 @@ export default async function NowPlayingPage() {
   }, [currentPage]);
 
   return (
-    <div className="container max-w-screen-xl mx-auto overflow-hidden">
+    <div className="container max-w-(--breakpoint-xl) mx-auto overflow-hidden">
       <BackNavigation />
       <div className="flex flex-col">
         <HeaderMovieList title={"Now Playing Movies"} />

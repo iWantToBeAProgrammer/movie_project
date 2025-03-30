@@ -20,19 +20,19 @@ export default function SearchMovie() {
 
   return (
     <div className="dropdown">
-      <div className="join mb-2">
+      <div className="mb-2 join">
         <input
-          className="input w-96 focus:outline-none bg-accent/80 glass text-white font-raleway text-xl font-semibold input-bordered join-item"
+          className="input input-lg join-item w-96 glass bg-accent/80 font-raleway text-xl font-semibold text-white focus:outline-hidden"
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button className="btn join-item btn-primary">
+        <button className="btn join-item btn-primary btn-lg">
           <MagnifyingGlass size={24} />
         </button>
       </div>
       {debouncedQuery.length > 2 && (
-        <div className="dropdown-content card card-compact bg-[#D9D9D9] text-primary-content z-[1] p-0 w-full shadow">
+        <div className="dropdown-content card z-1 w-full bg-[#D9D9D9] p-0 text-primary-content shadow-sm card-sm">
           <div className="card-body text-black">
             {isLoading ? (
               <span className="loading loading-spinner"></span>
@@ -43,7 +43,7 @@ export default function SearchMovie() {
                   tabIndex={0}
                   role="button"
                   href={"/"}
-                  className="w-full flex justify-center items-center font-bold uppercase text-black pb-2"
+                  className="flex w-full items-center justify-center pb-2 font-bold text-black uppercase"
                 >
                   View All Results
                 </Link>

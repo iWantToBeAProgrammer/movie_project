@@ -8,7 +8,7 @@ const WatchlistDropdown = ({
   return (
     <ul
       tabIndex={0}
-      className="dropdown-content menu bg-white text-black rounded-xl mt-2 z-[1] w-52 p-2 shadow hover:*:*:bg-secondary transition-colors duration-200 ease-in-out *:rounded-xl gap-1"
+      className="dropdown-content menu bg-white text-black rounded-xl mt-2 z-1 w-52 p-2 shadow-sm *:*:hover:bg-secondary transition-colors duration-200 ease-in-out *:rounded-xl gap-1"
     >
       <li className="border-b border-black/50 font-sans_caption">
         <button className="focus:text-black" onClick={showModal}>

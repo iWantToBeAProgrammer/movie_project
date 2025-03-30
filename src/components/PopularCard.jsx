@@ -42,7 +42,7 @@ const PopularCard = ({ results = [] }) => {
 
         <Link
           href={"/movies"}
-          className="h-10  px-6 py-2 text-sm font-bold bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:opacity-90 transition"
+          className="h-10  px-6 py-2 text-sm font-bold bg-linear-to-r from-primary to-secondary text-white rounded-xl hover:opacity-90 transition"
         >
           Explore More
         </Link>
@@ -69,7 +69,7 @@ const PopularCard = ({ results = [] }) => {
               >
                 {/* Poster */}
                 <div className="flex justify-center">
-                  <div className="relative w-3/4 aspect-[2/3] overflow-hidden rounded-lg shadow-lg transform -translate-y-8 group-hover:translate-y-28 transition-all duration-500 ease-in-out">
+                  <div className="relative w-3/4 aspect-2/3 overflow-hidden rounded-lg shadow-lg transform -translate-y-8 group-hover:translate-y-28 transition-all duration-500 ease-in-out">
                     <Image
                       src={`https://image.tmdb.org/t/p/w500${poster_path}`}
                       fill

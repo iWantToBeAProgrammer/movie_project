@@ -22,26 +22,26 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
 
   return (
     <>
-      <div className="form-card w-full flex rounded-2xl bg-[#1A1919] relative">
+      <div className="form-card relative flex w-full rounded-2xl bg-[#1A1919]">
         <div className="back-button absolute top-10 left-10">
           <button type="button" onClick={() => router.push("/")}>
             <CaretLeft size={50} weight="bold" />
           </button>
         </div>
 
-        <div className="form-card-left w-1/2 h-full">{/* Left assets */}</div>
-        <div className="form-card-right w-1/2 h-full py-24">
-          <div className="form-right-wrapper mx-auto w-full h-full justify-center items-center flex flex-col">
-            <div className="title-wrapper flex gap-3 items-center">
+        <div className="form-card-left h-full w-1/2">{/* Left assets */}</div>
+        <div className="form-card-right h-full w-1/2 py-24">
+          <div className="form-right-wrapper mx-auto flex h-full w-full flex-col items-center justify-center">
+            <div className="title-wrapper flex items-center gap-3">
               <h1 className="text-4xl">
                 Welcome to CINEMA
-                <span className="font-raleway_italic bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-black">
+                <span className="bg-linear-to-r from-primary to-secondary bg-clip-text font-raleway_italic font-black text-transparent">
                   Tix
                 </span>
               </h1>
             </div>
 
-            <div className="form-wrapper w-full mt-8">
+            <div className="form-wrapper mt-8 w-full">
               <form
                 onSubmit={handleSubmit}
                 className="form-control gap-6 px-12"
@@ -50,13 +50,13 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
                   type="text"
                   placeholder="Email"
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  className="w-full border-b-2 border-white bg-transparent px-3 py-2 font-semibold focus:outline-hidden"
                 />
                 <input
                   type="password"
                   placeholder="Password"
                   onChange={(e) => setPassword(e.target.value)}
-                  className="border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none"
+                  className="w-full border-b-2 border-white bg-transparent px-3 py-2 font-semibold focus:outline-hidden"
                 />
                 <input
                   type="password"
@@ -64,12 +64,12 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
                   onChange={(e) => setPasswordConfirmation(e.target.value)}
                   className={`${
                     pathname === "/auth/login" && "hidden"
-                  } border-b-2 bg-transparent border-white px-3 w-full font-semibold py-2 focus:outline-none`}
+                  } w-full border-b-2 border-white bg-transparent px-3 py-2 font-semibold focus:outline-hidden`}
                 />
 
                 <button
                   type="submit"
-                  className="form-button btn btn-outline font-bebas_neue text-3xl border-primary hover:text-white hover:bg-primary hover:border-primary tracking-wider"
+                  className="form-button btn border-primary font-bebas_neue text-3xl tracking-wider btn-outline hover:border-primary hover:bg-primary hover:text-white"
                 >
                   {pathname === "/auth/login" ? "Sign in" : "Sign up"}
                 </button>
@@ -78,8 +78,12 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
                   OR
                 </div>
 
-                <button type="button" className="btn btn-primary font-bebas_neue text-2xl tracking-wider uppercase" onClick={() => OAuthSubmit("google")}>
-                  <div className="flex items-center gap-2  h-full">
+                <button
+                  type="button"
+                  className="btn font-bebas_neue text-2xl tracking-wider uppercase btn-primary"
+                  onClick={() => OAuthSubmit("google")}
+                >
+                  <div className="flex h-full items-center gap-2">
                     <AiFillGoogleCircle size={32} /> Sign in with google
                   </div>
                 </button>
@@ -89,7 +93,7 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
                     ? "Don't have an account? "
                     : "Already Have an Account? "}
                   <Link
-                    className="uppercase underline text-white"
+                    className="text-white uppercase underline"
                     href={
                       pathname === "/auth/login"
                         ? "/auth/register"
@@ -104,7 +108,7 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
           </div>
         </div>
 
-        <div className="absolute bottom-10 text-center w-full">
+        <div className="absolute bottom-10 w-full text-center">
           {error && <p className="text-red-500">{error}</p>}
           {success && <p className="text-green-500">{success}</p>}
         </div>
