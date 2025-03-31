@@ -71,6 +71,8 @@ export default function Profile() {
     watchedMovies: watchedMovies?.map((item) => item.movie),
   };
 
+  console.log(formattedData);
+
   const [tabValue, setTabValue] = useState("watchlist");
 
   return (
@@ -124,22 +126,19 @@ export default function Profile() {
               </button>
               <div
                 role="tabpanel"
-                className="tab-content border-t-white/30 py-8"
+                className="relative tab-content border-t-white/30 py-8"
               >
-                <div className="mb-4 flex justify-end">
+                <div className="mb-4 flex w-full justify-end">
                   <button
                     onClick={() =>
                       document.getElementById("watchlist-modal").showModal()
                     }
-                    className="add-watchlist-button btn rounded-2xl bg-neutral/90 p-4 transition-all duration-200 ease-in-out btn-lg hover:scale-110 hover:bg-neutral"
+                    className="add-watchlist-button rounded-2xl bg-neutral/90 p-4 transition-all duration-200 ease-in-out btn-md hover:scale-110 hover:bg-neutral"
                   >
                     <Plus size={32} className="text-primary" weight="bold" />
                   </button>
                 </div>
-
-                <Suspense fallback={<Loading />}>
-                  <WatchlistCard watchlists={watchlists} username={username} />
-                </Suspense>
+                <WatchlistCard watchlists={watchlists} username={username} />
               </div>
               <button
                 role="tab"
@@ -155,9 +154,11 @@ export default function Profile() {
                 className="tab-content border-t-white/30 py-10"
               >
                 <div className="grid grid-cols-3 gap-4">
-                  <Suspense fallback={<Loading />}>
+                  {formattedData.favoriteMovies.length > 0 ? (
                     <CardMovieList results={formattedData.favoriteMovies} />
-                  </Suspense>
+                  ) : (
+                    <p className="text-white/30">No favorite movies yet.</p>
+                  )}
                 </div>
               </div>
               <button
@@ -173,11 +174,11 @@ export default function Profile() {
                 role="tabpanel"
                 className="tab-content border-t-white/30 py-10"
               >
-                <div className="grid grid-cols-3 gap-4">
-                  <Suspense fallback={<Loading />}>
-                    <CardMovieList results={formattedData.watchedMovies} />
-                  </Suspense>
-                </div>
+                {formattedData.watchedMovies.length > 0 ? (
+                  <CardMovieList results={formattedData.watchedMovies} />
+                ) : (
+                  <p className="text-white/30">No watched movies yet.</p>
+                )}
               </div>
             </div>
           </div>

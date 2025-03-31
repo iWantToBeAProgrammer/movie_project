@@ -63,7 +63,7 @@ const SearchMovieCard = ({ results }) => {
         const movieColor = movieColors[result.id] || {};
 
         return (
-          <div key={key} className="form-control">
+          <div key={key} className="flex flex-col">
             <Link
               tabIndex={0}
               href={`/movies/${result.id}`}

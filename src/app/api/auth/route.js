@@ -9,36 +9,35 @@ import {
 
 export async function POST(request) {
   try {
-    const { action, email, password, username, provider } =
-      await request.json();
+    const { action, email, password, provider } = await request.json();
 
     if (action === "signUp") {
       const { user, error } = await signUpWithEmail(email, password);
       if (error) throw new Error(error.message);
 
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-
-      if (!existingUser) {
-        const username = email.substring(0, email.indexOf("@"));
-
-        await prisma.user.create({
-          data: {
-            id: user.id,
-            email: user.email,
-            username: username,
-          },
-        });
-      } else {
-        throw new Error("User Already Registered");
-      }
-
-      return NextResponse.json({ message: "Signup successful!", user: user });
+      return NextResponse.json({
+        message:
+          "Signup successful! Please verify your email before continuing.",
+        user: { email: user.email, id: user.id },
+        verification_status: "verification_required",
+      });
     }
 
     if (action === "signIn") {
       const { user, error } = await signInWithEmail(email, password);
       if (error) throw new Error(error.message);
 
+      if (!user.email_confirmed_at) {
+        return NextResponse.json(
+          {
+            message: "Please verify your email before signing in",
+            verification_status: "verification_required",
+            email: user.email,
+          },
+          { status: 200 },
+        );
+      }
+
       const existingUser = await prisma.user.findUnique({ where: { email } });
 
       if (!existingUser) {
@@ -53,7 +52,11 @@ export async function POST(request) {
         });
       }
 
-      return NextResponse.json({ message: "Signin successful!", user: user });
+      return NextResponse.json({
+        message: "Signin successful!",
+        user: user,
+        verification_status: "verified",
+      });
     }
 
     if (action === "oauth") {
@@ -68,44 +71,21 @@ export async function POST(request) {
 
     if (action === "resendEmail") {
       try {
-        const user = await prisma.user.findUnique({ where: { email } });
-
-        if (!user) {
-          return NextResponse.json(
-            { error: "User not found" },
-            { status: 404 }
-          );
-        }
-
-        const now = new Date();
-        if (
-          user.last_email_sent_at &&
-          now - new Date(user.last_email_sent_at) < 60000
-        ) {
-          return NextResponse.json(
-            { error: "You can only resend verification email after 1 minute." },
-            { status: 429 }
-          );
-        }
-
-        await prisma.user.update({
-          where: { email },
-          data: { last_email_sent_at: now },
-        });
-
         const { error } = await resendEmailVerification(email);
         if (error) {
           return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        return NextResponse.json({ message: "Verification email resent." });
+        return NextResponse.json({
+          message: "Verification email resent. Please check your inbox.",
+        });
       } catch (error) {
         console.error(error);
         return NextResponse.json(
           {
             error: "An error occurred while resending the verification email.",
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     }

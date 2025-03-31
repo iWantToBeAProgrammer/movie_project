@@ -6,8 +6,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { AiFillGoogleCircle } from "react-icons/ai";
+import ErrorNotification from "./ErrorNotification";
 
-export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
+export default function FormCard({
+  onSubmit,
+  error,
+  OAuthSubmit,
+  verificationEmail,
+}) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -17,7 +23,9 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSubmit) onSubmit(email, password, passwordConfirmation);
+    if (onSubmit) {
+      onSubmit(email, password, passwordConfirmation);
+    }
   };
 
   return (
@@ -44,7 +52,7 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
             <div className="form-wrapper mt-8 w-full">
               <form
                 onSubmit={handleSubmit}
-                className="form-control gap-6 px-12"
+                className="flex flex-col gap-6 px-12"
               >
                 <input
                   type="text"
@@ -69,7 +77,7 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
 
                 <button
                   type="submit"
-                  className="form-button btn border-primary font-bebas_neue text-3xl tracking-wider btn-outline hover:border-primary hover:bg-primary hover:text-white"
+                  className="form-button btn w-full border-primary font-bebas_neue text-3xl tracking-wider btn-outline btn-lg hover:border-primary hover:bg-primary hover:text-white"
                 >
                   {pathname === "/auth/login" ? "Sign in" : "Sign up"}
                 </button>
@@ -80,7 +88,7 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
 
                 <button
                   type="button"
-                  className="btn font-bebas_neue text-2xl tracking-wider uppercase btn-primary"
+                  className="btn w-full font-bebas_neue text-2xl tracking-wider uppercase btn-lg btn-primary"
                   onClick={() => OAuthSubmit("google")}
                 >
                   <div className="flex h-full items-center gap-2">
@@ -110,7 +118,6 @@ export default function FormCard({ onSubmit, error, success, OAuthSubmit }) {
 
         <div className="absolute bottom-10 w-full text-center">
           {error && <p className="text-red-500">{error}</p>}
-          {success && <p className="text-green-500">{success}</p>}
         </div>
       </div>
     </>

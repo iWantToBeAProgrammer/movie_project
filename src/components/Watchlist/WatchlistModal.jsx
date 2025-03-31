@@ -11,12 +11,12 @@ const WatchlistModal = ({
     <div className="modal-box max-w-2xl">
       <form method="dialog" className="mb-4">
         <h1 className="text-2xl">Create Watchlist</h1>
-        <button className="btn btn-sm btn-circle btn-ghost absolute top-6 right-2">
+        <button className="btn absolute top-6 right-2 btn-circle btn-ghost btn-sm">
           ✕
         </button>
       </form>
       <form
-        className="watchlist-form form-control gap-4"
+        className="watchlist-form flex flex-col gap-4"
         onSubmit={handleSubmit}
         encType="multipart/form-data"
       >
@@ -26,7 +26,7 @@ const WatchlistModal = ({
               <Image
                 width={600}
                 height={600}
-                className="object-cover aspect-square object-center"
+                className="aspect-square object-cover object-center"
                 src={
                   watchlistData.picture
                     ? URL.createObjectURL(watchlistData.picture)
@@ -43,23 +43,23 @@ const WatchlistModal = ({
                 onChange={handleImageChange}
               />
 
-              <div className="w-full h-full absolute justify-center items-center top-0 z-10 *:hidden hover:bg-black/50 hover:*:block flex flex-col">
+              <div className="absolute top-0 z-10 flex h-full w-full flex-col items-center justify-center *:hidden hover:bg-black/50 hover:*:block">
                 <Pencil size={50} weight="bold" />
                 <p className="font-raleway font-semibold">Choose a photo</p>
               </div>
             </label>
           </div>
-          <div className="watchlist-form-content col-span-2 h-full gap-2 flex flex-col">
+          <div className="watchlist-form-content col-span-2 flex h-full flex-col gap-2">
             <input
               type="text"
               placeholder="Add a name"
-              className="input input-bordered w-full py-5"
+              className="input-bordered input w-full py-5"
               name="name"
               value={watchlistData.name}
               onChange={handleChange}
             />
             <textarea
-              className="textarea textarea-bordered resize-none h-full w-full"
+              className="textarea-bordered textarea h-full w-full resize-none"
               placeholder="Add an optional description here"
               name="description"
               value={watchlistData.description}
@@ -68,9 +68,11 @@ const WatchlistModal = ({
           </div>
         </div>
 
-        <button className="btn btn-primary" type="submit">
-          Create
-        </button>
+        <div className="flex justify-end">
+          <button className="btn mt-5 btn-wide btn-primary" type="submit">
+            Create
+          </button>
+        </div>
       </form>
     </div>
   );

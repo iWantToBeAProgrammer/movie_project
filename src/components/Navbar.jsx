@@ -26,9 +26,9 @@ const Navbar = () => {
   return (
     <>
       <div
-        className={`navbar h-16 2xl:h-20  text-xl 2xl:text-3xl absolute top-2 left-0 text-neutral z-50 flex justify-center`}
+        className={`absolute top-2 left-0 z-50 navbar flex h-16 justify-center text-xl text-neutral 2xl:h-20 2xl:text-3xl`}
       >
-        <div className="navbar-wrapper flex items-center justify-between max-w-(--breakpoint-xl) w-full">
+        <div className="navbar-wrapper flex w-full max-w-(--breakpoint-xl) items-center justify-between">
           <Link href="/">
             <Image
               src={"/assets/images/logo/logo.svg"}
@@ -36,10 +36,10 @@ const Navbar = () => {
               height={150}
             />
           </Link>
-          <div className="navbar-item  flex gap-12 items-center text-xl 2xl:text-3xl">
+          <div className="navbar-item flex items-center gap-12 text-xl 2xl:text-3xl">
             <SearchMovie />
 
-            <div className="dropdown dropdown-end dropdown-hover group">
+            <div className="dropdown-hover group dropdown dropdown-end">
               <div
                 tabIndex={0}
                 role="button"
@@ -47,14 +47,14 @@ const Navbar = () => {
               >
                 Movie List{" "}
                 <CaretDown
-                  className="text-primary transform group-hover:-rotate-180 duration-500 transition-transform"
+                  className="transform text-primary transition-transform duration-500 group-hover:-rotate-180"
                   size={28}
                   weight="bold"
                 />
               </div>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu bg-white rounded-xl z-1 w-44 p-2 shadow-sm text-raleway text-[#333333] font-semibold"
+                className="dropdown-content text-raleway menu z-1 w-44 rounded-xl bg-white p-2 font-semibold text-[#333333] shadow-sm"
               >
                 <li>
                   <Link href={"/movies"}>Popular Movies</Link>
@@ -70,13 +70,14 @@ const Navbar = () => {
             {!user ? (
               <Link
                 href={"/auth/login"}
-                className="font-bebas_neue bg-linear-to-t from-primary to-secondary hover:from-primary/50 hover:to-primary/50 hover:border-2 hover:border-primary px-6 btn  py-2 xl:py-1 rounded-xl text-3xl"
-                type="button"
+                className="btn rounded-xl bg-linear-to-t from-primary to-secondary px-6 py-2 font-bebas_neue text-3xl btn-lg hover:border-2 hover:border-primary hover:from-primary/50 hover:to-primary/50 xl:py-1"
+                role="button"
+                tabIndex={0}
               >
                 sign in
               </Link>
             ) : (
-              <div className="dropdown dropdown-end dropdown-hover ">
+              <div className="dropdown-hover dropdown dropdown-end">
                 <div
                   tabIndex={0}
                   role="button"
@@ -86,7 +87,7 @@ const Navbar = () => {
                 </div>
                 <ul
                   tabIndex={0}
-                  className="dropdown-content menu bg-white rounded-xl z-1 w-44 p-2 shadow-sm text-raleway text-[#333333] font-semibold"
+                  className="dropdown-content text-raleway menu z-1 w-44 rounded-xl bg-white p-2 font-semibold text-[#333333] shadow-sm"
                 >
                   <li>
                     <Link href={"/profile"}>My Profile</Link>
