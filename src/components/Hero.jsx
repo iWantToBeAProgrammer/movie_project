@@ -11,6 +11,7 @@ import WatchlistDropdown from "./Watchlist/WatchlistDropdown";
 import WatchlistModal from "./Watchlist/WatchlistModal";
 import Loading from "@/app/loading";
 import { getMovieData } from "@/libs/api-libs";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 const Hero = ({ movieResults }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,6 +19,7 @@ const Hero = ({ movieResults }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const result = movieResults[currentIndex] || {};
+  const { user } = useAuth();
 
   const [watchlistData, setWatchlistData] = useState({
     watchlistId: null,
@@ -45,7 +47,7 @@ const Hero = ({ movieResults }) => {
     const interval = isIntervalActive
       ? setInterval(() => {
           setCurrentIndex((prevIndex) =>
-            prevIndex + 1 < movieResults.length ? prevIndex + 1 : 0
+            prevIndex + 1 < movieResults.length ? prevIndex + 1 : 0,
           );
         }, 7000)
       : null;
@@ -70,6 +72,12 @@ const Hero = ({ movieResults }) => {
     enabled: !!result.id,
     suspense: true,
   });
+
+  const handleAddToWatchlistClick = () => {
+    !user
+      ? document.getElementById("error-notification").showModal()
+      : document.getElementById("watchlist_modal").showModal();
+  };
 
   const {
     formData,
@@ -117,7 +125,7 @@ const Hero = ({ movieResults }) => {
   const backdropPath = `${process.env.NEXT_APP_BASEIMG}${bgBackdrop}`;
 
   const certification = movieDetails.release_dates.results.find(
-    (result) => result.iso_3166_1 === "ID"
+    (result) => result.iso_3166_1 === "ID",
   )?.release_dates[0]?.certification;
 
   const movieTeaser = movieDetails.videos.results
@@ -127,21 +135,21 @@ const Hero = ({ movieResults }) => {
   return (
     <>
       <div
-        className={`w-full bg-[image:var(--backdrop-url)] h-screen bg-no-repeat bg-center bg-cover transition duration-300 ease-in-out md:mb-8 mb-4`}
+        className={`mb-4 h-screen w-full bg-[image:var(--backdrop-url)] bg-cover bg-center bg-no-repeat transition duration-300 ease-in-out md:mb-8`}
         style={{ "--backdrop-url": `url(${backdropPath})` }}
       >
-        <div className="blur-overlay h-full w-full backdrop-blur-md absolute"></div>
-        <div className="hero w-full h-full flex items-center justify-center relative">
-          <div className="hero-wrapper w-full max-w-(--breakpoint-xl) h-[80%]  bg-[image:var(--backdrop-url)]  rounded-2xl bg-center bg-cover bg-no-repeat px-8 pb-12 font-bebas_neue text-3xl flex justify-between">
-            <div className="hero-left-content relative z-30 me-6 flex flex-col items-start w-[40%] justify-end h-full">
+        <div className="blur-overlay absolute h-full w-full backdrop-blur-md"></div>
+        <div className="relative hero flex h-full w-full items-center justify-center">
+          <div className="hero-wrapper flex h-[80%] w-full max-w-(--breakpoint-xl) justify-between rounded-2xl bg-[image:var(--backdrop-url)] bg-cover bg-center bg-no-repeat px-8 pb-12 font-bebas_neue text-3xl">
+            <div className="hero-left-content relative z-30 me-6 flex h-full w-[40%] flex-col items-start justify-end">
               <h1 className="mb-2">
                 {result.title} ({result.release_date.slice(0, 4)})
               </h1>
-              <div className="flex items-center gap-4 text-2xl lg:text-4xl lg:gap-16">
+              <div className="flex items-center gap-4 text-2xl lg:gap-16 lg:text-4xl">
                 <Certification result={certification} />
                 <span>{result.release_date}</span>
               </div>
-              <div className="genres font-raleway text-xl font-medium items-center flex gap-3 my-8">
+              <div className="genres my-8 flex items-center gap-3 font-raleway text-xl font-medium">
                 <h1 className="me-6">Genre</h1>
                 {movieDetails.genres.map((data, index) => {
                   return (
@@ -156,24 +164,22 @@ const Hero = ({ movieResults }) => {
                   );
                 })}
               </div>
-              <div className="hero-description font-raleway_italic text-base line-clamp-3 hover:line-clamp-none">
+              <div className="hero-description line-clamp-3 font-raleway_italic text-base hover:line-clamp-none">
                 {result.overview}
               </div>
 
-              <div className="flex items-center gap-2 mt-4 lg:mt-8 lg:gap-8 hero-button-wrapper">
+              <div className="hero-button-wrapper mt-4 flex items-center gap-2 lg:mt-8 lg:gap-8">
                 <div className="dropdown dropdown-bottom">
                   <div
                     role="button"
                     tabIndex={0}
-                    className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm"
+                    className="btn w-24 text-sm shadow-xl btn-sm btn-neutral lg:w-48 lg:text-xl"
                   >
                     Add To Watchlist
                   </div>
 
                   <WatchlistDropdown
-                    showModal={() =>
-                      document.getElementById("watchlist_modal").showModal()
-                    }
+                    showModal={handleAddToWatchlistClick}
                     handleSubmitToExistingWatchlist={
                       handleSubmitToExistingWatchlist
                     }
@@ -182,18 +188,20 @@ const Hero = ({ movieResults }) => {
                 </div>
 
                 <button
-                  className="w-24 text-sm shadow-xl lg:text-xl lg:w-48 btn btn-neutral btn-sm"
-                  onClick={() => router.push(`/movies/${result.id}`)}
+                  className="btn w-24 text-sm shadow-xl btn-sm btn-neutral lg:w-48 lg:text-xl"
+                  onClick={() =>
+                    router.push(`/movies/${result.id}?autoplay=true`)
+                  }
                 >
                   Watch Trailer
                 </button>
               </div>
             </div>
-            <div className="hero-right-content w-1/2 h-full reltaive z-30">
+            <div className="hero-right-content reltaive z-30 h-full w-1/2">
               <Teaser movieTeaser={movieTeaser} />
             </div>
 
-            <div className="bottom-overlay h-full bg-linear-to-b from-black/20 to-black/80 absolute bottom-0 w-full z-0 left-0"></div>
+            <div className="bottom-overlay absolute bottom-0 left-0 z-0 h-full w-full bg-linear-to-b from-black/20 to-black/80"></div>
           </div>
         </div>
       </div>

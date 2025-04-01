@@ -7,6 +7,7 @@ import CardMovieList from "@/components/MovieList/CardMovieList";
 import Pagination from "@/components/Pagination";
 import HeaderMovieList from "@/components/MovieList/HeaderMovieList";
 import BackNavigation from "@/components/Common/BackNavigation";
+import Navbar from "@/components/Navbar";
 
 export default async function TopRatedPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,8 +27,8 @@ export default async function TopRatedPage() {
 
   return (
     <div className="container max-w-(--breakpoint-xl) mx-auto overflow-hidden">
-      <BackNavigation />
-      <div className="flex flex-col">
+      <Navbar />
+      <div className="flex flex-col mt-24">
         <HeaderMovieList title={"Top Rated Movies"} />
         <div className="grid grid-cols-5 gap-12">
           <Suspense fallback={<Loading />}>

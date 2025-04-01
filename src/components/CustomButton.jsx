@@ -16,6 +16,7 @@ import WatchlistDropdown from "./Watchlist/WatchlistDropdown";
 import { useAuth } from "@/app/contexts/AuthContext";
 import ErrorNotification from "./Auth/ErrorNotification";
 import { useWatchlistMutation } from "@/hooks/useFormMutation";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const { user } = useAuth();
@@ -124,13 +125,13 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const buttonConfig = {
     add: {
       text: "Add To Watchlist",
-      icon: <PlusCircle size={20} className="inline-block mr-2" />,
+      icon: <PlusCircle size={20} className="mr-2 inline-block" />,
       className: "bg-white text-black hover:bg-secondary hover:text-white",
       renderAsDropdown: true,
     },
     watched: {
       text: isWatched ? "Didn't Watch It" : "Watched It",
-      icon: <Eye size={20} className="inline-block mr-2" />,
+      icon: <Eye size={20} className="mr-2 inline-block" />,
       className:
         "bg-transparent border border-secondary border-4 text-secondary hover:bg-secondary hover:text-white",
       onClick: handleWatchedClick,
@@ -160,7 +161,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
         onClick={config.onClick}
         onMouseEnter={config.onMouseEnter}
         onMouseLeave={config.onMouseLeave}
-        className={`rounded-xl transition-colors font-bebas_neue duration-200 flex items-center justify-center ${config.className} ${sizeClasses[size]} ${className}`}
+        className={`flex items-center justify-center rounded-xl font-bebas_neue transition-colors duration-200 ${config.className} ${sizeClasses[size]} ${className}`}
       >
         {config.icon}
         {config.text}
@@ -174,7 +175,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
         <div
           tabIndex={0}
           role="button"
-          className={`h-12 rounded-lg transition-colors font-bebas_neue duration-200 flex items-center justify-center ${config.className} ${sizeClasses[size]} ${className}`}
+          className={`flex h-12 items-center justify-center rounded-lg font-bebas_neue transition-colors duration-200 ${config.className} ${sizeClasses[size]} ${className}`}
         >
           {config.icon}
           {config.text}
@@ -195,9 +196,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
         />
       </dialog>
 
-      <dialog id="error-notification" className="modal">
-        <ErrorNotification />
-      </dialog>
+     
     </>
   );
 };

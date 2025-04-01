@@ -14,7 +14,7 @@ const WatchlistCard = ({ watchlists = [], username }) => {
             return (
               <Link
                 key={key}
-                className="watchlist-card cursor-pointer px-4 pt-4 h-80 w-60 font-sans_caption rounded-2xl hover:bg-white/10 transition-colors duration-200 ease-out"
+                className="watchlist-card h-80 w-60 cursor-pointer rounded-2xl px-4 pt-4 font-sans_caption transition-colors duration-200 ease-out hover:bg-white/10"
                 href={`/profile/watchlist/${watchlist.id}`}
               >
                 <div className="watchlist-card-wrapper flex flex-col gap-3">
@@ -23,13 +23,13 @@ const WatchlistCard = ({ watchlists = [], username }) => {
                       src={`${watchlist.picture}`}
                       width={230}
                       height={230}
-                      className="object-cover object-center rounded-2xl aspect-square"
+                      className="aspect-square rounded-2xl object-cover object-center"
                     />
                   ) : (
                     <WatchlistThumbnail movies={watchlist.items} />
                   )}
                   <div className="watchlist-card-content flex flex-col">
-                    <h3 className="watchlist-card-name font-bold text-xl line-clamp-2">
+                    <h3 className="watchlist-card-name line-clamp-2 text-xl font-bold">
                       {watchlist.name}
                     </h3>
                     <p className="watchlist-card-desc text-white/30">
@@ -41,7 +41,9 @@ const WatchlistCard = ({ watchlists = [], username }) => {
             );
           })
         ) : (
-          <p className="text-white/30">No watchlists yet.</p>
+          <p className="absolute top-10 left-0 text-white/30">
+            No watchlists yet.
+          </p>
         )}
       </div>
     </>

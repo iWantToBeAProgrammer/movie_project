@@ -1,4 +1,5 @@
 import Certification from "@/components/Certification";
+import CommentSection from "@/components/CommentSection";
 import BackNavigation from "@/components/Common/BackNavigation";
 import CustomButton from "@/components/CustomButton";
 import SliderRecommendation from "@/components/MovieList/SliderRecommendation";
@@ -27,15 +28,15 @@ export default async function movieDetails({ params }) {
   const runtimeFormatted = movie.runtime ? formatRuntime(movie.runtime) : "N/A";
 
   return (
-    <div className="container max-w-(--breakpoint-xl) mx-auto h-fit">
+    <div className="container mx-auto h-fit max-w-(--breakpoint-xl)">
       <BackNavigation />
       <div className="movie-details-wrapper flex flex-col">
-        <div className="video-section flex w-full h-full">
+        <div className="video-section flex h-full w-full">
           <Trailer movieTrailer={movie.movieTrailer} />
         </div>
-        <div className="overview-cast-wrapper flex mt-10 gap-20">
+        <div className="overview-cast-wrapper mt-10 flex gap-20">
           <div className="left-content flex flex-col gap-4 font-sans_caption">
-            <h1 className="text-4xl font-bebas_neue tracking-wider">
+            <h1 className="font-bebas_neue text-4xl tracking-wider">
               {movie.title}
             </h1>
             <div className="flex gap-5">
@@ -43,7 +44,7 @@ export default async function movieDetails({ params }) {
               <CustomButton type="watched" size="large" movieId={movie.id} />
               <CustomButton type="favorite" size="small" movieId={movie.id} />
             </div>
-            <div className=" flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <Certification result={certification} />
               <p>
                 {movie.genres.join(", ")} ● {releaseYear}
@@ -53,37 +54,37 @@ export default async function movieDetails({ params }) {
             <p className="text-pretty">{movie.overview}</p>
             <div className="grid grid-cols-3 border-t border-slate-600 pt-4">
               <p className="">Director</p>
-              <p className="text-pretty col-span-2">
+              <p className="col-span-2 text-pretty">
                 {movie.directors.join(", ")}
               </p>
             </div>
-            <div className="grid grid-cols-3 border-t border-slate-600 pt-4 ">
+            <div className="grid grid-cols-3 border-t border-slate-600 pt-4">
               <p className="">Writers</p>
-              <p className="text-pretty col-span-2">
+              <p className="col-span-2 text-pretty">
                 {movie.writers.join(", ")}
               </p>
             </div>
             <div className="grid grid-cols-3 border-t border-slate-600 pt-4">
               <p className="">Studios</p>
-              <p className="text-pretty col-span-2">
+              <p className="col-span-2 text-pretty">
                 {movie.companyNames.join(", ")}
               </p>
             </div>
           </div>
-          <div className="right-content flex flex-col w-1/2">
-            <div className="gap-2 flex">
+          <div className="right-content flex w-1/2 flex-col">
+            <div className="flex gap-2">
               <p className="border-l-8 border-secondary"></p>
-              <h2 className="text-4xl font-bold font-bebas_neue tracking-wider">
+              <h2 className="font-bebas_neue text-4xl font-bold tracking-wider">
                 CAST
               </h2>
             </div>
-            <div className="cast-list items-center grid grid-rows-2 grid-flow-col gap-5 hover:overflow-x-auto mt-4 overflow-hidden">
+            <div className="cast-list mt-4 grid grid-flow-col grid-rows-2 items-center gap-5 overflow-hidden hover:overflow-x-auto">
               {cast.map((actor, index) => (
                 <div
                   key={index}
-                  className="text-sm flex flex-col text-center gap-1 w-fit"
+                  className="flex w-fit flex-col gap-1 text-center text-sm"
                 >
-                  <div className="w-40 h-40 flex">
+                  <div className="flex h-40 w-40">
                     {actor.profile_path ? (
                       <Image
                         src={`${process.env.NEXT_APP_BASEIMG}${actor.profile_path}`}
@@ -93,7 +94,7 @@ export default async function movieDetails({ params }) {
                         className="rounded-2xl object-cover"
                       />
                     ) : (
-                      <div className="w-40 h-40 rounded-2xl bg-gray-300 flex items-center justify-center">
+                      <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-gray-300">
                         <Image
                           src={"/assets/images/noimage.jpeg"}
                           width={150}
@@ -103,17 +104,17 @@ export default async function movieDetails({ params }) {
                       </div>
                     )}
                   </div>
-                  <p className="font-semibold text-xs">{actor.name}</p>
+                  <p className="text-xs font-semibold">{actor.name}</p>
                   <p className="text-xs">{actor.character}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
-        <div className="recommendation-section flex flex-col mt-10 gap-4">
-          <div className="gap-2 flex">
+        <div className="recommendation-section mt-10 flex flex-col gap-4">
+          <div className="flex gap-2">
             <p className="border-l-8 border-secondary"></p>
-            <h2 className="text-4xl font-bold font-bebas_neue tracking-wider">
+            <h2 className="font-bebas_neue text-4xl font-bold tracking-wider">
               RECOMMENDATIONS
             </h2>
           </div>
@@ -121,38 +122,15 @@ export default async function movieDetails({ params }) {
             <SliderRecommendation results={recommendations} />
           </div>
         </div>
-        <div className="review-section flex flex-col mt-10 w-1/2 gap-4 font-sans_caption">
-          <div className="gap-2 flex">
+        <div className="review-section mt-10 flex flex-col gap-4 font-sans_caption">
+          <div className="flex gap-2">
             <p className="border-l-8 border-secondary"></p>
-            <h2 className="text-4xl font-bold font-bebas_neue tracking-wider">
+            <h2 className="font-bebas_neue text-4xl font-bold tracking-wider">
               Review
             </h2>
           </div>
-          <div className="flex gap-2 font-raleway font-semibold">
-            <input
-              type="text"
-              placeholder="add a review"
-              className="p-3 w-full rounded-lg bg-transparent border-white border text-white"
-            />
-            <button className="p-3 bg-secondary rounded-lg">Post</button>
-          </div>
-          <div className="review-wrapper w-full h-fit flex flex-col text-black bg-neutral p-5 rounded-lg gap-4">
-            <p className="text-pretty">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </p>
-            <div className="user-date-wrapper flex items-center justify-between">
-              <div className="user-profile flex items-center gap-2">
-                <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
-                  <span className="text-sm text-gray-600">#</span>
-                </div>
-                <p className="user-name text-secondary">Putra</p>
-              </div>
-              <p className="date-created text-[#484848]">32 Januari 2099</p>
-            </div>
-          </div>
+
+          <CommentSection movieId={movie.id} />
         </div>
       </div>
     </div>
