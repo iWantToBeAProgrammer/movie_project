@@ -133,4 +133,10 @@
         src: url(/assets/fonts/PT_Sans_Caption/PTSansCaption-Regular.ttf) format("truetype");
 
     }
-}
+    
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }

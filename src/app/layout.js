@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <QueryProvider>
             <Toaster position="bottom-center" />
-            <div className="font-raleway text-neutral">{children}</div>
+            <main className="font-raleway text-neutral flex-1">{children}</main>
             <Footer />
           </QueryProvider>
         </AuthProvider>

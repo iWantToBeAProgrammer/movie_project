@@ -11,6 +11,7 @@ import CardMovieList from "@/components/MovieList/CardMovieList";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import WatchlistModal from "@/components/Watchlist/WatchlistModal";
 import toast from "react-hot-toast";
+import Navbar from "@/components/Navbar";
 
 export default function Profile() {
   const { data, isPending } = useQuery({
@@ -77,8 +78,8 @@ export default function Profile() {
 
   return (
     <>
-      <BackNavigation />
-      <div className="profile-container mx-auto mt-24 w-full max-w-(--breakpoint-xl) overflow-hidden">
+      <Navbar />
+      <div className="profile-container mx-auto mt-28 w-full max-w-(--breakpoint-xl) overflow-hidden">
         <div className="profile-wrapper flex gap-4">
           <div className="profile-content-left w-3/4">
             <header className="flex gap-8">

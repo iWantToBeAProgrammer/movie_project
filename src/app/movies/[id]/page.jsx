@@ -1,4 +1,5 @@
 import Certification from "@/components/Certification";
+import CommentSection from "@/components/CommentSection";
 import BackNavigation from "@/components/Common/BackNavigation";
 import CustomButton from "@/components/CustomButton";
 import SliderRecommendation from "@/components/MovieList/SliderRecommendation";
@@ -121,38 +122,15 @@ export default async function movieDetails({ params }) {
             <SliderRecommendation results={recommendations} />
           </div>
         </div>
-        <div className="review-section mt-10 flex w-1/2 flex-col gap-4 font-sans_caption">
+        <div className="review-section mt-10 flex flex-col gap-4 font-sans_caption">
           <div className="flex gap-2">
             <p className="border-l-8 border-secondary"></p>
             <h2 className="font-bebas_neue text-4xl font-bold tracking-wider">
               Review
             </h2>
           </div>
-          <div className="flex gap-2 font-raleway font-semibold">
-            <input
-              type="text"
-              placeholder="add a review"
-              className="w-full rounded-lg border border-white bg-transparent p-3 text-white"
-            />
-            <button className="rounded-lg bg-secondary p-3">Post</button>
-          </div>
-          <div className="review-wrapper flex h-fit w-full flex-col gap-4 rounded-lg bg-neutral p-5 text-black">
-            <p className="text-pretty">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </p>
-            <div className="user-date-wrapper flex items-center justify-between">
-              <div className="user-profile flex items-center gap-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
-                  <span className="text-sm text-gray-600">#</span>
-                </div>
-                <p className="user-name text-secondary">Putra</p>
-              </div>
-              <p className="date-created text-[#484848]">32 Januari 2099</p>
-            </div>
-          </div>
+
+          <CommentSection movieId={movie.id} />
         </div>
       </div>
     </div>

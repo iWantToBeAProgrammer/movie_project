@@ -27,8 +27,8 @@ export default async function NowPlayingPage() {
 
   return (
     <div className="container max-w-(--breakpoint-xl) mx-auto overflow-hidden">
-      <BackNavigation />
-      <div className="flex flex-col">
+      <Navbar />
+      <div className="flex flex-col mt-24">
         <HeaderMovieList title={"Now Playing Movies"} />
         <div className="grid grid-cols-5 gap-12">
           <Suspense fallback={<Loading />}>
