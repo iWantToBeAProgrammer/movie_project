@@ -196,15 +196,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
         />
       </dialog>
 
-      <dialog id="error-notification" className="modal">
-        <ErrorNotification
-          icon={<HiOutlineExclamationCircle size={104} />}
-          title={"You Need to login"}
-          desc={
-            "Please log in to continue. You need an account to use this feature."
-          }
-        />
-      </dialog>
+     
     </>
   );
 };

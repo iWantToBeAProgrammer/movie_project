@@ -2,15 +2,25 @@
 
 import { Play } from "@phosphor-icons/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import YouTube from "react-youtube";
 
 const Trailer = ({ movieTrailer }) => {
   const [playingVideoId, setPlayingVideoId] = useState(null);
+  const searchParams = useSearchParams();
+  const autoplay = searchParams.get("autoplay") === "true";
+
+  useEffect(() => {
+    if (autoplay && movieTrailer?.length > 0) {
+      setPlayingVideoId(movieTrailer[0].id);
+    }
+  }, [autoplay, movieTrailer]);
 
   const handlePlayVideo = (trailerId) => {
     setPlayingVideoId(trailerId);
   };
+
   const opts = {
     width: "1280",
     height: "720",
@@ -22,11 +32,9 @@ const Trailer = ({ movieTrailer }) => {
   return (
     <div className="flex flex-col">
       {movieTrailer?.map((trailer, key) => (
-        <div key={key} className="relative aspect-video w-full h-full">
+        <div key={key} className="relative aspect-video h-full w-full">
           {playingVideoId === trailer.id ? (
-            <>
-              <YouTube videoId={trailer.key} opts={opts} />
-            </>
+            <YouTube videoId={trailer.key} opts={opts} />
           ) : (
             <>
               <Image
@@ -37,14 +45,14 @@ const Trailer = ({ movieTrailer }) => {
                 height={720}
               />
               <button
-                className="button-overlay bg-black/50 w-full h-full flex items-center justify-center absolute top-0 group"
+                className="button-overlay group absolute top-0 flex h-full w-full items-center justify-center bg-black/50"
                 onClick={() => handlePlayVideo(trailer.id)}
               >
                 <Play
                   width={100}
                   height={100}
                   weight="fill"
-                  className="group-hover:scale-125 transition-all duration-300 ease-in-out text-white"
+                  className="text-white transition-all duration-300 ease-in-out group-hover:scale-125"
                 />
               </button>
             </>
