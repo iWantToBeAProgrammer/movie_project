@@ -27,7 +27,7 @@ export default function SearchMovie() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button className="btn join-item btn-primary btn-lg">
+        <button className="btn join-item btn-lg btn-primary">
           <MagnifyingGlass size={24} />
         </button>
       </div>
@@ -42,14 +42,17 @@ export default function SearchMovie() {
                 <Link
                   tabIndex={0}
                   role="button"
-                  href={"/"}
+                  href={`/search/${encodeURIComponent(debouncedQuery)}`}
                   className="flex w-full items-center justify-center pb-2 font-bold text-black uppercase"
                 >
                   View All Results
                 </Link>
               </div>
             ) : (
-              <p>No results found for "{debouncedQuery}"</p>
+              <p className="font-bold">
+                " Sorry, we couldn’t find the movie… but our hearts are always
+                here for you! ❤️🎬 "
+              </p>
             )}
           </div>
         </div>

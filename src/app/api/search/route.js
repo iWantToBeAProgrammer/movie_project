@@ -4,7 +4,6 @@ const TMDB_API = {
   baseUrl: process.env.NEXT_APP_BASE_URL || "https://api.themoviedb.org/3",
   apiKey: process.env.NEXT_APP_APIKEY,
 
-  // Updated to fetch release dates which contain certification
   getMovieDetailUrl: (movieId) =>
     `${TMDB_API.baseUrl}/movie/${movieId}/release_dates?api_key=${TMDB_API.apiKey}`,
 };
@@ -19,12 +18,10 @@ async function fetchMovieCertification(movie) {
     }
 
     const data = await response.json();
-
     const certification =
       data.results.find((result) => result.iso_3166_1 === "ID")
         ?.release_dates[0]?.certification || "";
 
-    console.log(certification);
     return {
       ...movie,
       certification,
@@ -39,11 +36,14 @@ export async function GET(req) {
   const { searchParams } = req.nextUrl;
 
   try {
-    const url = `${TMDB_API.baseUrl}/search/movie?api_key=${
-      TMDB_API.apiKey
-    }&${searchParams.toString()}&page=1`;
+    const page = searchParams.get("page") || "1";
 
-    const response = await fetch(url);
+    const url = new URL(`${TMDB_API.baseUrl}/search/movie`);
+    url.searchParams.append("api_key", TMDB_API.apiKey);
+    url.searchParams.append("query", searchParams.get("query"));
+    url.searchParams.append("page", page);
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch data from TMDB");
@@ -52,7 +52,7 @@ export async function GET(req) {
     const data = await response.json();
 
     const moviesWithCertification = await Promise.all(
-      data.results.map(fetchMovieCertification)
+      data.results.map(fetchMovieCertification),
     );
 
     return NextResponse.json({
