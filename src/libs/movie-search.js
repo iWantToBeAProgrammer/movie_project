@@ -1,18 +1,16 @@
-export async function getSearchData(params = {}) {
+export async function getSearchData(query, page = 1) {
   try {
-    const queryString = params;
-
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASEURL}/api/search?query=${queryString}`
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/search?query=${query}&page=${page}`,
     );
 
     if (!response.ok) {
       throw new Error("Failed to fetch data");
     }
 
-    return await response.json(); // Return the parsed JSON
+    return await response.json();
   } catch (error) {
     console.error(error);
-    return { results: [] }; // Return an empty result in case of failure
+    return { results: [], total_pages: 1, total_results: 0 };
   }
 }

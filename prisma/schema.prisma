@@ -11,11 +11,11 @@ datasource db {
 model User {
   email              String          @unique
   createdAt          DateTime        @default(now()) @map("created_at")
-  last_email_sent_at DateTime?
   profilePicture     String?
   role               String          @default("user")
   username           String?         @unique
   id                 String          @id @default(uuid()) @map("id") @db.Uuid
+  last_email_sent_at DateTime?
   comments           Comment[]
   watchedMovies      WatchedMovie[]
   Watchlist          Watchlist[]
