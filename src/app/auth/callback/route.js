@@ -46,7 +46,10 @@ export async function GET(request) {
             id: user.id,
             email: user.email,
             username: user.user_metadata.full_name || user.email.split("@")[0],
-            profilePicture: user.user_metadata.avatar_url,
+            profilePicture: user.user_metadata.avatar_url.replace(
+              /=s\d+-c/,
+              "=s256-c",
+            ),
           },
         });
       }
