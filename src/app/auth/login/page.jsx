@@ -34,21 +34,6 @@ const login = () => {
     }
   };
 
-  const handleOAuthSubmit = async (provider) => {
-    setError(null);
-    setSuccess("");
-    try {
-      const response = await authRequest("oauth", { provider });
-
-      setSuccess(response.message);
-      setError("");
-    } catch (error) {
-      setError(error.message);
-
-      setSuccess("");
-    }
-  };
-
   return (
     <>
       <div className="relative flex h-screen w-full items-center justify-center">
@@ -56,8 +41,6 @@ const login = () => {
           onSubmit={handleSubmit}
           error={error}
           verificationEmail={verificationEmail}
-          showModal={showVerificationModal}
-          OAuthSubmit={handleOAuthSubmit}
         />
 
         <dialog className="modal" id="verification-modal">

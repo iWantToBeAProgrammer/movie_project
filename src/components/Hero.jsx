@@ -124,6 +124,7 @@ const Hero = ({ movieResults }) => {
   const bgBackdrop = result.backdrop_path;
   const backdropPath = `${process.env.NEXT_APP_BASEIMG}${bgBackdrop}`;
 
+
   const certification = movieDetails.release_dates.results.find(
     (result) => result.iso_3166_1 === "ID",
   )?.release_dates[0]?.certification;

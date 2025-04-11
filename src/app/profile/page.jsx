@@ -27,7 +27,7 @@ export default function Profile() {
   });
 
   const { watchlists, favoriteMovies, watchedMovies } = data?.profile ?? [];
-  const { username } = data?.user ?? "";
+  const { username, profilePicture } = data?.user ?? "";
 
   const totalWatchlist = watchlists?.length || 0;
   const totalFavorites = favoriteMovies?.length || 0;
@@ -84,7 +84,7 @@ export default function Profile() {
           <div className="profile-content-left w-3/4">
             <header className="flex gap-8">
               <Image
-                src="/assets/images/noimage.jpg"
+                src={`${profilePicture || "/assets/images/noimage.jpg"}`}
                 alt="profile"
                 width={120}
                 height={120}

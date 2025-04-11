@@ -4,9 +4,10 @@ import { authRequest } from "@/utility/auth";
 import { CaretLeft, FacebookLogo } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiFillGoogleCircle } from "react-icons/ai";
 import ErrorNotification from "./ErrorNotification";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function FormCard({
   onSubmit,
@@ -20,12 +21,41 @@ export default function FormCard({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const { user } = useAuth();
+  const [popup, setPopup] = useState(null);
+
+  useEffect(() => {
+    if (popup && user) {
+      popup.close();
+      setPopup(null);
+      window.location.href = "/"; // redirect to home or wherever
+    }
+  }, [popup, user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (onSubmit) {
       onSubmit(email, password, passwordConfirmation);
     }
+  };
+
+  const handleGoogleSubmit = async () => {
+    const response = await authRequest("google");
+    const newPopup = popupCenter(response.url, "Google Sign in");
+    setPopup(newPopup);
+  };
+
+  const popupCenter = (url, title) => {
+    const width = 500;
+    const height = 550;
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+
+    return window.open(
+      url,
+      title,
+      `width=${width},height=${height},top=${top},left=${left}`,
+    );
   };
 
   return (
@@ -89,7 +119,7 @@ export default function FormCard({
                 <button
                   type="button"
                   className="btn w-full font-bebas_neue text-2xl tracking-wider uppercase btn-lg btn-primary"
-                  onClick={() => OAuthSubmit("google")}
+                  onClick={handleGoogleSubmit}
                 >
                   <div className="flex h-full items-center gap-2">
                     <AiFillGoogleCircle size={32} /> Sign in with google

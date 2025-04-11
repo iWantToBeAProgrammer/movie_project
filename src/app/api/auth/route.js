@@ -1,11 +1,14 @@
+"use server";
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 import {
   signUpWithEmail,
   signInWithEmail,
-  signInWithOAuth,
   resendEmailVerification,
+  signInWithGoogle,
 } from "@/services/auth-service";
+import { redirect } from "next/navigation";
 
 export async function POST(request) {
   try {
@@ -59,14 +62,26 @@ export async function POST(request) {
       });
     }
 
-    if (action === "oauth") {
-      const { user, error } = await signInWithOAuth(provider);
+    if (action === "google") {
+      const { data, error } = await signInWithGoogle();
       if (error) throw new Error(error.message);
 
-      return NextResponse.json({
-        message: `OAuth with ${provider} successful!`,
-        user: user,
-      });
+      if (error) {
+        console.error("OAuth error:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+
+      if (data?.url) {
+        return new Response(JSON.stringify({ url: data.url }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      return NextResponse.json(
+        { error: "No redirect URL found" },
+        { status: 400 },
+      );
     }
 
     if (action === "resendEmail") {
