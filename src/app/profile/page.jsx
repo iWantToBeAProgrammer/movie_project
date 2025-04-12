@@ -1,17 +1,22 @@
 "use client";
 
-import BackNavigation from "@/components/Common/BackNavigation";
 import WatchlistCard from "@/components/Profile/WatchlistCard";
-import { createWatchlist, fetchProfileData } from "@/libs/api";
+import {
+  createWatchlist,
+  fetchProfileData,
+  updateProfileData,
+} from "@/libs/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import Loading from "../loading";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import CardMovieList from "@/components/MovieList/CardMovieList";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import WatchlistModal from "@/components/Watchlist/WatchlistModal";
 import toast from "react-hot-toast";
 import Navbar from "@/components/Navbar";
+import { IoPencil } from "react-icons/io5";
+import { FaPencilAlt } from "react-icons/fa";
+import { HiOutlinePencil } from "react-icons/hi";
 
 export default function Profile() {
   const { data, isPending } = useQuery({
@@ -27,7 +32,12 @@ export default function Profile() {
   });
 
   const { watchlists, favoriteMovies, watchedMovies } = data?.profile ?? [];
-  const { username } = data?.user ?? "";
+  const { username, profilePicture } = data?.user ?? "";
+
+  const [updatedUserData, setUpdatedUserData] = useState({
+    username: username,
+    profilePicture: profilePicture,
+  });
 
   const totalWatchlist = watchlists?.length || 0;
   const totalFavorites = favoriteMovies?.length || 0;
@@ -62,17 +72,37 @@ export default function Profile() {
     },
   });
 
+  const handleUserImageChange = (e) => {
+    const file = e.target.files[0];
+    setUpdatedUserData((prev) => ({ ...prev, profilePicture: file }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     mutate(watchlistData);
+  };
+
+  const updateMutation = useMutation({
+    mutationFn: updateProfileData,
+    onSuccess: (data) => {
+      toast.success("Profile updated successfully!");
+      queryClient.invalidateQueries(["profile"]);
+      document.getElementById("profile-modal").close();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update profile");
+    },
+  });
+
+  const handleUpdateUserSubmit = (e) => {
+    e.preventDefault();
+    updateMutation.mutate(updatedUserData);
   };
 
   const formattedData = {
     favoriteMovies: favoriteMovies?.map((item) => item.movie),
     watchedMovies: watchedMovies?.map((item) => item.movie),
   };
-
-  console.log(formattedData);
 
   const [tabValue, setTabValue] = useState("watchlist");
 
@@ -83,13 +113,24 @@ export default function Profile() {
         <div className="profile-wrapper flex gap-4">
           <div className="profile-content-left w-3/4">
             <header className="flex gap-8">
-              <Image
-                src="/assets/images/noimage.jpg"
-                alt="profile"
-                width={120}
-                height={120}
-                className="rounded-2xl"
-              />
+              <button
+                onClick={() =>
+                  document.getElementById("profile-modal").showModal()
+                }
+                className="profile-image-wrapper relative flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-2xl"
+              >
+                <Image
+                  src={`${profilePicture || "/assets/images/noimage.jpg"}`}
+                  alt="profile"
+                  width={128}
+                  height={128}
+                  className="object-cover object-center"
+                />
+
+                <div className="profile-image-overlay absolute top-0 left-0 z-10 flex h-full w-full flex-col items-center justify-center transition duration-200 ease-out *:hidden hover:bg-black/70 hover:*:block">
+                  <HiOutlinePencil size={64} />
+                </div>
+              </button>
               <div className="header-content flex flex-col justify-between py-2">
                 <h1 className="profile-name text-4xl">{username}</h1>
                 <div className="profile-data flex gap-4">
@@ -193,6 +234,76 @@ export default function Profile() {
             handleSubmit={handleSubmit}
             watchlistData={watchlistData}
           />
+        </dialog>
+
+        <dialog className="modal" id="profile-modal">
+          <div className="modal-box max-w-xl p-10">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm">
+                ✕
+              </button>
+            </form>
+            <form
+              className="flex items-center gap-8"
+              onSubmit={handleUpdateUserSubmit}
+            >
+              <div className="profile-picture-modal overflow-hidden rounded-2xl">
+                <label htmlFor="profilePicture" className="relative">
+                  <Image
+                    width={200}
+                    height={200}
+                    className="aspect-square object-cover object-center"
+                    src={
+                      updatedUserData.profilePicture instanceof File
+                        ? URL.createObjectURL(updatedUserData.profilePicture)
+                        : updatedUserData.profilePicture ||
+                          "/assets/images/noimage.jpg"
+                    }
+                    alt="User Profile Preview"
+                  />
+                  <input
+                    type="file"
+                    name="profilePicture"
+                    id="profilePicture"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleUserImageChange}
+                  />
+
+                  <div className="absolute top-0 z-10 flex h-full w-full flex-col items-center justify-center *:hidden hover:bg-black/50 hover:*:block">
+                    <HiOutlinePencil size={64} weight="bold" />
+                  </div>
+                </label>
+              </div>
+
+              <div className="form-data flex h-full flex-col items-end justify-end text-end">
+                <label className="floating-label">
+                  <span className="block">Username</span>
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    className="input input-lg w-72 focus:outline-none"
+                    name="username"
+                    value={updatedUserData.username}
+                    onChange={(e) =>
+                      setUpdatedUserData((prev) => ({
+                        ...prev,
+                        username: e.target.value,
+                      }))
+                    }
+                  />
+                </label>
+
+                <button
+                  type="submit"
+                  className="btn mt-5 px-6 btn-lg btn-primary"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
         </dialog>
       </div>
     </>

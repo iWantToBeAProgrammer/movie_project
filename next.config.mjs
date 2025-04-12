@@ -11,6 +11,9 @@ const nextConfig = {
       {
         hostname: "i.ytimg.com",
       },
+      {
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
 

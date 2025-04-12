@@ -42,10 +42,10 @@
 
 
 @theme {
-  --font-bebas_neue: "Bebas_Neue";
-  --font-raleway: "Raleway";
-  --font-raleway_italic: "Raleway_italic";
-  --font-sans_caption: "Sans_caption";
+  --font-bebas_neue: "var(--font-bebas_neue)";
+  --font-raleway: "var(--font-raleway)";
+  --font-raleway_italic: "var(--font-raleway_italic)";
+  --font-sans_caption: "var(--font-sans_caption)";
 }
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -68,9 +68,7 @@
 @layer utilities {
   /* Import Swiper Navigation module styles */
 
-  h1 {
-    font-family: 'Bebas_Neue';
-  }
+
   .card:hover > .card-overlay {
     transform: translateY(0%);
   }
@@ -112,31 +110,15 @@
   }
 }
 
-@layer base {
-    @font-face {
-        font-family: "Bebas_Neue";
-        src: url(/assets/fonts/Bebas_Neue,Raleway/Bebas_Neue/BebasNeue-Regular.ttf) format("truetype");
-    }
-
-    @font-face {
-        font-family: "Raleway";
-        src: url(/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-VariableFont_wght.ttf) format("truetype");
-    }
-
-    @font-face {
-        font-family: "Raleway_italic";
-        src: url(/assets/fonts/Bebas_Neue,Raleway/Raleway/Raleway-Italic-VariableFont_wght.ttf) format("truetype");
-
-    }
-    @font-face {
-        font-family: "Sans_caption";
-        src: url(/assets/fonts/PT_Sans_Caption/PTSansCaption-Regular.ttf) format("truetype");
-
-    }
-    
+@layer base {    
     html, body {
       height: 100%;
       display: flex;
       flex-direction: column;
+    }
+
+    
+    h1 {
+      font-family: var(--font-bebas_neue), sans-serif;
     }
   }

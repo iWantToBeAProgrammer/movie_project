@@ -1,4 +1,5 @@
 const { createClient } = require("@/libs/supabaseServer");
+const { redirect } = require("next/navigation");
 
 async function signUpWithEmail(email, password) {
   const supabase = await createClient();
@@ -17,16 +18,22 @@ async function signInWithEmail(email, password) {
   return data;
 }
 
-async function signInWithOAuth(provider) {
+async function signInWithGoogle() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
+    provider: "google",
     options: {
-      redirectTo: `http://localhost:3000/api/auth/callback`,
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
+      redirectTo: "http://localhost:3000/auth/callback",
     },
   });
+
   if (error) throw new Error(error.message);
-  return data;
+
+  return { data, error };
 }
 
 async function resendEmailVerification(email) {
@@ -42,6 +49,6 @@ async function resendEmailVerification(email) {
 module.exports = {
   signUpWithEmail,
   signInWithEmail,
-  signInWithOAuth,
+  signInWithGoogle,
   resendEmailVerification,
 };
