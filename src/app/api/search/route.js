@@ -5,10 +5,10 @@ const TMDB_API = {
   apiKey: process.env.NEXT_APP_APIKEY,
 
   getMovieDetailUrl: (movieId) =>
-    `${TMDB_API.baseUrl}/movie/${movieId}/release_dates?api_key=${TMDB_API.apiKey}`,
+    `${TMDB_API.baseUrl}/movie/${movieId}?api_key=${TMDB_API.apiKey}&append_to_response=release_dates`,
 };
 
-async function fetchMovieCertification(movie) {
+async function fetchMovieDetails(movie) {
   try {
     const response = await fetch(TMDB_API.getMovieDetailUrl(movie.id));
 
@@ -19,12 +19,24 @@ async function fetchMovieCertification(movie) {
 
     const data = await response.json();
     const certification =
-      data.results.find((result) => result.iso_3166_1 === "ID")
-        ?.release_dates[0]?.certification || "";
+      data?.release_dates?.results?.find((result) => result.iso_3166_1 === "ID")
+        ?.release_dates[0]?.certification || "N/A";
+
+    const genres = data?.genres.map((genre) => genre.name);
+
+    function formatRuntime(minutes) {
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return `${hours}h ${mins}m`;
+    }
+
+    const runtime = formatRuntime(data?.runtime);
 
     return {
       ...movie,
       certification,
+      genres,
+      runtime,
     };
   } catch (error) {
     console.error(`Certification fetch error for movie ${movie.id}:`, error);
@@ -52,7 +64,7 @@ export async function GET(req) {
     const data = await response.json();
 
     const moviesWithCertification = await Promise.all(
-      data.results.map(fetchMovieCertification),
+      data.results.map(fetchMovieDetails),
     );
 
     return NextResponse.json({

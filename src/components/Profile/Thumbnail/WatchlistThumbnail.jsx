@@ -66,9 +66,9 @@ const WatchlistThumbnail = ({ movies, setThumbnailUrl = () => {} }) => {
       <img
         src={thumbnail || "/assets/images/watchlist-default.jpg"}
         alt="Watchlist Thumbnail"
-        width={230}
-        height={230}
-        className="object-cover object-center rounded-2xl aspect-square"
+        width={512}
+        height={512}
+        className="object-cover object-center w-full h-full rounded-2xl"
       />
       <canvas ref={canvasRef} className="hidden" />
     </>
