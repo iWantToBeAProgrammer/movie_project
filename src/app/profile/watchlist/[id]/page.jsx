@@ -41,46 +41,51 @@ export default function WatchlistDetail({ params }) {
   const watchlistItem = watchlist?.items;
 
   return (
-    <div className="flex flex-col mx-auto items-center justify-center">
+    <div className="mx-auto flex flex-col items-center justify-center">
       <BackNavigation />
       <WatchlistBackdrop imageUrl={watchlist.picture || thumbnailUrl}>
-        <div className="flex gap-4 max-w-(--breakpoint-xl) w-full">
-          {watchlist.picture ? (
-            <Image
-              src={`${watchlist.picture}`}
-              width={230}
-              height={230}
-              className="object-cover object-center rounded-2xl aspect-square"
-            />
-          ) : (
-            <WatchlistThumbnail
-              movies={watchlist.items}
-              setThumbnailUrl={setThumbnailUrl}
-            />
-          )}
-          <div className="flex flex-col gap-3 font-sans_caption justify-end">
-            <h1 className="text-4xl font-raleway">{watchlist.name}</h1>
-            <p className="text-xl text-slate-300 line-clamp-3 hover:line-clamp-4">
+        <div className="flex w-full max-w-(--breakpoint-xl) gap-4">
+          <div className="watchlist-image-wrapper w-64 h-64 overflow-hidden">
+            {watchlist.picture ? (
+              <Image
+                src={`${watchlist.picture}`}
+                width={512}
+                height={512}
+                className="aspect-square rounded-2xl object-cover object-center w-full h-full"
+              />
+            ) : (
+              <WatchlistThumbnail
+                movies={watchlist.items}
+                setThumbnailUrl={setThumbnailUrl}
+              />
+            )}
+          </div>
+
+          <div className="flex flex-col justify-end gap-3 font-sans_caption">
+            <h1 className="font-raleway text-4xl">{watchlist.name}</h1>
+            <p className="line-clamp-3 text-xl text-slate-300 hover:line-clamp-4">
               {watchlist.description}
             </p>
-            <div className="flex gap-2 items-center">
-              {watchlist.picture ? (
-                <Image
-                  src={`${watchlist.picture}`}
-                  width={20}
-                  height={20}
-                  className="object-cover object-center rounded-full"
-                />
-              ) : (
-                <Image
-                  src="/assets/images/noimage.jpg"
-                  width={20}
-                  height={20}
-                  className="object-cover object-center rounded-full"
-                />
-              )}
+            <div className="flex items-center gap-2">
+              <div className="user-image-wrapper h-5 w-5 overflow-hidden">
+                {watchlist?.user?.profilePicture ? (
+                  <Image
+                    src={`${watchlist.user.profilePicture}`}
+                    width={40}
+                    height={40}
+                    className="h-full w-full rounded-full object-cover object-center"
+                  />
+                ) : (
+                  <Image
+                    src="/assets/images/noimage.jpg"
+                    width={40}
+                    height={40}
+                    className="h-full w-full rounded-full object-cover object-center"
+                  />
+                )}
+              </div>
               <p
-                className="hover:underline cursor-pointer"
+                className="cursor-pointer hover:underline"
                 onClick={() => router.push(`/profile`)}
               >
                 {watchlist.user.username}
@@ -91,8 +96,8 @@ export default function WatchlistDetail({ params }) {
         </div>
       </WatchlistBackdrop>
 
-      <div className="flex flex-col max-w-(--breakpoint-xl) h-full w-full gap-5 my-24">
-        <div className="flex space-x-10 py-2 border-b border-slate-500 text-slate-500    ">
+      <div className="my-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
+        <div className="flex space-x-10 border-b border-slate-500 py-2 text-slate-500">
           <h1 className="text-4xl">#</h1>
           <h1 className="text-4xl">Movies</h1>
         </div>

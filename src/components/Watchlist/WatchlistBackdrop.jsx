@@ -4,7 +4,7 @@ import ColorThief from "color-thief-browser";
 import { useEffect, useState } from "react";
 
 export default function WatchlistBackdrop({ imageUrl, children }) {
-  const [bgColor, setBgColor] = useState("#000000");
+  const [bgColor, setBgColor] = useState("#oklch(0.18 0.0067 17.8)");
 
   useEffect(() => {
     if (!imageUrl) return; // ✅ Prevent errors
@@ -27,7 +27,7 @@ export default function WatchlistBackdrop({ imageUrl, children }) {
   return (
     <div
       className="h-80 w-full flex items-center justify-center text-white"
-      style={{ background: `linear-gradient(to bottom, ${bgColor}, #000000)` }}
+      style={{ background: `linear-gradient(to bottom, ${bgColor} 0%, oklch(0.18 0.0067 17.8)) 100%` }}
     >
       {children}
     </div>

@@ -27,6 +27,8 @@ export default function SearchResultsPage({ params }) {
     return <Loading />;
   }
 
+
+  console.log(data)
   return (
     <>
       <Navbar />

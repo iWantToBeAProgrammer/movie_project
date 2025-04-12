@@ -122,9 +122,9 @@ export default function Profile() {
                 <Image
                   src={`${profilePicture || "/assets/images/noimage.jpg"}`}
                   alt="profile"
-                  width={128}
-                  height={128}
-                  className="object-cover object-center"
+                  width={512}
+                  height={512}
+                  className=" object-center w-full h-full aspect-square object-cover"
                 />
 
                 <div className="profile-image-overlay absolute top-0 left-0 z-10 flex h-full w-full flex-col items-center justify-center transition duration-200 ease-out *:hidden hover:bg-black/70 hover:*:block">
@@ -251,8 +251,8 @@ export default function Profile() {
               <div className="profile-picture-modal overflow-hidden rounded-2xl">
                 <label htmlFor="profilePicture" className="relative">
                   <Image
-                    width={200}
-                    height={200}
+                    width={512}
+                    height={512}
                     className="aspect-square object-cover object-center"
                     src={
                       updatedUserData.profilePicture instanceof File

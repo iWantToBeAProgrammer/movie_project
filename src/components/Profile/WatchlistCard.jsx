@@ -8,26 +8,28 @@ const WatchlistCard = ({ watchlists = [], username }) => {
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-4 gap-4">
         {watchlists.length !== 0 ? (
           watchlists.map((watchlist, key) => {
             return (
               <Link
                 key={key}
-                className="watchlist-card h-80 w-60 cursor-pointer rounded-2xl px-4 pt-4 font-sans_caption transition-colors duration-200 ease-out hover:bg-white/10"
+                className="watchlist-card md:h-80 md:w-60 w-48 h-64 cursor-pointer rounded-2xl px-4 pt-4 font-sans_caption transition-colors duration-200 ease-out hover:bg-white/10"
                 href={`/profile/watchlist/${watchlist.id}`}
               >
-                <div className="watchlist-card-wrapper flex flex-col gap-3">
-                  {watchlist.picture ? (
-                    <Image
-                      src={`${watchlist.picture}`}
-                      width={230}
-                      height={230}
-                      className="aspect-square rounded-2xl object-cover object-center"
-                    />
-                  ) : (
-                    <WatchlistThumbnail movies={watchlist.items} />
-                  )}
+                <div className="watchlist-card-wrapper flex flex-col gap-3 items-center md:items-start text-center md:text-start">
+                  <div className="thumbnail-image-wrapper md:h-52 md:w-52 w-36 h-36 overflow-hidden rounded-2xl">
+                    {watchlist.picture ? (
+                      <Image
+                        src={`${watchlist.picture}`}
+                        width={512}
+                        height={512}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    ) : (
+                      <WatchlistThumbnail movies={watchlist.items} />
+                    )}
+                  </div>
                   <div className="watchlist-card-content flex flex-col">
                     <h3 className="watchlist-card-name line-clamp-2 text-xl font-bold">
                       {watchlist.name}
