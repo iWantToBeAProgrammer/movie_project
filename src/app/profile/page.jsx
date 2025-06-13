@@ -124,7 +124,7 @@ export default function Profile() {
                   alt="profile"
                   width={512}
                   height={512}
-                  className=" object-center w-full h-full aspect-square object-cover"
+                  className="aspect-square h-full w-full object-cover object-center"
                 />
 
                 <div className="profile-image-overlay absolute top-0 left-0 z-10 flex h-full w-full flex-col items-center justify-center transition duration-200 ease-out *:hidden hover:bg-black/70 hover:*:block">

@@ -1,6 +1,6 @@
 export const authRequest = async (action, body = {}) => {
   try {
-    const response = await fetch("/api/auth", {
+    const response = await fetch("/api/auth/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action, ...body }),
@@ -11,7 +11,6 @@ export const authRequest = async (action, body = {}) => {
 
     return result;
   } catch (error) {
-    console.error(error.message);
     throw error;
   }
 };

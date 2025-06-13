@@ -1,19 +1,17 @@
 import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
 import { getMovieDetails } from "@/services/movie-service";
+import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
 export const GET = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const watchlistId = searchParams.get("watchlistId");
+    const token = searchParams.get("token");
     const supabase = await createClient();
 
-    if (!watchlistId) {
-      return NextResponse.json(
-        { error: "Watchlist ID is required" },
-        { status: 400 }
-      );
+    if (!token) {
+      return NextResponse.json({ error: "token is required" }, { status: 400 });
     }
 
     const { data, error } = await supabase.auth.getUser();
@@ -22,7 +20,7 @@ export const GET = async (req) => {
     }
 
     const watchlist = await prisma.watchlist.findUnique({
-      where: { id: parseInt(watchlistId, 10) },
+      where: { token },
       include: {
         user: {
           select: {
@@ -51,7 +49,7 @@ export const GET = async (req) => {
     if (!watchlist) {
       return NextResponse.json(
         { error: "Watchlist not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -80,6 +78,7 @@ export const POST = async (req) => {
     const rawMovieId = formData.get("movieId");
     const movieId = rawMovieId ? parseInt(rawMovieId, 10) : null;
     const picture = formData.get("picture");
+    const inviteToken = nanoid(16);
 
     let imageUrl = null;
 
@@ -99,7 +98,7 @@ export const POST = async (req) => {
       if (uploadError) {
         return NextResponse.json(
           { error: uploadError.message },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
@@ -120,8 +119,10 @@ export const POST = async (req) => {
           data: {
             userId: user.id,
             name,
+            token: nanoid(16),
             description,
             picture: imageUrl,
+            inviteToken,
           },
         });
         return NextResponse.json({
@@ -139,7 +140,14 @@ export const POST = async (req) => {
     // Handle creating or validating an existing watchlist
     if (!watchlistId) {
       const newWatchlist = await prisma.watchlist.create({
-        data: { userId: user.id, name, description, picture: imageUrl },
+        data: {
+          userId: user.id,
+          name,
+          token: nanoid(16),
+          description,
+          picture: imageUrl,
+          inviteToken,
+        },
       });
       selectedWatchlistId = newWatchlist.id;
     } else {
@@ -149,7 +157,7 @@ export const POST = async (req) => {
       if (!existingWatchlist)
         return NextResponse.json(
           { error: "Invalid watchlist ID" },
-          { status: 403 }
+          { status: 403 },
         );
     }
 
@@ -159,7 +167,7 @@ export const POST = async (req) => {
       if (!tmdbId)
         return NextResponse.json(
           { error: "Either movieId or tmdbId is required" },
-          { status: 400 }
+          { status: 400 },
         );
 
       const movie = await getMovieDetails(tmdbId);
@@ -179,13 +187,21 @@ export const POST = async (req) => {
     if (existingItem) {
       return NextResponse.json(
         { error: "Movie is already in the watchlist" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Add movie to the watchlist
     await prisma.watchlistItem.create({
       data: { watchlistId: selectedWatchlistId, movieId: finalMovieId },
+    });
+
+    await prisma.watchlistCollaborator.create({
+      data: {
+        watchlistId: selectedWatchlistId,
+        userId: user.id,
+        role: "OWNER",
+      },
     });
 
     return NextResponse.json({
@@ -237,7 +253,7 @@ export async function DELETE(req) {
 
     return NextResponse.json(
       { message: "Watchlist deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

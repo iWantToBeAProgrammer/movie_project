@@ -23,7 +23,7 @@ export const GET = async () => {
       },
     });
 
-    const watchlists = await prisma.watchlist.findMany({
+    const ownerWatchlist = await prisma.watchlist.findMany({
       where: {
         userId: userId,
       },
@@ -39,6 +39,50 @@ export const GET = async () => {
         },
       },
     });
+
+    const collaborativeWatchlist = await prisma.watchlistCollaborator.findMany({
+      select: {
+        role: true,
+        watchlist: {
+          select: {
+            items: {
+              select: {
+                movie: {
+                  select: {
+                    posterPath: true,
+                  },
+                },
+              },
+            },
+            name: true,
+            description: true,
+            token: true,
+            picture: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        userId: userId,
+      },
+    });
+
+    const formattedCollaborative = collaborativeWatchlist.map((collab) => ({
+      ...collab.watchlist,
+      role: collab.role, // add role info if needed
+      isCollaborator: true, // flag to differentiate
+    }));
+
+    console.log(formattedCollaborative);
+
+    // Combine both arrays
+    const watchlists = [...ownerWatchlist, ...formattedCollaborative];
 
     const watchedMovies = await prisma.watchedMovie.findMany({
       select: {

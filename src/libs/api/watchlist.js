@@ -1,5 +1,5 @@
-export const fetchWatchlistData = async (watchlistId) => {
-  const res = await fetch(`/api/watchlist?watchlistId=${watchlistId}`);
+export const fetchWatchlistData = async (token) => {
+  const res = await fetch(`/api/watchlist?token=${token}`);
   if (!res.ok) throw new Error("Failed to fetch watchlist");
   return res.json();
 };

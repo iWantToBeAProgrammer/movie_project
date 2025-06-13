@@ -9,9 +9,11 @@ import WatchlistItemCard from "@/components/Watchlist/WatchlistItemCard";
 import { useRouter } from "next/navigation";
 import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
 import { useEffect, useRef, useState } from "react";
+import { IoPersonAddOutline } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 export default function WatchlistDetail({ params }) {
-  const { id } = params;
+  const { token } = params;
   const router = useRouter();
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
 
@@ -21,9 +23,17 @@ export default function WatchlistDetail({ params }) {
     isError,
     error,
   } = useQuery({
-    queryKey: ["watchlist", id],
-    queryFn: () => fetchWatchlistData(id),
+    queryKey: ["watchlist", token],
+    queryFn: () => fetchWatchlistData(token),
   });
+
+  const handleAddCollaborator = () => {
+    navigator.clipboard.writeText(
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/invite/${watchlist?.inviteToken}`,
+    );
+
+    toast.success("Link Copied to Clipboard");
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -45,13 +55,13 @@ export default function WatchlistDetail({ params }) {
       <BackNavigation />
       <WatchlistBackdrop imageUrl={watchlist.picture || thumbnailUrl}>
         <div className="flex w-full max-w-(--breakpoint-xl) gap-4">
-          <div className="watchlist-image-wrapper w-64 h-64 overflow-hidden">
+          <div className="watchlist-image-wrapper h-64 w-64 overflow-hidden">
             {watchlist.picture ? (
               <Image
                 src={`${watchlist.picture}`}
                 width={512}
                 height={512}
-                className="aspect-square rounded-2xl object-cover object-center w-full h-full"
+                className="aspect-square h-full w-full rounded-2xl object-cover object-center"
               />
             ) : (
               <WatchlistThumbnail
@@ -96,7 +106,15 @@ export default function WatchlistDetail({ params }) {
         </div>
       </WatchlistBackdrop>
 
-      <div className="my-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
+      <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
+        <div className="flex h-16 w-full items-center justify-start">
+          <button className="cursor-pointer" onClick={handleAddCollaborator}>
+            <IoPersonAddOutline
+              size={28}
+              className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+            />
+          </button>
+        </div>
         <div className="flex space-x-10 border-b border-slate-500 py-2 text-slate-500">
           <h1 className="text-4xl">#</h1>
           <h1 className="text-4xl">Movies</h1>
