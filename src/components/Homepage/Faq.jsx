@@ -5,8 +5,6 @@ import { TbPointFilled } from "react-icons/tb";
 import { MdArrowForwardIos } from "react-icons/md";
 
 const Faq = () => {
-  const [selectedFaq, setSelectedFaq] = useState(null);
-
   const faqs = [
     {
       question: "What is CINEMATix?",
@@ -35,20 +33,25 @@ const Faq = () => {
     },
   ];
 
-  const handleFaqClick = (faqs) => {
-    setSelectedFaq(faqs);
+  const [selectedFaq, setSelectedFaq] = useState(faqs[0]);
+  const handleFaqClick = (faq) => {
+    setSelectedFaq(faq);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full py-12 font-sans_caption">
-      <h1 className="text-6xl mb-4 text-center">frequently asked questions</h1>
-      <div className="flex w-full h-[28rem] overflow-hidden justify-end relative items-center">
-        <div className="flex flex-col w-fit p-6 bg-white absolute left-0 z-99 rounded-tl-2xl rounded-bl-2xl">
+    <div className="flex w-full flex-col items-center justify-center py-12 font-sans_caption">
+      <h1 className="mb-4 text-center text-6xl">frequently asked questions</h1>
+      <div className="relative flex h-[28rem] w-full items-center justify-end overflow-hidden">
+        <div className="absolute left-0 z-99 flex w-fit flex-col rounded-tl-2xl rounded-bl-2xl bg-white p-6">
           <div className="space-y-4">
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="cursor-pointer text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-red-200 transition-all"
+                className={`cursor-pointer rounded-lg px-4 py-2 transition-all ${
+                  selectedFaq.question === faq.question
+                    ? "bg-red-600 text-white"
+                    : "text-gray-700 hover:bg-red-200"
+                }`}
                 onClick={() => handleFaqClick(faq)}
               >
                 <div className="flex items-center justify-between gap-10">
@@ -63,11 +66,11 @@ const Faq = () => {
           </div>
         </div>
 
-        <div className="flex flex-col w-[34rem] h-[24rem] p-6 bg-primary text-white rounded-2xl">
-          <div className="pl-20 py-4">
+        <div className="flex h-[24rem] w-[34rem] flex-col rounded-2xl bg-primary p-6 text-white">
+          <div className="py-4 pl-20">
             {selectedFaq ? (
               <>
-                <h2 className="text-lg font-semibold mb-4">
+                <h2 className="mb-4 text-lg font-semibold">
                   {selectedFaq.question}
                 </h2>
                 <p className="text-sm">{selectedFaq.answer}</p>
