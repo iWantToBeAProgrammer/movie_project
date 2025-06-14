@@ -5,11 +5,11 @@ export async function getMovieData(endpoint, params = {}) {
 
     // Fetch data from the dynamic API route
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASEURL}/api/movies/${endpoint}?${queryString}`
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/movies/${endpoint}?${queryString}`,
     );
 
     if (!response.ok) {
-      throw new Error("Failed to fetch data");
+      throw new Error(`Failed to fetch ${type}: ${response.statusText}`);
     }
 
     return await response.json(); // Return the parsed JSON

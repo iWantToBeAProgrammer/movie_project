@@ -31,15 +31,15 @@ export default function Profile() {
     picture: null,
   });
 
-  const { watchlists, favoriteMovies, watchedMovies } = data?.profile ?? [];
-  const { username, profilePicture } = data?.user ?? "";
+  const { members, favoriteMovies, watchedMovies } = data?.profile ?? [];
+  const { username, profilePicture } = data?.profile ?? "";
 
   const [updatedUserData, setUpdatedUserData] = useState({
     username: username,
     profilePicture: profilePicture,
   });
 
-  const totalWatchlist = watchlists?.length || 0;
+  const totalWatchlist = members?.length || 0;
   const totalFavorites = favoriteMovies?.length || 0;
   const totalWatched = watchedMovies?.length || 0;
 
@@ -98,6 +98,17 @@ export default function Profile() {
     e.preventDefault();
     updateMutation.mutate(updatedUserData);
   };
+
+  const enrichedWatchlists = members.map((membership) => {
+    const watchlist = membership.watchlist;
+
+    const owner = watchlist.members.find((member) => member.role === "OWNER");
+
+    return {
+      ...watchlist,
+      owner: owner?.user || null,
+    };
+  });
 
   const formattedData = {
     favoriteMovies: favoriteMovies?.map((item) => item.movie),
@@ -180,7 +191,10 @@ export default function Profile() {
                     <Plus size={32} className="text-primary" weight="bold" />
                   </button>
                 </div>
-                <WatchlistCard watchlists={watchlists} username={username} />
+                <WatchlistCard
+                  watchlists={enrichedWatchlists}
+                  username={username}
+                />
               </div>
               <button
                 role="tab"

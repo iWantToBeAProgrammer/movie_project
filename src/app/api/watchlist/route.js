@@ -22,25 +22,16 @@ export const GET = async (req) => {
     const watchlist = await prisma.watchlist.findUnique({
       where: { token },
       include: {
-        user: {
+        members: {
           select: {
-            username: true,
-            profilePicture: true,
+            user: true,
+            role: true,
+            userId: true,
           },
         },
         items: {
           select: {
-            movie: {
-              select: {
-                id: true,
-                title: true,
-                posterPath: true,
-                overview: true,
-                genres: true,
-                runtime: true,
-                vote_average: true,
-              },
-            },
+            movie: true,
           },
         },
       },
@@ -53,7 +44,12 @@ export const GET = async (req) => {
       );
     }
 
-    return NextResponse.json(watchlist);
+    const membersById = watchlist.members.find(
+      (member) => member.userId === data?.user?.id,
+    );
+
+    const role = membersById.role;
+    return NextResponse.json({ ...watchlist, userRole: role });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -117,7 +113,6 @@ export const POST = async (req) => {
       if (!tmdbId) {
         const newWatchlist = await prisma.watchlist.create({
           data: {
-            userId: user.id,
             name,
             token: nanoid(16),
             description,
@@ -125,6 +120,15 @@ export const POST = async (req) => {
             inviteToken,
           },
         });
+
+        await prisma.watchlistMember.create({
+          data: {
+            watchlistId: newWatchlist.id,
+            userId: user.id,
+            role: "OWNER",
+          },
+        });
+
         return NextResponse.json({
           message: "New empty watchlist created",
           watchlist: newWatchlist,
@@ -141,7 +145,6 @@ export const POST = async (req) => {
     if (!watchlistId) {
       const newWatchlist = await prisma.watchlist.create({
         data: {
-          userId: user.id,
           name,
           token: nanoid(16),
           description,
@@ -151,8 +154,8 @@ export const POST = async (req) => {
       });
       selectedWatchlistId = newWatchlist.id;
     } else {
-      const existingWatchlist = await prisma.watchlist.findFirst({
-        where: { userId: user.id, id: parseInt(watchlistId) },
+      const existingWatchlist = await prisma.watchlistMember.findFirst({
+        where: { userId: user.id, watchlistId: parseInt(watchlistId) },
       });
       if (!existingWatchlist)
         return NextResponse.json(
@@ -196,7 +199,7 @@ export const POST = async (req) => {
       data: { watchlistId: selectedWatchlistId, movieId: finalMovieId },
     });
 
-    await prisma.watchlistCollaborator.create({
+    await prisma.watchlistMember.create({
       data: {
         watchlistId: selectedWatchlistId,
         userId: user.id,

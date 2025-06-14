@@ -5,12 +5,11 @@ import Link from "next/link";
 
 const WatchlistCard = ({ watchlists = [], username }) => {
   const router = useRouter();
-
   return (
     <>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {watchlists.length !== 0 ? (
-          watchlists.map((watchlist, key) => {
+          watchlists?.map((watchlist, key) => {
             return (
               <Link
                 key={key}
@@ -22,6 +21,7 @@ const WatchlistCard = ({ watchlists = [], username }) => {
                     {watchlist.picture ? (
                       <Image
                         src={`${watchlist.picture}`}
+                        alt={watchlist.name}
                         width={512}
                         height={512}
                         className="h-full w-full object-cover object-center"
@@ -35,7 +35,7 @@ const WatchlistCard = ({ watchlists = [], username }) => {
                       {watchlist.name}
                     </h3>
                     <p className="watchlist-card-desc text-white/30">
-                      By {watchlist.user?.username || username}
+                      By {watchlist?.owner?.username || username}
                     </p>
                   </div>
                 </div>

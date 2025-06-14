@@ -8,14 +8,20 @@ import BackNavigation from "@/components/Common/BackNavigation";
 import WatchlistItemCard from "@/components/Watchlist/WatchlistItemCard";
 import { useRouter } from "next/navigation";
 import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { IoPersonAddOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
+import Link from "next/link";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { TbForbid } from "react-icons/tb";
+import { FaDoorOpen } from "react-icons/fa";
+import { CaretDown, DoorOpen } from "@phosphor-icons/react";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
   const router = useRouter();
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
+  const { user } = useAuth();
 
   const {
     data: watchlist,
@@ -29,10 +35,38 @@ export default function WatchlistDetail({ params }) {
 
   const handleAddCollaborator = () => {
     navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/invite/${watchlist?.inviteToken}`,
+      `${process.env.NEXT_PUBLIC_BASEURL}/watchlist/invite/${watchlist?.inviteToken}`,
     );
 
     toast.success("Link Copied to Clipboard");
+  };
+
+  const handleLeaveWatchlist = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/members/me`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.ok) throw new Error("Failed to fetch watchlist");
+
+    const results = await response.json();
+    toast.success(results.message);
+  };
+
+  const handleRemoveMember = async (member) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/members/${member.userId}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.ok) throw new Error("Failed to fetch watchlist");
+
+    const results = await response.json();
+    toast.success(results?.message);
   };
 
   if (isLoading) {
@@ -54,7 +88,7 @@ export default function WatchlistDetail({ params }) {
     <div className="mx-auto flex flex-col items-center justify-center">
       <BackNavigation />
       <WatchlistBackdrop imageUrl={watchlist.picture || thumbnailUrl}>
-        <div className="flex w-full max-w-(--breakpoint-xl) gap-4">
+        <div className="flex h-full w-full max-w-(--breakpoint-xl) items-end gap-4">
           <div className="watchlist-image-wrapper h-64 w-64 overflow-hidden">
             {watchlist.picture ? (
               <Image
@@ -76,30 +110,48 @@ export default function WatchlistDetail({ params }) {
             <p className="line-clamp-3 text-xl text-slate-300 hover:line-clamp-4">
               {watchlist.description}
             </p>
-            <div className="flex items-center gap-2">
-              <div className="user-image-wrapper h-5 w-5 overflow-hidden">
-                {watchlist?.user?.profilePicture ? (
-                  <Image
-                    src={`${watchlist.user.profilePicture}`}
-                    width={40}
-                    height={40}
-                    className="h-full w-full rounded-full object-cover object-center"
-                  />
+            <div className="flex w-full items-center gap-2">
+              <div className="avatar-group -space-x-3">
+                {watchlist?.members ? (
+                  watchlist.members.map((member, key) => {
+                    return (
+                      <div
+                        className="avatar border-base-100 outline-base-100"
+                        key={key}
+                      >
+                        <div className="w-8">
+                          <img
+                            src={`${member.user.profilePicture}`}
+                            width={40}
+                            height={40}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
                 ) : (
-                  <Image
-                    src="/assets/images/noimage.jpg"
-                    width={40}
-                    height={40}
-                    className="h-full w-full rounded-full object-cover object-center"
-                  />
+                  <div className="w-8">
+                    <Image
+                      src="/assets/images/noimage.jpg"
+                      width={40}
+                      height={40}
+                      className="h-full w-full rounded-full object-cover object-center"
+                    />
+                  </div>
                 )}
               </div>
-              <p
-                className="cursor-pointer hover:underline"
-                onClick={() => router.push(`/profile`)}
+              <a
+                href={`${watchlist.members.length === 1 ? "/profile" : "#shared_modal"}`}
               >
-                {watchlist.user.username}
-              </p>
+                <p className="cursor-pointer hover:underline">
+                  {watchlist.members.length === 1
+                    ? watchlist.members[0]?.user.username
+                    : watchlist.members.length === 2
+                      ? `${watchlist.members[0]?.user.username} and ${watchlist.members[1]?.user.username}`
+                      : `${watchlist.members[0]?.user.username} and ${watchlist.members.length - 1} others`}
+                </p>
+              </a>
+
               <p>• {totalMovies} Movies</p>
             </div>
           </div>
@@ -108,12 +160,14 @@ export default function WatchlistDetail({ params }) {
 
       <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
         <div className="flex h-16 w-full items-center justify-start">
-          <button className="cursor-pointer" onClick={handleAddCollaborator}>
-            <IoPersonAddOutline
-              size={28}
-              className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-            />
-          </button>
+          {watchlist.userRole === "OWNER" && (
+            <button className="cursor-pointer" onClick={handleAddCollaborator}>
+              <IoPersonAddOutline
+                size={28}
+                className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+              />
+            </button>
+          )}
         </div>
         <div className="flex space-x-10 border-b border-slate-500 py-2 text-slate-500">
           <h1 className="text-4xl">#</h1>
@@ -123,6 +177,93 @@ export default function WatchlistDetail({ params }) {
           <WatchlistItemCard watchlistItem={watchlistItem} />
         </div>
       </div>
+
+      <dialog id="shared_modal" className="modal">
+        <div className="modal-box overflow-hidden px-4 pb-12">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <a
+              href="#"
+              className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm"
+            >
+              ✕
+            </a>
+          </form>
+          <h3 className="text-lg font-bold">Shared Watchlist</h3>
+          <div className="divider"></div>
+          <ul className="list rounded-box bg-base-100 shadow-md">
+            {watchlist?.members.map((member, key) => {
+              const isMe = member.userId === user.id;
+              const isOwner = member.role === "OWNER";
+              const iAmOwner = watchlist.members.some(
+                (m) => m.userId === user.id && m.role === "OWNER",
+              );
+              return (
+                <li className="list-row" key={key}>
+                  <div>
+                    <Image
+                      className="size-10 rounded-box"
+                      src={member.user.profilePicture}
+                      height={50}
+                      width={50}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex h-full items-center">
+                      {member.user.username}
+                    </div>
+                  </div>
+                  {iAmOwner && !isOwner ? (
+                    <div className="dropdown dropdown-end">
+                      <div
+                        tabIndex={0}
+                        role="button"
+                        className="flex h-full cursor-pointer items-center justify-center font-semibold tracking-wide text-white/100"
+                      >
+                        {member.role} <CaretDown size={16} />
+                      </div>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu z-1 w-64 rounded-lg bg-neutral p-0 text-black shadow-sm"
+                      >
+                        <li className="rounded-lg p-1 transition-all duration-300 ease-in-out hover:bg-primary hover:text-neutral">
+                          <button onClick={() => handleRemoveMember(member)}>
+                            <TbForbid /> Remove From Watchlist
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  ) : isMe && !isOwner ? (
+                    <div className="dropdown dropdown-end">
+                      <div
+                        tabIndex={0}
+                        role="button"
+                        className="flex h-full cursor-pointer items-center justify-center font-semibold tracking-wide text-white/100"
+                      >
+                        {member.role} <CaretDown size={16} />
+                      </div>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu z-1 w-52 rounded-lg bg-neutral p-2 text-black shadow-sm"
+                      >
+                        <li>
+                          <button onClick={handleLeaveWatchlist}>
+                            <DoorOpen /> Leave Watchlist
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  ) : (
+                    <span className="flex h-full items-center justify-center font-semibold tracking-wide text-white/50">
+                      {member.role}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </dialog>
     </div>
   );
 }

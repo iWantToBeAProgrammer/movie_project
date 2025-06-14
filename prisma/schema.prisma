@@ -9,18 +9,17 @@ datasource db {
 }
 
 model User {
-  email                 String                  @unique
-  createdAt             DateTime                @default(now()) @map("created_at")
-  profilePicture        String?
-  role                  String                  @default("user")
-  username              String?                 @unique
-  id                    String                  @id @default(uuid()) @map("id") @db.Uuid
-  last_email_sent_at    DateTime?
-  comments              Comment[]
-  watchedMovies         WatchedMovie[]
-  Watchlist             Watchlist[]
-  watchlistCollaborator WatchlistCollaborator[]
-  favoriteMovies        favoriteMovie[]
+  email              String            @unique
+  createdAt          DateTime          @default(now()) @map("created_at")
+  profilePicture     String?
+  role               String            @default("user")
+  username           String?           @unique
+  id                 String            @id @default(uuid()) @map("id") @db.Uuid
+  last_email_sent_at DateTime?
+  comments           Comment[]
+  watchedMovies      WatchedMovie[]
+  favoriteMovies     favoriteMovie[]
+  members            watchlistMember[]
 }
 
 model Movie {
@@ -49,30 +48,28 @@ model Movie {
 }
 
 model Watchlist {
-  id            Int                     @id @default(autoincrement())
-  createdAt     DateTime                @default(now())
-  description   String?
-  name          String
-  picture       String?
-  updatedAt     DateTime                @updatedAt
-  userId        String                  @map("user_id") @db.Uuid
-  inviteToken   String?                 @unique
-  isPublic      Boolean                 @default(true)
-  token         String                  @unique
-  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  collaborators WatchlistCollaborator[]
-  items         WatchlistItem[]
-
-  @@index([userId])
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  description String?
+  name        String
+  picture     String?
+  updatedAt   DateTime          @updatedAt
+  inviteToken String?           @unique
+  isPublic    Boolean           @default(true)
+  token       String            @unique
+  items       WatchlistItem[]
+  members     watchlistMember[]
 }
 
-model WatchlistCollaborator {
-  id          Int              @id @default(autoincrement())
-  userId      String           @db.Uuid
+model watchlistMember {
+  id          Int        @id @default(autoincrement())
+  userId      String     @db.Uuid
   watchlistId Int
-  role        CollaboratorRole @default(COLLABORATOR)
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  watchlist   Watchlist        @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  role        MemberRole @default(COLLABORATOR)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchlist   Watchlist  @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
 
   @@unique([userId, watchlistId])
   @@index([watchlistId])
@@ -129,7 +126,7 @@ model favoriteMovie {
   @@index([movieId])
 }
 
-enum CollaboratorRole {
+enum MemberRole {
   OWNER
   COLLABORATOR
 }

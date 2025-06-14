@@ -33,7 +33,7 @@ export async function GET(request, { params }) {
   }
 
   // Check if user already in watchlist
-  const exists = await prisma.watchlistCollaborator.findFirst({
+  const exists = await prisma.watchlistMember.findFirst({
     where: {
       watchlistId: watchlist.id,
       userId: user.id,
@@ -41,7 +41,7 @@ export async function GET(request, { params }) {
   });
 
   if (!exists) {
-    await prisma.watchlistCollaborator.create({
+    await prisma.watchlistMember.create({
       data: {
         userId: user.id,
         watchlistId: watchlist.id,
