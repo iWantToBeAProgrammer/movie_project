@@ -27,3 +27,16 @@ export const createWatchlist = async (watchlistData) => {
 
   return res.json();
 };
+
+export const togglePrivacy = async ({token, isPublic}) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist?token=${token}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ isPublic }),
+    },
+  );
+
+  if (!response.ok) throw new Error("Failed to toggle visibility");
+  return response.json();
+};

@@ -262,3 +262,66 @@ export async function DELETE(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function PATCH(req) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const token = searchParams.get("token");
+
+  if (!token) {
+    return NextResponse.json({ error: "Missing token" }, { status: 400 });
+  }
+
+  const watchlist = await prisma.watchlist.findUnique({
+    where: {
+      token: token,
+    },
+  });
+
+  if (!watchlist) {
+    return NextResponse.json({ error: "Watchlist not found" }, { status: 400 });
+  }
+
+  const member = await prisma.watchlistMember.findFirst({
+    where: {
+      watchlistId: watchlist.id,
+      userId: user.id,
+    },
+  });
+
+  if (!member || member.role !== "OWNER") {
+    return NextResponse.json(
+      { error: "Forbidden: you must be the owner" },
+      { status: 403 },
+    );
+  }
+
+  const { isPublic } = await req.json();
+
+  if (isPublic === null) {
+    return NextResponse.json(
+      { error: "Invalid update field" },
+      { status: 400 },
+    );
+  }
+
+  const updated = await prisma.watchlist.update({
+    where: { token },
+    data: {
+      isPublic,
+    },
+  });
+
+  const privacyValue = updated.isPublic ? "public" : "private";
+  return NextResponse.json({
+    watchlist: updated,
+    message: `Watchlist has been made to ${privacyValue}`,
+  });
+}

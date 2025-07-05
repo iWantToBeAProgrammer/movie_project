@@ -1,6 +1,6 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import { fetchWatchlistData } from "@/libs/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchWatchlistData, togglePrivacy } from "@/libs/api";
 import Image from "next/image";
 import WatchlistThumbnail from "@/components/Profile/Thumbnail/WatchlistThumbnail";
 import Loading from "@/app/loading";
@@ -11,18 +11,16 @@ import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
 import { useState } from "react";
 import { IoPersonAddOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
-import Link from "next/link";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { TbForbid } from "react-icons/tb";
-import { FaDoorOpen } from "react-icons/fa";
 import { CaretDown, DoorOpen } from "@phosphor-icons/react";
+import { CiLock, CiGlobe, CiUnlock } from "react-icons/ci";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
   const router = useRouter();
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const { user } = useAuth();
-
   const {
     data: watchlist,
     isLoading,
@@ -31,6 +29,7 @@ export default function WatchlistDetail({ params }) {
   } = useQuery({
     queryKey: ["watchlist", token],
     queryFn: () => fetchWatchlistData(token),
+    enabled: !!token,
   });
 
   const handleAddCollaborator = () => {
@@ -53,6 +52,25 @@ export default function WatchlistDetail({ params }) {
 
     const results = await response.json();
     toast.success(results.message);
+  };
+
+  const queryClient = useQueryClient();
+
+  const privacyMutation = useMutation({
+    mutationFn: togglePrivacy,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      queryClient.invalidateQueries(["watchlist", token]);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const privacyButtonToggle = (e) => {
+    e.preventDefault();
+
+    privacyMutation.mutate({ token, isPublic: !watchlist.isPublic });
   };
 
   const handleRemoveMember = async (member) => {
@@ -120,8 +138,11 @@ export default function WatchlistDetail({ params }) {
                         key={key}
                       >
                         <div className="w-8">
-                          <img
-                            src={`${member.user.profilePicture}`}
+                          <Image
+                            src={
+                              member.user.profilePicture ||
+                              "/assets/images/noimage.jpg"
+                            }
                             width={40}
                             height={40}
                           />
@@ -159,14 +180,46 @@ export default function WatchlistDetail({ params }) {
       </WatchlistBackdrop>
 
       <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
-        <div className="flex h-16 w-full items-center justify-start">
+        <div className="mt-8 flex h-12 w-full items-center justify-start">
           {watchlist.userRole === "OWNER" && (
-            <button className="cursor-pointer" onClick={handleAddCollaborator}>
-              <IoPersonAddOutline
-                size={28}
-                className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-              />
-            </button>
+            <div className="watchlist-actions flex items-center gap-4">
+              <div
+                className="tooltip font-semibold tooltip-accent"
+                data-tip="Add to Collaborator"
+              >
+                <button
+                  className="cursor-pointer"
+                  onClick={handleAddCollaborator}
+                >
+                  <IoPersonAddOutline
+                    size={32}
+                    className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                  />
+                </button>
+              </div>
+
+              <div
+                className="tooltip font-semibold tooltip-accent"
+                data-tip={watchlist?.isPublic ? "Make private" : "Make Public"}
+              >
+                <button
+                  className="cursor-pointer"
+                  onClick={privacyButtonToggle}
+                >
+                  {watchlist?.isPublic ? (
+                    <CiLock
+                      size={32}
+                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                    />
+                  ) : (
+                    <CiUnlock
+                      size={32}
+                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                    />
+                  )}
+                </button>
+              </div>
+            </div>
           )}
         </div>
         <div className="flex space-x-10 border-b border-slate-500 py-2 text-slate-500">
@@ -203,7 +256,10 @@ export default function WatchlistDetail({ params }) {
                   <div>
                     <Image
                       className="size-10 rounded-box"
-                      src={member.user.profilePicture}
+                      src={
+                        member.user.profilePicture ||
+                        "/assets/images/noimage.jpg"
+                      }
                       height={50}
                       width={50}
                     />

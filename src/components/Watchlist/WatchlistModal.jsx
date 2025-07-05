@@ -49,29 +49,34 @@ const WatchlistModal = ({
               </div>
             </label>
           </div>
-          <div className="watchlist-form-content col-span-2 flex h-full flex-col gap-2">
-            <input
-              type="text"
-              placeholder="Add a name"
-              className="input-bordered input w-full py-5"
-              name="name"
-              value={watchlistData.name}
-              onChange={handleChange}
-            />
-            <textarea
-              className="textarea-bordered textarea h-full w-full resize-none"
-              placeholder="Add an optional description here"
-              name="description"
-              value={watchlistData.description}
-              onChange={handleChange}
-            ></textarea>
+          <div className="watchlist-form-content col-span-2 flex h-full flex-col justify-between gap-2">
+            <label className="floating-label">
+              <span>Name</span>
+              <input
+                type="text"
+                placeholder="Add a name"
+                className="input-bordered input input-lg w-full py-5"
+                name="name"
+                value={watchlistData.name}
+                onChange={handleChange}
+              />
+            </label>
+            <label className="floating-label">
+              <span>Description</span>
+              <textarea
+                className="textarea-bordered textarea h-full w-full resize-none textarea-lg"
+                placeholder="Add an optional description here"
+                name="description"
+                value={watchlistData.description}
+                onChange={handleChange}
+              ></textarea>
+            </label>
+            <div className="flex justify-end">
+              <button className="btn px-8 btn-primary" type="submit">
+                Create
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button className="btn mt-5 btn-wide btn-primary" type="submit">
-            Create
-          </button>
         </div>
       </form>
     </div>
