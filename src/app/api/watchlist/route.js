@@ -1,19 +1,17 @@
 import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
 import { getMovieDetails } from "@/services/movie-service";
+import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
 export const GET = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const watchlistId = searchParams.get("watchlistId");
+    const token = searchParams.get("token");
     const supabase = await createClient();
 
-    if (!watchlistId) {
-      return NextResponse.json(
-        { error: "Watchlist ID is required" },
-        { status: 400 }
-      );
+    if (!token) {
+      return NextResponse.json({ error: "token is required" }, { status: 400 });
     }
 
     const { data, error } = await supabase.auth.getUser();
@@ -22,27 +20,18 @@ export const GET = async (req) => {
     }
 
     const watchlist = await prisma.watchlist.findUnique({
-      where: { id: parseInt(watchlistId, 10) },
+      where: { token },
       include: {
-        user: {
+        members: {
           select: {
-            username: true,
-            profilePicture: true,
+            user: true,
+            role: true,
+            userId: true,
           },
         },
         items: {
           select: {
-            movie: {
-              select: {
-                id: true,
-                title: true,
-                posterPath: true,
-                overview: true,
-                genres: true,
-                runtime: true,
-                vote_average: true,
-              },
-            },
+            movie: true,
           },
         },
       },
@@ -51,11 +40,16 @@ export const GET = async (req) => {
     if (!watchlist) {
       return NextResponse.json(
         { error: "Watchlist not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    return NextResponse.json(watchlist);
+    const membersById = watchlist.members.find(
+      (member) => member.userId === data?.user?.id,
+    );
+
+    const role = membersById.role;
+    return NextResponse.json({ ...watchlist, userRole: role });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -80,6 +74,7 @@ export const POST = async (req) => {
     const rawMovieId = formData.get("movieId");
     const movieId = rawMovieId ? parseInt(rawMovieId, 10) : null;
     const picture = formData.get("picture");
+    const inviteToken = nanoid(16);
 
     let imageUrl = null;
 
@@ -99,7 +94,7 @@ export const POST = async (req) => {
       if (uploadError) {
         return NextResponse.json(
           { error: uploadError.message },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
@@ -118,12 +113,22 @@ export const POST = async (req) => {
       if (!tmdbId) {
         const newWatchlist = await prisma.watchlist.create({
           data: {
-            userId: user.id,
             name,
+            token: nanoid(16),
             description,
             picture: imageUrl,
+            inviteToken,
           },
         });
+
+        await prisma.watchlistMember.create({
+          data: {
+            watchlistId: newWatchlist.id,
+            userId: user.id,
+            role: "OWNER",
+          },
+        });
+
         return NextResponse.json({
           message: "New empty watchlist created",
           watchlist: newWatchlist,
@@ -139,17 +144,23 @@ export const POST = async (req) => {
     // Handle creating or validating an existing watchlist
     if (!watchlistId) {
       const newWatchlist = await prisma.watchlist.create({
-        data: { userId: user.id, name, description, picture: imageUrl },
+        data: {
+          name,
+          token: nanoid(16),
+          description,
+          picture: imageUrl,
+          inviteToken,
+        },
       });
       selectedWatchlistId = newWatchlist.id;
     } else {
-      const existingWatchlist = await prisma.watchlist.findFirst({
-        where: { userId: user.id, id: parseInt(watchlistId) },
+      const existingWatchlist = await prisma.watchlistMember.findFirst({
+        where: { userId: user.id, watchlistId: parseInt(watchlistId) },
       });
       if (!existingWatchlist)
         return NextResponse.json(
           { error: "Invalid watchlist ID" },
-          { status: 403 }
+          { status: 403 },
         );
     }
 
@@ -159,7 +170,7 @@ export const POST = async (req) => {
       if (!tmdbId)
         return NextResponse.json(
           { error: "Either movieId or tmdbId is required" },
-          { status: 400 }
+          { status: 400 },
         );
 
       const movie = await getMovieDetails(tmdbId);
@@ -179,13 +190,21 @@ export const POST = async (req) => {
     if (existingItem) {
       return NextResponse.json(
         { error: "Movie is already in the watchlist" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Add movie to the watchlist
     await prisma.watchlistItem.create({
       data: { watchlistId: selectedWatchlistId, movieId: finalMovieId },
+    });
+
+    await prisma.watchlistMember.create({
+      data: {
+        watchlistId: selectedWatchlistId,
+        userId: user.id,
+        role: "OWNER",
+      },
     });
 
     return NextResponse.json({
@@ -237,9 +256,72 @@ export async function DELETE(req) {
 
     return NextResponse.json(
       { message: "Watchlist deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
+
+export async function PATCH(req) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const token = searchParams.get("token");
+
+  if (!token) {
+    return NextResponse.json({ error: "Missing token" }, { status: 400 });
+  }
+
+  const watchlist = await prisma.watchlist.findUnique({
+    where: {
+      token: token,
+    },
+  });
+
+  if (!watchlist) {
+    return NextResponse.json({ error: "Watchlist not found" }, { status: 400 });
+  }
+
+  const member = await prisma.watchlistMember.findFirst({
+    where: {
+      watchlistId: watchlist.id,
+      userId: user.id,
+    },
+  });
+
+  if (!member || member.role !== "OWNER") {
+    return NextResponse.json(
+      { error: "Forbidden: you must be the owner" },
+      { status: 403 },
+    );
+  }
+
+  const { isPublic } = await req.json();
+
+  if (isPublic === null) {
+    return NextResponse.json(
+      { error: "Invalid update field" },
+      { status: 400 },
+    );
+  }
+
+  const updated = await prisma.watchlist.update({
+    where: { token },
+    data: {
+      isPublic,
+    },
+  });
+
+  const privacyValue = updated.isPublic ? "public" : "private";
+  return NextResponse.json({
+    watchlist: updated,
+    message: `Watchlist has been made to ${privacyValue}`,
+  });
 }
