@@ -15,6 +15,7 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { TbForbid } from "react-icons/tb";
 import { CaretDown, DoorOpen } from "@phosphor-icons/react";
 import { CiLock, CiGlobe, CiUnlock } from "react-icons/ci";
+import { ShareNetwork } from "@phosphor-icons/react/dist/ssr";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
@@ -181,46 +182,62 @@ export default function WatchlistDetail({ params }) {
 
       <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
         <div className="mt-8 flex h-12 w-full items-center justify-start">
-          {watchlist.userRole === "OWNER" && (
-            <div className="watchlist-actions flex items-center gap-4">
-              <div
-                className="tooltip font-semibold tooltip-accent"
-                data-tip="Add to Collaborator"
-              >
-                <button
-                  className="cursor-pointer"
-                  onClick={handleAddCollaborator}
+          <div className="watchlist-actions flex items-center gap-4">
+            {watchlist.userRole === "OWNER" && (
+              <div className="flex items-center gap-4">
+                <div
+                  className="tooltip font-semibold tooltip-accent"
+                  data-tip="Add to Collaborator"
                 >
-                  <IoPersonAddOutline
-                    size={32}
-                    className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                  />
-                </button>
-              </div>
+                  <button
+                    className="cursor-pointer"
+                    onClick={handleAddCollaborator}
+                  >
+                    <IoPersonAddOutline
+                      size={32}
+                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                    />
+                  </button>
+                </div>
 
-              <div
-                className="tooltip font-semibold tooltip-accent"
-                data-tip={watchlist?.isPublic ? "Make private" : "Make Public"}
-              >
-                <button
-                  className="cursor-pointer"
-                  onClick={privacyButtonToggle}
+                <div
+                  className="tooltip font-semibold tooltip-accent"
+                  data-tip={
+                    watchlist?.isPublic ? "Make private" : "Make Public"
+                  }
                 >
-                  {watchlist?.isPublic ? (
-                    <CiLock
-                      size={32}
-                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                    />
-                  ) : (
-                    <CiUnlock
-                      size={32}
-                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                    />
-                  )}
-                </button>
+                  <button
+                    className="cursor-pointer"
+                    onClick={privacyButtonToggle}
+                  >
+                    {watchlist?.isPublic ? (
+                      <CiLock
+                        size={32}
+                        className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                      />
+                    ) : (
+                      <CiUnlock
+                        size={32}
+                        className="transition-acll text-white/50 duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                      />
+                    )}
+                  </button>
+                </div>
               </div>
+            )}
+
+            <div
+              className="tooltip font-semibold tooltip-accent"
+              data-tip="Share"
+            >
+              <button className="cursor-pointer">
+                <ShareNetwork
+                  size={32}
+                  className="transition-all text-white/50 duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                />
+              </button>
             </div>
-          )}
+          </div>
         </div>
         <div className="flex space-x-10 border-b border-slate-500 py-2 text-slate-500">
           <h1 className="text-4xl">#</h1>

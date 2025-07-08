@@ -199,13 +199,22 @@ export const POST = async (req) => {
       data: { watchlistId: selectedWatchlistId, movieId: finalMovieId },
     });
 
-    await prisma.watchlistMember.create({
-      data: {
-        watchlistId: selectedWatchlistId,
+    const existingMembership = await prisma.watchlistMember.findFirst({
+      where: {
         userId: user.id,
-        role: "OWNER",
+        watchlistId: selectedWatchlistId,
       },
     });
+
+    if (!existingMembership) {
+      await prisma.watchlistMember.create({
+        data: {
+          watchlistId: selectedWatchlistId,
+          userId: user.id,
+          role: "OWNER", // or COLLABORATOR if applicable
+        },
+      });
+    }
 
     return NextResponse.json({
       message: watchlistId
