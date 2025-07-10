@@ -12,60 +12,53 @@ export const GET = async () => {
 
     const userId = data.user.id;
 
-    const userData = await prisma.user.findFirst({
+    const userData = await prisma.user.findUnique({
       where: {
         id: userId,
       },
-      select: {
-        profilePicture: true,
-        username: true,
-        email: true,
-      },
-    });
-
-    const watchlists = await prisma.watchlist.findMany({
-      where: {
-        userId: userId,
-      },
       include: {
-        items: {
+        watchedMovies: {
           include: {
-            movie: {
-              select: {
-                posterPath: true,
+            movie: true,
+          },
+        },
+        members: {
+          include: {
+            watchlist: {
+              include: {
+                items: {
+                  include: {
+                    movie: {
+                      select: {
+                        posterPath: true,
+                      },
+                    },
+                  },
+                },
+                members: {
+                  include: {
+                    user: {
+                      select: {
+                        username: true,
+                        profilePicture: true,
+                      },
+                    },
+                  },
+                },
               },
             },
+          },
+        },
+        favoriteMovies: {
+          include: {
+            movie: true,
           },
         },
       },
     });
 
-    const watchedMovies = await prisma.watchedMovie.findMany({
-      select: {
-        movie: true,
-      },
-      where: {
-        userId: userId,
-      },
-    });
-
-    const favoriteMovies = await prisma.favoriteMovie.findMany({
-      select: {
-        movie: true,
-      },
-      where: {
-        userId: userId,
-      },
-    });
-
     return NextResponse.json({
-      profile: {
-        watchlists,
-        watchedMovies,
-        favoriteMovies,
-      },
-
-      user: userData,
+      profile: userData,
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

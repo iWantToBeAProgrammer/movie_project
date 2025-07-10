@@ -23,9 +23,9 @@ const WatchlistDropdown = ({
           <li key={key}>
             <button
               className="font-sans_caption focus:text-black"
-              onClick={() => handleSubmitToExistingWatchlist(watchlist.id)}
+              onClick={() => handleSubmitToExistingWatchlist(watchlist?.watchlist?.id)}
             >
-              {watchlist.name}
+              {watchlist?.watchlist?.name}
             </button>
           </li>
         ))}

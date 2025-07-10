@@ -19,6 +19,7 @@ const nextConfig = {
 
   env: {
     NEXT_APP_APIKEY: process.env.NEXT_APP_APIKEY,
+    NEXT_PUBLIC_APIKEY: process.env.NEXT_PUBLIC_APIKEY,
     NEXT_APP_BASEURL: process.env.NEXT_APP_BASEURL,
     NEXT_APP_BASEIMG: process.env.NEXT_APP_BASEIMG,
   },

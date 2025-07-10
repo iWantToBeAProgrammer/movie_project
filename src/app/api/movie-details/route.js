@@ -12,7 +12,7 @@ export const GET = async (req) => {
     if (!movieId && !tmdbId) {
       return NextResponse.json(
         { error: "Either Movie ID or TMDB ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -27,8 +27,11 @@ export const GET = async (req) => {
     }
 
     const userId = data.user.id;
-    const watchlists = await prisma.watchlist.findMany({
+    const watchlists = await prisma.watchlistMember.findMany({
       where: { userId: userId },
+      select: {
+        watchlist: true,
+      },
     });
 
     // If we have a direct movieId, use it

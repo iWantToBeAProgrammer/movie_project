@@ -5,23 +5,23 @@ import Link from "next/link";
 
 const WatchlistCard = ({ watchlists = [], username }) => {
   const router = useRouter();
-
   return (
     <>
-      <div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {watchlists.length !== 0 ? (
-          watchlists.map((watchlist, key) => {
+          watchlists?.map((watchlist, key) => {
             return (
               <Link
                 key={key}
-                className="watchlist-card md:h-80 md:w-60 w-48 h-64 cursor-pointer rounded-2xl px-4 pt-4 font-sans_caption transition-colors duration-200 ease-out hover:bg-white/10"
-                href={`/profile/watchlist/${watchlist.id}`}
+                className="watchlist-card h-64 w-48 cursor-pointer rounded-2xl px-4 pt-4 font-sans_caption transition-colors duration-200 ease-out hover:bg-white/10 md:h-80 md:w-60"
+                href={`/watchlist/${watchlist.token}`}
               >
-                <div className="watchlist-card-wrapper flex flex-col gap-3 items-center md:items-start text-center md:text-start">
-                  <div className="thumbnail-image-wrapper md:h-52 md:w-52 w-36 h-36 overflow-hidden rounded-2xl">
+                <div className="watchlist-card-wrapper flex flex-col items-center gap-3 text-center md:items-start md:text-start">
+                  <div className="thumbnail-image-wrapper h-36 w-36 overflow-hidden rounded-2xl md:h-52 md:w-52">
                     {watchlist.picture ? (
                       <Image
                         src={`${watchlist.picture}`}
+                        alt={watchlist.name}
                         width={512}
                         height={512}
                         className="h-full w-full object-cover object-center"
@@ -35,7 +35,7 @@ const WatchlistCard = ({ watchlists = [], username }) => {
                       {watchlist.name}
                     </h3>
                     <p className="watchlist-card-desc text-white/30">
-                      By {username}
+                      By {watchlist?.owner?.username || username}
                     </p>
                   </div>
                 </div>

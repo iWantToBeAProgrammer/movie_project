@@ -31,15 +31,15 @@ export default function Profile() {
     picture: null,
   });
 
-  const { watchlists, favoriteMovies, watchedMovies } = data?.profile ?? [];
-  const { username, profilePicture } = data?.user ?? "";
+  const { members, favoriteMovies, watchedMovies } = data?.profile ?? [];
+  const { username, profilePicture } = data?.profile ?? "";
 
   const [updatedUserData, setUpdatedUserData] = useState({
     username: username,
     profilePicture: profilePicture,
   });
 
-  const totalWatchlist = watchlists?.length || 0;
+  const totalWatchlist = members?.length || 0;
   const totalFavorites = favoriteMovies?.length || 0;
   const totalWatched = watchedMovies?.length || 0;
 
@@ -99,6 +99,17 @@ export default function Profile() {
     updateMutation.mutate(updatedUserData);
   };
 
+  const enrichedWatchlists = members.map((membership) => {
+    const watchlist = membership.watchlist;
+
+    const owner = watchlist.members.find((member) => member.role === "OWNER");
+
+    return {
+      ...watchlist,
+      owner: owner?.user || null,
+    };
+  });
+
   const formattedData = {
     favoriteMovies: favoriteMovies?.map((item) => item.movie),
     watchedMovies: watchedMovies?.map((item) => item.movie),
@@ -124,7 +135,7 @@ export default function Profile() {
                   alt="profile"
                   width={512}
                   height={512}
-                  className=" object-center w-full h-full aspect-square object-cover"
+                  className="aspect-square h-full w-full object-cover object-center"
                 />
 
                 <div className="profile-image-overlay absolute top-0 left-0 z-10 flex h-full w-full flex-col items-center justify-center transition duration-200 ease-out *:hidden hover:bg-black/70 hover:*:block">
@@ -180,7 +191,10 @@ export default function Profile() {
                     <Plus size={32} className="text-primary" weight="bold" />
                   </button>
                 </div>
-                <WatchlistCard watchlists={watchlists} username={username} />
+                <WatchlistCard
+                  watchlists={enrichedWatchlists}
+                  username={username}
+                />
               </div>
               <button
                 role="tab"
