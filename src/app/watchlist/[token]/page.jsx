@@ -9,7 +9,7 @@ import WatchlistItemCard from "@/components/Watchlist/WatchlistItemCard";
 import { useRouter } from "next/navigation";
 import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
 import { useState } from "react";
-import { IoPersonAddOutline } from "react-icons/io5";
+import { IoAddCircleOutline, IoPersonAddOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { TbForbid } from "react-icons/tb";
@@ -41,6 +41,55 @@ export default function WatchlistDetail({ params }) {
     toast.success("Link Copied to Clipboard");
   };
 
+  const saveToLibrary = async (token) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/save`,
+      {
+        method: "POST",
+      },
+    );
+
+    if (!response.ok) throw new Error("Failed to save watchlist");
+
+    const results = await response.json();
+    return results;
+  };
+
+  const saveMutation = useMutation({
+    mutationFn: saveToLibrary,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      queryClient.invalidateQueries(["watchlist", token]);
+    },
+
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const shareWatchlistUrl = (watchlistToken, inviteToken) => {
+    const baseUrl = `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/view`;
+    const url = new URL(baseUrl);
+
+    url.searchParams.set("token", watchlistToken);
+
+    if (inviteToken) {
+      url.searchParams.set("inviteToken", inviteToken);
+    }
+
+    return url.toString();
+  };
+
+  const handleShareWatchlist = () => {
+    const shareUrl = shareWatchlistUrl(
+      watchlist.token,
+      watchlist.isPublic ? undefined : watchlist.inviteToken,
+    );
+
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Link copied to clipboard!");
+  };
+
   const handleLeaveWatchlist = async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/members/me`,
@@ -64,7 +113,7 @@ export default function WatchlistDetail({ params }) {
       queryClient.invalidateQueries(["watchlist", token]);
     },
     onError: (error) => {
-      console.error(error);
+      toast.error(error.message);
     },
   });
 
@@ -103,6 +152,13 @@ export default function WatchlistDetail({ params }) {
   const totalMovies = watchlist.items?.length || 0; // ✅ A
   const watchlistItem = watchlist?.items;
 
+  const isOwned =
+    watchlist?.userRole === "OWNER" || watchlist?.userRole === "COLLABORATOR";
+
+  const filteredMembers = watchlist?.members?.filter(
+    (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
+  );
+
   return (
     <div className="mx-auto flex flex-col items-center justify-center">
       <BackNavigation />
@@ -131,8 +187,8 @@ export default function WatchlistDetail({ params }) {
             </p>
             <div className="flex w-full items-center gap-2">
               <div className="avatar-group -space-x-3">
-                {watchlist?.members ? (
-                  watchlist.members.map((member, key) => {
+                {filteredMembers ? (
+                  filteredMembers.map((member, key) => {
                     return (
                       <div
                         className="avatar border-base-100 outline-base-100"
@@ -162,17 +218,21 @@ export default function WatchlistDetail({ params }) {
                   </div>
                 )}
               </div>
-              <a
-                href={`${watchlist.members.length === 1 ? "/profile" : "#shared_modal"}`}
+              <button
+                onClick={() =>
+                  filteredMembers.length === 1
+                    ? router.push("/profile")
+                    : document.getElementById("shared_modal").showModal()
+                }
               >
                 <p className="cursor-pointer hover:underline">
-                  {watchlist.members.length === 1
-                    ? watchlist.members[0]?.user.username
-                    : watchlist.members.length === 2
-                      ? `${watchlist.members[0]?.user.username} and ${watchlist.members[1]?.user.username}`
-                      : `${watchlist.members[0]?.user.username} and ${watchlist.members.length - 1} others`}
+                  {filteredMembers.length === 1
+                    ? filteredMembers[0]?.user.username
+                    : filteredMembers.length === 2
+                      ? `${filteredMembers[0]?.user.username} and ${filteredMembers[1]?.user.username}`
+                      : `${filteredMembers[0]?.user.username} and ${filteredMembers.length - 1} others`}
                 </p>
-              </a>
+              </button>
 
               <p>• {totalMovies} Movies</p>
             </div>
@@ -183,6 +243,22 @@ export default function WatchlistDetail({ params }) {
       <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
         <div className="mt-8 flex h-12 w-full items-center justify-start">
           <div className="watchlist-actions flex items-center gap-4">
+            {!isOwned && (
+              <div
+                className="tooltip font-semibold tooltip-accent"
+                data-tip="Save to your library"
+              >
+                <button
+                  onClick={() => saveMutation.mutate(token)}
+                  className="cursor-pointer"
+                >
+                  <IoAddCircleOutline
+                    size={32}
+                    className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                  />
+                </button>
+              </div>
+            )}
             {watchlist.userRole === "OWNER" && (
               <div className="flex items-center gap-4">
                 <div
@@ -227,13 +303,13 @@ export default function WatchlistDetail({ params }) {
             )}
 
             <div
-              className="tooltip font-semibold tooltip-accent"
+              className={`tooltip font-semibold tooltip-accent ${!watchlist?.isPublic && watchlist.userRole === "VIEWER" && "hidden"}`}
               data-tip="Share"
             >
-              <button className="cursor-pointer">
+              <button className="cursor-pointer" onClick={handleShareWatchlist}>
                 <ShareNetwork
                   size={32}
-                  className="transition-all text-white/50 duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                  className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
                 />
               </button>
             </div>
@@ -252,17 +328,14 @@ export default function WatchlistDetail({ params }) {
         <div className="modal-box overflow-hidden px-4 pb-12">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}
-            <a
-              href="#"
-              className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm"
-            >
+            <button className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm">
               ✕
-            </a>
+            </button>
           </form>
           <h3 className="text-lg font-bold">Shared Watchlist</h3>
           <div className="divider"></div>
           <ul className="list rounded-box bg-base-100 shadow-md">
-            {watchlist?.members.map((member, key) => {
+            {filteredMembers.map((member, key) => {
               const isMe = member.userId === user.id;
               const isOwner = member.role === "OWNER";
               const iAmOwner = watchlist.members.some(

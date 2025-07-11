@@ -23,6 +23,11 @@ export const GET = async () => {
           },
         },
         members: {
+          where: {
+            role: {
+              not: "VIEWER",
+            },
+          },
           include: {
             watchlist: {
               include: {
@@ -45,6 +50,7 @@ export const GET = async () => {
                     },
                   },
                 },
+                SavedWatchlist: true,
               },
             },
           },

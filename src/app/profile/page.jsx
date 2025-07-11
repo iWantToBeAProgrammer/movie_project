@@ -115,6 +115,9 @@ export default function Profile() {
     watchedMovies: watchedMovies?.map((item) => item.movie),
   };
 
+  console.log(data)
+
+
   const [tabValue, setTabValue] = useState("watchlist");
 
   return (
