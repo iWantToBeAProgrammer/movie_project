@@ -34,6 +34,11 @@ export const GET = async (req) => {
             movie: true,
           },
         },
+        SavedWatchlist: {
+          where: {
+            userId: data.user.id,
+          },
+        },
       },
     });
 
@@ -47,9 +52,9 @@ export const GET = async (req) => {
     const membersById = watchlist.members.find(
       (member) => member.userId === data?.user?.id,
     );
-
-    const role = membersById.role;
-    return NextResponse.json({ ...watchlist, userRole: role });
+    const role = membersById?.role;
+    const isSaved = watchlist.SavedWatchlist.length > 0;
+    return NextResponse.json({ ...watchlist, userRole: role, saved: isSaved });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

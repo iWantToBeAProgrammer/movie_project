@@ -108,6 +108,9 @@
   .navigate-button:hover {
     @apply opacity-70;
   }
+
+
+
 }
 
 @layer base {    

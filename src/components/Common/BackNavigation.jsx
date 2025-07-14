@@ -4,7 +4,7 @@ import { CaretLeft } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const BackNavigation = ({fallback = '/'}) => {
+const BackNavigation = ({ fallback = "/" }) => {
   const router = useRouter();
   const [canGoBack, setCanGoBack] = useState(false);
 

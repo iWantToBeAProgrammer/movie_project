@@ -1,29 +1,28 @@
 "use client";
 
 import WatchlistCard from "@/components/Profile/WatchlistCard";
-import {
-  createWatchlist,
-  fetchProfileData,
-  updateProfileData,
-} from "@/libs/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createWatchlist, updateProfileData } from "@/libs/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardMovieList from "@/components/MovieList/CardMovieList";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import WatchlistModal from "@/components/Watchlist/WatchlistModal";
 import toast from "react-hot-toast";
 import Navbar from "@/components/Navbar";
-import { IoPencil } from "react-icons/io5";
-import { FaPencilAlt } from "react-icons/fa";
 import { HiOutlinePencil } from "react-icons/hi";
+import { useProfileData } from "@/hooks/useProfileData";
+import { useAuth } from "../contexts/AuthContext";
+import Loading from "../loading";
 
 export default function Profile() {
-  const { data, isPending } = useQuery({
-    queryKey: ["profile"],
-    queryFn: fetchProfileData,
-    suspense: true,
-  });
+  const { user } = useAuth();
+
+  if (!user) return <Loading />;
+
+  const queryClient = useQueryClient();
+
+  const [tabValue, setTabValue] = useState("watchlist");
 
   const [watchlistData, setWatchlistData] = useState({
     name: "",
@@ -31,19 +30,67 @@ export default function Profile() {
     picture: null,
   });
 
-  const { members, favoriteMovies, watchedMovies } = data?.profile ?? [];
-  const { username, profilePicture } = data?.profile ?? "";
-
   const [updatedUserData, setUpdatedUserData] = useState({
-    username: username,
-    profilePicture: profilePicture,
+    username: "",
+    profilePicture: null,
   });
 
-  const totalWatchlist = members?.length || 0;
-  const totalFavorites = favoriteMovies?.length || 0;
-  const totalWatched = watchedMovies?.length || 0;
+  const createMutation = useMutation({
+    mutationFn: createWatchlist,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      queryClient.invalidateQueries(["watchlist"]);
+      setWatchlistData({ name: "", description: "", picture: null });
+      document.getElementById("watchlist-modal")?.close();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to create watchlist");
+    },
+  });
 
-  const queryClient = useQueryClient();
+  const updateMutation = useMutation({
+    mutationFn: updateProfileData,
+    onSuccess: () => {
+      toast.success("Profile updated successfully!");
+      queryClient.invalidateQueries(["profile"]);
+      document.getElementById("profile-modal")?.close();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update profile");
+    },
+  });
+
+  const {
+    userInfo,
+    watchedMovies,
+    favoriteMovies,
+    joinedWatchlists,
+    savedWatchlists,
+  } = useProfileData(user.id);
+
+  const isLoading =
+    userInfo.isLoading ||
+    watchedMovies.isLoading ||
+    favoriteMovies.isLoading ||
+    joinedWatchlists.isLoading ||
+    savedWatchlists.isLoading;
+
+  if (isLoading) return <Loading />;
+
+  const watchlists = [
+    ...joinedWatchlists.data.map((item) => ({
+      ...item.watchlist,
+      source: "joined",
+    })),
+    ...savedWatchlists.data.map((item) => ({
+      ...item.watchlist,
+      source: "saved",
+    })),
+  ];
+
+  const totalWatchlist = watchlists.length;
+  const totalFavorites = favoriteMovies.data.length;
+  const totalWatched = watchedMovies.data.length;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,23 +102,6 @@ export default function Profile() {
     setWatchlistData((prev) => ({ ...prev, picture: file }));
   };
 
-  const { mutate, isLoading } = useMutation({
-    mutationFn: createWatchlist,
-    onSuccess: (data) => {
-      toast.success(data.message);
-      queryClient.invalidateQueries(["watchlist"]);
-      setWatchlistData({
-        name: "",
-        description: "",
-        picture: null,
-      });
-      document.getElementById("watchlist-modal").close();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create watchlist");
-    },
-  });
-
   const handleUserImageChange = (e) => {
     const file = e.target.files[0];
     setUpdatedUserData((prev) => ({ ...prev, profilePicture: file }));
@@ -79,46 +109,18 @@ export default function Profile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mutate(watchlistData);
+    createMutation.mutate(watchlistData);
   };
-
-  const updateMutation = useMutation({
-    mutationFn: updateProfileData,
-    onSuccess: (data) => {
-      toast.success("Profile updated successfully!");
-      queryClient.invalidateQueries(["profile"]);
-      document.getElementById("profile-modal").close();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update profile");
-    },
-  });
 
   const handleUpdateUserSubmit = (e) => {
     e.preventDefault();
     updateMutation.mutate(updatedUserData);
   };
 
-  const enrichedWatchlists = members.map((membership) => {
-    const watchlist = membership.watchlist;
-
-    const owner = watchlist.members.find((member) => member.role === "OWNER");
-
-    return {
-      ...watchlist,
-      owner: owner?.user || null,
-    };
-  });
-
   const formattedData = {
-    favoriteMovies: favoriteMovies?.map((item) => item.movie),
-    watchedMovies: watchedMovies?.map((item) => item.movie),
+    favoriteMovies: favoriteMovies.data.map((item) => item.movie),
+    watchedMovies: watchedMovies.data.map((item) => item.movie),
   };
-
-  console.log(data)
-
-
-  const [tabValue, setTabValue] = useState("watchlist");
 
   return (
     <>
@@ -128,13 +130,17 @@ export default function Profile() {
           <div className="profile-content-left w-3/4">
             <header className="flex gap-8">
               <button
-                onClick={() =>
-                  document.getElementById("profile-modal").showModal()
-                }
+                onClick={() => {
+                  setUpdatedUserData({
+                    username: userInfo?.data.username,
+                    profilePicture: userInfo?.data.profilePicture,
+                  });
+                  document.getElementById("profile-modal").showModal();
+                }}
                 className="profile-image-wrapper relative flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-2xl"
               >
                 <Image
-                  src={`${profilePicture || "/assets/images/noimage.jpg"}`}
+                  src={`${userInfo?.data.profilePicture || "/assets/images/noimage.jpg"}`}
                   alt="profile"
                   width={512}
                   height={512}
@@ -146,7 +152,9 @@ export default function Profile() {
                 </div>
               </button>
               <div className="header-content flex flex-col justify-between py-2">
-                <h1 className="profile-name text-4xl">{username}</h1>
+                <h1 className="profile-name text-4xl">
+                  {userInfo?.data.username}
+                </h1>
                 <div className="profile-data flex gap-4">
                   <div className="watchlist-total flex flex-col items-center font-sans_caption">
                     <h3 className="watchlist-total-data text-xl">
@@ -194,10 +202,7 @@ export default function Profile() {
                     <Plus size={32} className="text-primary" weight="bold" />
                   </button>
                 </div>
-                <WatchlistCard
-                  watchlists={enrichedWatchlists}
-                  username={username}
-                />
+                <WatchlistCard watchlists={watchlists} />
               </div>
               <button
                 role="tab"

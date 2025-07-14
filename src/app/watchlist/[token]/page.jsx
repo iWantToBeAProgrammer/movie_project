@@ -8,14 +8,15 @@ import BackNavigation from "@/components/Common/BackNavigation";
 import WatchlistItemCard from "@/components/Watchlist/WatchlistItemCard";
 import { useRouter } from "next/navigation";
 import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
-import { useState } from "react";
-import { IoAddCircleOutline, IoPersonAddOutline } from "react-icons/io5";
+import { IoPersonAddOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { TbForbid } from "react-icons/tb";
 import { CaretDown, DoorOpen } from "@phosphor-icons/react";
-import { CiLock, CiGlobe, CiUnlock } from "react-icons/ci";
+import { CiLock, CiUnlock } from "react-icons/ci";
 import { ShareNetwork } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
+import SaveButton from "@/components/Watchlist/WatchlistSavedButton";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
@@ -40,32 +41,6 @@ export default function WatchlistDetail({ params }) {
 
     toast.success("Link Copied to Clipboard");
   };
-
-  const saveToLibrary = async (token) => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/save`,
-      {
-        method: "POST",
-      },
-    );
-
-    if (!response.ok) throw new Error("Failed to save watchlist");
-
-    const results = await response.json();
-    return results;
-  };
-
-  const saveMutation = useMutation({
-    mutationFn: saveToLibrary,
-    onSuccess: (data) => {
-      toast.success(data.message);
-      queryClient.invalidateQueries(["watchlist", token]);
-    },
-
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
 
   const shareWatchlistUrl = (watchlistToken, inviteToken) => {
     const baseUrl = `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/view`;
@@ -244,20 +219,7 @@ export default function WatchlistDetail({ params }) {
         <div className="mt-8 flex h-12 w-full items-center justify-start">
           <div className="watchlist-actions flex items-center gap-4">
             {!isOwned && (
-              <div
-                className="tooltip font-semibold tooltip-accent"
-                data-tip="Save to your library"
-              >
-                <button
-                  onClick={() => saveMutation.mutate(token)}
-                  className="cursor-pointer"
-                >
-                  <IoAddCircleOutline
-                    size={32}
-                    className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                  />
-                </button>
-              </div>
+              <SaveButton isSavedInitial={watchlist?.saved} token={token} />
             )}
             {watchlist.userRole === "OWNER" && (
               <div className="flex items-center gap-4">
