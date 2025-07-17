@@ -167,6 +167,12 @@ export const POST = async (req) => {
           { error: "Invalid watchlist ID" },
           { status: 403 },
         );
+
+      if (existingWatchlist.role === "VIEWER")
+        return NextResponse.json(
+          { error: "You're not allowed adding movie to this watchlist" },
+          { status: 500 },
+        );
     }
 
     // Handle adding movie logic

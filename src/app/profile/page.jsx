@@ -89,10 +89,6 @@ export default function Profile() {
     })),
   ];
 
-  const totalWatchlist = watchlists.length;
-  const totalFavorites = favoriteMovies.data.length;
-  const totalWatched = watchedMovies.data.length;
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setWatchlistData((prev) => ({ ...prev, [name]: value }));
@@ -122,6 +118,8 @@ export default function Profile() {
     favoriteMovies: favoriteMovies.data.map((item) => item.movie),
     watchedMovies: watchedMovies.data.map((item) => item.movie),
   };
+
+  console.log(watchlists)
 
   return (
     <>
