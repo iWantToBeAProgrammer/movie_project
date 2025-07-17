@@ -28,7 +28,7 @@ const WatchlistModal = ({
                 height={600}
                 className="aspect-square object-cover object-center"
                 src={
-                  watchlistData.picture
+                  watchlistData?.picture
                     ? URL.createObjectURL(watchlistData.picture)
                     : "/assets/images/watchlist-default.jpg"
                 }
@@ -57,7 +57,7 @@ const WatchlistModal = ({
                 placeholder="Add a name"
                 className="input-bordered input input-lg w-full py-5"
                 name="name"
-                value={watchlistData.name}
+                value={watchlistData?.name}
                 onChange={handleChange}
               />
             </label>
@@ -67,7 +67,7 @@ const WatchlistModal = ({
                 className="textarea-bordered textarea h-full w-full resize-none textarea-lg"
                 placeholder="Add an optional description here"
                 name="description"
-                value={watchlistData.description}
+                value={watchlistData?.description}
                 onChange={handleChange}
               ></textarea>
             </label>

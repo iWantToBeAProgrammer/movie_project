@@ -17,6 +17,7 @@ import { CiLock, CiUnlock } from "react-icons/ci";
 import { ShareNetwork } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import SaveButton from "@/components/Watchlist/WatchlistSavedButton";
+import Link from "next/link";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
@@ -134,6 +135,8 @@ export default function WatchlistDetail({ params }) {
     (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
   );
 
+  console.log(filteredMembers);
+
   return (
     <div className="mx-auto flex flex-col items-center justify-center">
       <BackNavigation />
@@ -196,7 +199,9 @@ export default function WatchlistDetail({ params }) {
               <button
                 onClick={() =>
                   filteredMembers.length === 1
-                    ? router.push("/profile")
+                    ? filteredMembers[0]?.userId === user.id
+                      ? router.push("/profile")
+                      : router.push(`/user/${filteredMembers[0]?.userId}`)
                     : document.getElementById("shared_modal").showModal()
                 }
               >
@@ -318,7 +323,17 @@ export default function WatchlistDetail({ params }) {
                   </div>
                   <div>
                     <div className="flex h-full items-center">
-                      {member.user.username}
+                      {/* {member.user.username} */}
+                      {!isMe ? (
+                        <Link
+                          href={`/user/${member.userId}`}
+                          className="hover:underline"
+                        >
+                          {member.user.username}
+                        </Link>
+                      ) : (
+                        member.user.username
+                      )}
                     </div>
                   </div>
                   {iAmOwner && !isOwner ? (

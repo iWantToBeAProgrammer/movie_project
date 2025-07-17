@@ -7,8 +7,6 @@ import Image from "next/image";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import { HiOutlinePencil } from "react-icons/hi";
 import WatchlistModal from "@/components/Watchlist/WatchlistModal";
-import toast from "react-hot-toast";
-import Loading from "@/app/loading";
 
 export default function UserProfileLayout({
   userInfo,
@@ -20,12 +18,12 @@ export default function UserProfileLayout({
   updatedUserData,
   setUpdatedUserData,
   watchlistData,
-  setWatchlistData,
   handleUserImageChange,
   handleChange,
   handleImageChange,
   handleSubmit,
   handleUpdateUserSubmit,
+  isPublicView = false,
 }) {
   const totalWatchlist = watchlists.length;
   const totalFavorites = favoriteMovies.length;
@@ -37,6 +35,7 @@ export default function UserProfileLayout({
         <div className="profile-content-left w-3/4">
           <header className="flex gap-8">
             <button
+              disabled={isPublicView}
               onClick={() => {
                 setUpdatedUserData({
                   username: userInfo.username,
@@ -44,7 +43,7 @@ export default function UserProfileLayout({
                 });
                 document.getElementById("profile-modal").showModal();
               }}
-              className="profile-image-wrapper relative flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-2xl"
+              className={`profile-image-wrapper relative flex h-32 w-32 ${!isPublicView && "cursor-pointer"} items-center justify-center overflow-hidden rounded-2xl`}
             >
               <Image
                 src={userInfo?.profilePicture || "/assets/images/noimage.jpg"}
@@ -53,9 +52,11 @@ export default function UserProfileLayout({
                 height={512}
                 className="aspect-square h-full w-full object-cover object-center"
               />
-              <div className="profile-image-overlay absolute top-0 left-0 z-10 flex h-full w-full flex-col items-center justify-center transition duration-200 ease-out *:hidden hover:bg-black/70 hover:*:block">
-                <HiOutlinePencil size={64} />
-              </div>
+              {!isPublicView && (
+                <div className="profile-image-overlay absolute top-0 left-0 z-10 flex h-full w-full flex-col items-center justify-center transition duration-200 ease-out *:hidden hover:bg-black/70 hover:*:block">
+                  <HiOutlinePencil size={64} />
+                </div>
+              )}
             </button>
 
             <div className="header-content flex flex-col justify-between py-2">
@@ -92,22 +93,24 @@ export default function UserProfileLayout({
               role="tabpanel"
               className="relative tab-content border-t-white/30 py-8"
             >
-              <div className="mb-4 flex w-full justify-end">
-                <button
-                  onClick={() =>
-                    document.getElementById("watchlist-modal").showModal()
-                  }
-                  className="add-watchlist-button rounded-2xl bg-neutral/90 p-4 transition-all duration-200 ease-in-out btn-md hover:scale-110 hover:bg-neutral"
-                >
-                  <Plus size={32} className="text-primary" weight="bold" />
-                </button>
-              </div>
+              {!isPublicView && (
+                <div className="mb-4 flex w-full justify-end">
+                  <button
+                    onClick={() =>
+                      document.getElementById("watchlist-modal").showModal()
+                    }
+                    className="add-watchlist-button rounded-2xl bg-neutral/90 p-4 transition-all duration-200 ease-in-out btn-md hover:scale-110 hover:bg-neutral"
+                  >
+                    <Plus size={32} className="text-primary" weight="bold" />
+                  </button>
+                </div>
+              )}
               <WatchlistCard watchlists={watchlists} />
             </div>
             <button
               role="tab"
               onClick={() => setTabValue("favorites")}
-              className={`tab ${
+              className={`tab ${isPublicView && "tab-disabled"} ${
                 tabValue === "favorites" ? "tab-active" : ""
               } h-12 font-bebas_neue text-2xl`}
             >
@@ -128,7 +131,7 @@ export default function UserProfileLayout({
             <button
               onClick={() => setTabValue("watched")}
               role="tab"
-              className={`tab ${
+              className={`tab ${isPublicView && "tab-disabled"} ${
                 tabValue === "watched" ? "tab-active" : ""
               } h-12 font-bebas_neue text-2xl`}
             >
@@ -176,9 +179,9 @@ export default function UserProfileLayout({
                   height={512}
                   className="aspect-square object-cover object-center"
                   src={
-                    updatedUserData.profilePicture instanceof File
-                      ? URL.createObjectURL(updatedUserData.profilePicture)
-                      : updatedUserData.profilePicture ||
+                    updatedUserData?.profilePicture instanceof File
+                      ? URL.createObjectURL(updatedUserData?.profilePicture)
+                      : updatedUserData?.profilePicture ||
                         "/assets/images/noimage.jpg"
                   }
                   alt="User Profile Preview"
@@ -205,7 +208,7 @@ export default function UserProfileLayout({
                   placeholder="Username"
                   className="input input-lg w-72 focus:outline-none"
                   name="username"
-                  value={updatedUserData.username}
+                  value={updatedUserData?.username}
                   onChange={(e) =>
                     setUpdatedUserData((prev) => ({
                       ...prev,

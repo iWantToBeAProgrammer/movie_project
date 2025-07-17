@@ -119,8 +119,6 @@ export default function Profile() {
     watchedMovies: watchedMovies.data.map((item) => item.movie),
   };
 
-  console.log(watchlists)
-
   return (
     <>
       <Navbar />
