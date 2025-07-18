@@ -18,7 +18,7 @@ const Hero = ({ movieResults }) => {
   const [isIntervalActive, setIsIntervalActive] = useState(true);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const result = movieResults[currentIndex] || {};
+  const result = movieResults?.[currentIndex] || {};
   const { user } = useAuth();
 
   const [watchlistData, setWatchlistData] = useState({
