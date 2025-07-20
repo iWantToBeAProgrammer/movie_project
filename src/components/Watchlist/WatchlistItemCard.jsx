@@ -19,22 +19,22 @@ const WatchlistItemCard = ({ watchlistItem = [] }) => {
         return (
           <div key={key} className="flex space-x-10">
             <p className="flex items-center">{key + 1}</p>
-            <div className="flex py-5 border-b">
-              <div className="flex w-60 h-72">
-                <div className="relative group w-full h-full overflow-hidden rounded-lg">
+            <div className="flex border-b py-5">
+              <div className="flex h-72 w-60">
+                <div className="group relative h-full w-full overflow-hidden rounded-lg">
                   <Image
                     src={`${process.env.NEXT_APP_BASEIMG}${
                       item.movie.poster_path || item.movie.posterPath
                     }`}
                     fill
-                    className="object-cover w-full h-full"
+                    className="h-full w-full object-cover"
                     alt={item.movie.title || "Movie poster"}
                   />
 
-                  <div className="w-full group-hover:translate-y-0 bg-black/0 hover:bg-black/70 transition-colors duration-300 ease-in-out h-full">
-                    <div className="flex flex-col items-center justify-center w-full h-full gap-2 p-2 text-white">
+                  <div className="h-full w-full bg-black/0 transition-colors duration-300 ease-in-out group-hover:translate-y-0 hover:bg-black/70">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-2 text-white">
                       <Link
-                        className="text-6xl hover:scale-125 transition-all duration-300 ease-in-out"
+                        className="text-6xl transition-all duration-300 ease-in-out hover:scale-125"
                         href={`/movies/${item?.movie?.id}`}
                       >
                         <IoPlayCircleOutline />
@@ -43,10 +43,10 @@ const WatchlistItemCard = ({ watchlistItem = [] }) => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col w-full px-6 py-10 justify-center font-sans_caption gap-2 text-pretty">
-                <div className="flex justify-between w-full items-center">
-                  <h1 className="text-4xl font-raleway">{item.movie.title}</h1>
-                  <h1 className="text-2xl font-raleway">
+              <div className="flex w-full flex-col justify-center gap-2 px-6 py-10 font-sans_caption text-pretty">
+                <div className="flex w-full items-center justify-between">
+                  <h1 className="font-raleway text-4xl">{item.movie.title}</h1>
+                  <h1 className="font-raleway text-2xl">
                     {item.movie.vote_average.toFixed(1)}/10
                   </h1>
                 </div>

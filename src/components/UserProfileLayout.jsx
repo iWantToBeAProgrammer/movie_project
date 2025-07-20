@@ -2,11 +2,11 @@
 "use client";
 
 import WatchlistCard from "@/components/Profile/WatchlistCard";
-import CardMovieList from "@/components/MovieList/CardMovieList";
 import Image from "next/image";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import { HiOutlinePencil } from "react-icons/hi";
 import WatchlistModal from "@/components/Watchlist/WatchlistModal";
+import CardMovieList from "./MovieList/CardMovieList";
 
 export default function UserProfileLayout({
   userInfo,
@@ -121,7 +121,7 @@ export default function UserProfileLayout({
               className="tab-content border-t-white/30 py-10"
             >
               <div className="grid grid-cols-3 gap-4">
-                {favoriteMovies > 0 ? (
+                {favoriteMovies.length > 0 ? (
                   <CardMovieList results={favoriteMovies} />
                 ) : (
                   <p className="text-white/30">No favorite movies yet.</p>
@@ -141,11 +141,13 @@ export default function UserProfileLayout({
               role="tabpanel"
               className="tab-content border-t-white/30 py-10"
             >
-              {watchedMovies > 0 ? (
-                <CardMovieList results={watchedMovies} />
-              ) : (
-                <p className="text-white/30">No watched movies yet.</p>
-              )}
+              <div className="grid grid-cols-3 gap-4">
+                {watchedMovies.length > 0 ? (
+                  <CardMovieList results={watchedMovies} />
+                ) : (
+                  <p className="text-white/30">No watched movies yet.</p>
+                )}
+              </div>
             </div>
           </div>
         </div>

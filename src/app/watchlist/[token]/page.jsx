@@ -135,7 +135,6 @@ export default function WatchlistDetail({ params }) {
     (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
   );
 
-  console.log(filteredMembers);
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center">
