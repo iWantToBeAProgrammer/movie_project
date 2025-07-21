@@ -17,6 +17,8 @@ const CardMovieList = ({ results = [] }) => {
           result.release_date?.slice(0, 4) ||
           result.releaseDates?.slice(0, 4) ||
           "Unknown Release Dates";
+        
+
 
         return (
           <div key={result.id} className="w-full">
