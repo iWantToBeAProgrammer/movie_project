@@ -31,7 +31,16 @@ export const GET = async (req) => {
         },
         items: {
           select: {
-            movie: true,
+            movie: {
+              include: {
+                watchedMovies: {
+                  select: { id: true },
+                },
+                favoriteMovies: {
+                  select: { id: true },
+                },
+              },
+            },
           },
         },
         SavedWatchlist: {
@@ -49,12 +58,29 @@ export const GET = async (req) => {
       );
     }
 
-    const membersById = watchlist.members.find(
+    const { members, items, SavedWatchlist, ...rest } = watchlist;
+
+    const membersById = members.find(
       (member) => member.userId === data?.user?.id,
     );
     const role = membersById?.role;
-    const isSaved = watchlist.SavedWatchlist.length > 0;
-    return NextResponse.json({ ...watchlist, userRole: role, saved: isSaved });
+    const isSaved = SavedWatchlist.length > 0;
+    const enrichedItems = items.map((item) => {
+      const movie = item.movie;
+      return {
+        ...movie,
+        isWatched: movie.watchedMovies.length > 0,
+        isFavorite: movie.favoriteMovies.length > 0,
+      };
+    });
+
+    return NextResponse.json({
+      ...rest,
+      members,
+      items: enrichedItems,
+      userRole: role,
+      saved: isSaved,
+    });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -8,7 +8,7 @@ import BackNavigation from "@/components/Common/BackNavigation";
 import WatchlistItemCard from "@/components/Watchlist/WatchlistItemCard";
 import { useRouter } from "next/navigation";
 import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
-import { IoPersonAddOutline } from "react-icons/io5";
+import { IoPersonAddOutline, IoTicketOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { TbForbid } from "react-icons/tb";
@@ -135,6 +135,7 @@ export default function WatchlistDetail({ params }) {
     (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
   );
 
+  console.log(watchlist);
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center">
@@ -222,6 +223,12 @@ export default function WatchlistDetail({ params }) {
       <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
         <div className="mt-8 flex h-12 w-full items-center justify-start">
           <div className="watchlist-actions flex items-center gap-4">
+            {isOwned && (
+              <button className="btn flex btn-circle h-16 w-16 items-center justify-center text-neutral transition-all duration-200 ease-in-out btn-primary hover:scale-105 hover:bg-secondary">
+                <IoTicketOutline size={32} />
+              </button>
+            )}
+
             {!isOwned && (
               <SaveButton isSavedInitial={watchlist?.saved} token={token} />
             )}
