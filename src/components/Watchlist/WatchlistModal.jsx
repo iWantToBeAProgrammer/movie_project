@@ -7,6 +7,8 @@ const WatchlistModal = ({
   handleImageChange,
   handleChange,
 }) => {
+
+  console.log(watchlistData)
   return (
     <div className="modal-box max-w-2xl">
       <form method="dialog" className="mb-4">

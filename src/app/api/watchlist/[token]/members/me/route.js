@@ -1,5 +1,3 @@
-// /app/api/watchlist/[token]/members/me/route.js
-
 import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
 import { NextResponse } from "next/server";

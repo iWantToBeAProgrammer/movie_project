@@ -1,6 +1,6 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchWatchlistData, togglePrivacy } from "@/libs/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { togglePrivacy } from "@/libs/api";
 import Image from "next/image";
 import WatchlistThumbnail from "@/components/Profile/Thumbnail/WatchlistThumbnail";
 import Loading from "@/app/loading";
@@ -18,22 +18,14 @@ import { ShareNetwork } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import SaveButton from "@/components/Watchlist/WatchlistSavedButton";
 import Link from "next/link";
+import { useWatchlist } from "@/hooks/useWatchlistQueries";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
   const router = useRouter();
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const { user } = useAuth();
-  const {
-    data: watchlist,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["watchlist", token],
-    queryFn: () => fetchWatchlistData(token),
-    enabled: !!token,
-  });
+  const { data: watchlist, isLoading, isError, error } = useWatchlist(token);
 
   const handleAddCollaborator = () => {
     navigator.clipboard.writeText(
@@ -134,8 +126,6 @@ export default function WatchlistDetail({ params }) {
   const filteredMembers = watchlist?.members?.filter(
     (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
   );
-
-  console.log(watchlist);
 
   return (
     <div className="mx-auto flex flex-col items-center justify-center">
@@ -267,7 +257,7 @@ export default function WatchlistDetail({ params }) {
                     ) : (
                       <CiUnlock
                         size={32}
-                        className="transition-acll text-white/50 duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                        className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
                       />
                     )}
                   </button>
@@ -293,7 +283,7 @@ export default function WatchlistDetail({ params }) {
           <h1 className="text-4xl">Movies</h1>
         </div>
         <div className="flex flex-col gap-4">
-          <WatchlistItemCard watchlistItem={watchlistItem} />
+          <WatchlistItemCard watchlistId={watchlist.id} watchlistItem={watchlistItem} token={token} />
         </div>
       </div>
 

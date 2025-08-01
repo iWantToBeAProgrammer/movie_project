@@ -107,6 +107,8 @@ export const POST = async (req) => {
     const picture = formData.get("picture");
     const inviteToken = nanoid(16);
 
+    console.log(formData)
+
     let imageUrl = null;
 
     // Handle picture upload
