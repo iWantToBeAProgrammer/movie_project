@@ -19,6 +19,7 @@ import { useState } from "react";
 import SaveButton from "@/components/Watchlist/WatchlistSavedButton";
 import Link from "next/link";
 import { useWatchlist } from "@/hooks/useWatchlistQueries";
+import TicketModal from "./components/TicketModal";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
@@ -214,7 +215,12 @@ export default function WatchlistDetail({ params }) {
         <div className="mt-8 flex h-12 w-full items-center justify-start">
           <div className="watchlist-actions flex items-center gap-4">
             {isOwned && (
-              <button className="btn flex btn-circle h-16 w-16 items-center justify-center text-neutral transition-all duration-200 ease-in-out btn-primary hover:scale-105 hover:bg-secondary">
+              <button
+                onClick={() =>
+                  document.getElementById("generate_ticket").showModal()
+                }
+                className="btn flex btn-circle h-16 w-16 items-center justify-center text-neutral transition-all duration-200 ease-in-out btn-primary hover:scale-105 hover:bg-secondary"
+              >
                 <IoTicketOutline size={32} />
               </button>
             )}
@@ -283,7 +289,11 @@ export default function WatchlistDetail({ params }) {
           <h1 className="text-4xl">Movies</h1>
         </div>
         <div className="flex flex-col gap-4">
-          <WatchlistItemCard watchlistId={watchlist.id} watchlistItem={watchlistItem} token={token} />
+          <WatchlistItemCard
+            watchlistId={watchlist.id}
+            watchlistItem={watchlistItem}
+            token={token}
+          />
         </div>
       </div>
 
@@ -383,6 +393,11 @@ export default function WatchlistDetail({ params }) {
           </ul>
         </div>
       </dialog>
+
+      <dialog id="generate_ticket" className="modal modal-bottom sm:modal-middle ">
+        <TicketModal items={watchlistItem}/>
+      </dialog>
+
     </div>
   );
 }
