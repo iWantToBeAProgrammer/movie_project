@@ -1,24 +1,66 @@
 import Image from "next/image";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function TicketModal({ items }) {
-  return (
-    <div className="modal-box flex flex-col items-center max-w-5xl">
-      <div className="modal-title">
-        <h2 className="text-2xl font-bold text-center mb-5">Generate Movie Ticket</h2>
+  const [selectedMovies, setSelectedMovies] = useState([]);
+  const [step, setStep] = useState(1);
 
-        <ul className="steps">
-          <li className="step step-primary">Choose Movies</li>
-          <li className="step">Choose your theme</li>
-          <li className="step">Download</li>
+  const handleNextStep = (step) => {
+    if (step === 1 && selectedMovies.length < 2) {
+      toast.error("Please select at least 2 movies.", {
+        position: "top-right",
+      });
+      return;
+    }
+    if (step === 1 && selectedMovies.length > 4) {
+      toast.error("You can only select up to 4 movies.", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    setStep(step + 1);
+  };
+
+  const handlePreviousStep = (step) => {
+    if (step > 1) {
+      setStep(step - 1);
+    }
+  };
+
+  if (!items || items.length === 0) {
+    return (
+      <div className="modal-box">
+        <h2 className="text-2xl font-bold">No Movies Selected</h2>
+        <p className="mt-4">Please add movies to your watchlist first.</p>
+      </div>
+    );
+  }
+
+  console.log("Selected Movies:", selectedMovies);
+  console.log("Current Step:", step);
+
+  return (
+    <div className="relative modal-box w-11/12 max-w-3xl">
+      <div className="modal-title mb-4 flex w-full flex-col items-center rounded-lg p-4 shadow-lg">
+        <h2 className="mb-5 text-center text-2xl font-bold">
+          Generate Movie Ticket
+        </h2>
+
+        <ul className="steps w-full font-semibold">
+          <li className={`step step-primary`}>Choose Movies</li>
+          <li className={`step ${step >= 2 && "step-primary"} `}>
+            Choose your theme
+          </li>
+          <li className={`step ${step === 3 && "step-primary"} `}>Download</li>
         </ul>
       </div>
-      <h3 className="step-title">Choose Movies</h3>
-      <p className="my-5 text-sm text-white/40">
-        Select 2-4 movies from your watchlist to include in the ticket
-      </p>
 
-      <div className="selection-counter p-4 outline-info border-error text-error border rounded-xl" id="selectionCounter">
+      <div
+        className="selection-counter rounded-xl bg-error p-4 text-white mt-12"
+        id="selectionCounter"
+      >
         Selected: <span id="selectedCount">0</span>/4 movies (minimum 2
         required)
       </div>
@@ -28,7 +70,7 @@ export default function TicketModal({ items }) {
           {items.map((item) => (
             <div
               key={item.id}
-              className="movie-item mt-4 rounded-lg bg-neutral-800 p-4 shadow-lg"
+              className="movie-item mt-4 rounded-lg bg-neutral-800 p-4 shadow-lg hover:-translate-y-1 transition-transform duration-200 ease-in"
             >
               <input
                 type="checkbox"
@@ -38,39 +80,40 @@ export default function TicketModal({ items }) {
                 className="hidden"
                 onChange={(e) => {
                   const countElement = document.getElementById("selectedCount");
-                  const selectionCounter = document.getElementById("selectionCounter");
+                  const selectionCounter =
+                    document.getElementById("selectionCounter");
                   const isChecked = e.target.checked;
-                    if (isChecked) {
-                        e.target.parentElement.classList.add("bg-primary");
-                    } else {
-                        e.target.parentElement.classList.remove("bg-primary");
-                    }
-                  const selectedCount = document.querySelectorAll(
-                    'input[name="selectedMovies"]:checked'
-                  ).length;
+                  if (isChecked) {
+                    e.target.parentElement.classList.add("border");
+                  } else {
+                    e.target.parentElement.classList.remove("border");
+                  }
+
+                  setSelectedMovies(
+                    Array.from(
+                      document.querySelectorAll(
+                        'input[name="selectedMovies"]:checked',
+                      ),
+                    ).map((input) => input.value),
+                  );
+
+                  const selectedCount =
+                    selectedMovies.length + (isChecked ? 1 : -1);
                   countElement.textContent = selectedCount;
-                    if (selectedCount < 2) {
-                        countElement.classList.add("text-error");
-                        selectionCounter.classList.add("text-error");
-                        selectionCounter.classList.add("border-error");
 
-                        selectionCounter.classList.remove("text-info");
-                        selectionCounter.classList.remove("border-info");
-                    } else if (selectedCount > 4) {
-                        selectionCounter.classList.add("text-error");
-                        selectionCounter.classList.add("border-error");
-                        
-                        selectionCounter.classList.remove("text-info");
-                        selectionCounter.classList.remove("border-info");
-                        toast.error("You can only select up to 4 movies.");
-                    } else {
+                  if (selectedCount < 2) {
+                    selectionCounter.classList.add("bg-error");
 
-                        selectionCounter.classList.remove("text-error");
-                        selectionCounter.classList.remove("border-error");
-                        countElement.classList.remove("text-error");
-                        selectionCounter.classList.add("text-info");
-                        selectionCounter.classList.add("border-info");
-                    }
+                    selectionCounter.classList.remove("bg-success");
+                  } else if (selectedCount > 4) {
+                    selectionCounter.classList.add("bg-error");
+
+                    selectionCounter.classList.remove("bg-success");
+                    toast.error("You can only select up to 4 movies.");
+                  } else {
+                    selectionCounter.classList.remove("bg-error");
+                    selectionCounter.classList.add("bg-success");
+                  }
                 }}
               />
               <label
@@ -121,11 +164,8 @@ export default function TicketModal({ items }) {
         </div>
       </div>
 
-      <div className="modal-action">
-        <form method="dialog">
-          {/* if there is a button in form, it will close the modal */}
-          <button className="btn">Close</button>
-        </form>
+      <div className="modal-action" onClick={() => handleNextStep(step)}>
+        <button className="btn btn-lg btn-primary">Next</button>
       </div>
     </div>
   );

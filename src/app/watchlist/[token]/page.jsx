@@ -129,7 +129,7 @@ export default function WatchlistDetail({ params }) {
   );
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-center">
+    <div className="mx-auto flex w-full flex-col items-center justify-center">
       <BackNavigation />
       <WatchlistBackdrop imageUrl={watchlist.picture || thumbnailUrl}>
         <div className="flex h-full w-full max-w-(--breakpoint-xl) items-end gap-4">
@@ -394,10 +394,15 @@ export default function WatchlistDetail({ params }) {
         </div>
       </dialog>
 
-      <dialog id="generate_ticket" className="modal modal-bottom sm:modal-middle ">
-        <TicketModal items={watchlistItem}/>
+      <dialog
+        id="generate_ticket"
+        className="modal modal-middle max-md:modal-bottom"
+      >
+        <TicketModal items={watchlistItem} />
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
-
     </div>
   );
 }
