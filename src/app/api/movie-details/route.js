@@ -28,7 +28,7 @@ export const GET = async (req) => {
 
     const userId = data.user.id;
     const watchlists = await prisma.watchlistMember.findMany({
-      where: { userId: userId },
+      where: { userId: userId, role: { not: "VIEWER" } },
       select: {
         watchlist: true,
       },

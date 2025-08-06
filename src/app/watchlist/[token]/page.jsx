@@ -8,13 +8,16 @@ import BackNavigation from "@/components/Common/BackNavigation";
 import WatchlistItemCard from "@/components/Watchlist/WatchlistItemCard";
 import { useRouter } from "next/navigation";
 import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
-import { useState } from "react";
 import { IoPersonAddOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { TbForbid } from "react-icons/tb";
 import { CaretDown, DoorOpen } from "@phosphor-icons/react";
-import { CiLock, CiGlobe, CiUnlock } from "react-icons/ci";
+import { CiLock, CiUnlock } from "react-icons/ci";
+import { ShareNetwork } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
+import SaveButton from "@/components/Watchlist/WatchlistSavedButton";
+import Link from "next/link";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
@@ -40,6 +43,29 @@ export default function WatchlistDetail({ params }) {
     toast.success("Link Copied to Clipboard");
   };
 
+  const shareWatchlistUrl = (watchlistToken, inviteToken) => {
+    const baseUrl = `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/view`;
+    const url = new URL(baseUrl);
+
+    url.searchParams.set("token", watchlistToken);
+
+    if (inviteToken) {
+      url.searchParams.set("inviteToken", inviteToken);
+    }
+
+    return url.toString();
+  };
+
+  const handleShareWatchlist = () => {
+    const shareUrl = shareWatchlistUrl(
+      watchlist.token,
+      watchlist.isPublic ? undefined : watchlist.inviteToken,
+    );
+
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Link copied to clipboard!");
+  };
+
   const handleLeaveWatchlist = async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/members/me`,
@@ -63,7 +89,7 @@ export default function WatchlistDetail({ params }) {
       queryClient.invalidateQueries(["watchlist", token]);
     },
     onError: (error) => {
-      console.error(error);
+      toast.error(error.message);
     },
   });
 
@@ -102,6 +128,15 @@ export default function WatchlistDetail({ params }) {
   const totalMovies = watchlist.items?.length || 0; // ✅ A
   const watchlistItem = watchlist?.items;
 
+  const isOwned =
+    watchlist?.userRole === "OWNER" || watchlist?.userRole === "COLLABORATOR";
+
+  const filteredMembers = watchlist?.members?.filter(
+    (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
+  );
+
+  console.log(filteredMembers);
+
   return (
     <div className="mx-auto flex flex-col items-center justify-center">
       <BackNavigation />
@@ -130,8 +165,8 @@ export default function WatchlistDetail({ params }) {
             </p>
             <div className="flex w-full items-center gap-2">
               <div className="avatar-group -space-x-3">
-                {watchlist?.members ? (
-                  watchlist.members.map((member, key) => {
+                {filteredMembers ? (
+                  filteredMembers.map((member, key) => {
                     return (
                       <div
                         className="avatar border-base-100 outline-base-100"
@@ -161,17 +196,23 @@ export default function WatchlistDetail({ params }) {
                   </div>
                 )}
               </div>
-              <a
-                href={`${watchlist.members.length === 1 ? "/profile" : "#shared_modal"}`}
+              <button
+                onClick={() =>
+                  filteredMembers.length === 1
+                    ? filteredMembers[0]?.userId === user.id
+                      ? router.push("/profile")
+                      : router.push(`/user/${filteredMembers[0]?.userId}`)
+                    : document.getElementById("shared_modal").showModal()
+                }
               >
                 <p className="cursor-pointer hover:underline">
-                  {watchlist.members.length === 1
-                    ? watchlist.members[0]?.user.username
-                    : watchlist.members.length === 2
-                      ? `${watchlist.members[0]?.user.username} and ${watchlist.members[1]?.user.username}`
-                      : `${watchlist.members[0]?.user.username} and ${watchlist.members.length - 1} others`}
+                  {filteredMembers.length === 1
+                    ? filteredMembers[0]?.user.username
+                    : filteredMembers.length === 2
+                      ? `${filteredMembers[0]?.user.username} and ${filteredMembers[1]?.user.username}`
+                      : `${filteredMembers[0]?.user.username} and ${filteredMembers.length - 1} others`}
                 </p>
-              </a>
+              </button>
 
               <p>• {totalMovies} Movies</p>
             </div>
@@ -181,46 +222,65 @@ export default function WatchlistDetail({ params }) {
 
       <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
         <div className="mt-8 flex h-12 w-full items-center justify-start">
-          {watchlist.userRole === "OWNER" && (
-            <div className="watchlist-actions flex items-center gap-4">
-              <div
-                className="tooltip font-semibold tooltip-accent"
-                data-tip="Add to Collaborator"
-              >
-                <button
-                  className="cursor-pointer"
-                  onClick={handleAddCollaborator}
+          <div className="watchlist-actions flex items-center gap-4">
+            {!isOwned && (
+              <SaveButton isSavedInitial={watchlist?.saved} token={token} />
+            )}
+            {watchlist.userRole === "OWNER" && (
+              <div className="flex items-center gap-4">
+                <div
+                  className="tooltip font-semibold tooltip-accent"
+                  data-tip="Add to Collaborator"
                 >
-                  <IoPersonAddOutline
-                    size={32}
-                    className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                  />
-                </button>
-              </div>
+                  <button
+                    className="cursor-pointer"
+                    onClick={handleAddCollaborator}
+                  >
+                    <IoPersonAddOutline
+                      size={32}
+                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                    />
+                  </button>
+                </div>
 
-              <div
-                className="tooltip font-semibold tooltip-accent"
-                data-tip={watchlist?.isPublic ? "Make private" : "Make Public"}
-              >
-                <button
-                  className="cursor-pointer"
-                  onClick={privacyButtonToggle}
+                <div
+                  className="tooltip font-semibold tooltip-accent"
+                  data-tip={
+                    watchlist?.isPublic ? "Make private" : "Make Public"
+                  }
                 >
-                  {watchlist?.isPublic ? (
-                    <CiLock
-                      size={32}
-                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                    />
-                  ) : (
-                    <CiUnlock
-                      size={32}
-                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                    />
-                  )}
-                </button>
+                  <button
+                    className="cursor-pointer"
+                    onClick={privacyButtonToggle}
+                  >
+                    {watchlist?.isPublic ? (
+                      <CiLock
+                        size={32}
+                        className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                      />
+                    ) : (
+                      <CiUnlock
+                        size={32}
+                        className="transition-acll text-white/50 duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                      />
+                    )}
+                  </button>
+                </div>
               </div>
+            )}
+
+            <div
+              className={`tooltip font-semibold tooltip-accent ${!watchlist?.isPublic && watchlist.userRole === "VIEWER" && "hidden"}`}
+              data-tip="Share"
+            >
+              <button className="cursor-pointer" onClick={handleShareWatchlist}>
+                <ShareNetwork
+                  size={32}
+                  className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                />
+              </button>
             </div>
-          )}
+          </div>
         </div>
         <div className="flex space-x-10 border-b border-slate-500 py-2 text-slate-500">
           <h1 className="text-4xl">#</h1>
@@ -235,17 +295,14 @@ export default function WatchlistDetail({ params }) {
         <div className="modal-box overflow-hidden px-4 pb-12">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}
-            <a
-              href="#"
-              className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm"
-            >
+            <button className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm">
               ✕
-            </a>
+            </button>
           </form>
           <h3 className="text-lg font-bold">Shared Watchlist</h3>
           <div className="divider"></div>
           <ul className="list rounded-box bg-base-100 shadow-md">
-            {watchlist?.members.map((member, key) => {
+            {filteredMembers.map((member, key) => {
               const isMe = member.userId === user.id;
               const isOwner = member.role === "OWNER";
               const iAmOwner = watchlist.members.some(
@@ -266,7 +323,17 @@ export default function WatchlistDetail({ params }) {
                   </div>
                   <div>
                     <div className="flex h-full items-center">
-                      {member.user.username}
+                      {/* {member.user.username} */}
+                      {!isMe ? (
+                        <Link
+                          href={`/user/${member.userId}`}
+                          className="hover:underline"
+                        >
+                          {member.user.username}
+                        </Link>
+                      ) : (
+                        member.user.username
+                      )}
                     </div>
                   </div>
                   {iAmOwner && !isOwner ? (

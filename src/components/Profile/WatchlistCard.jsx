@@ -10,6 +10,9 @@ const WatchlistCard = ({ watchlists = [], username }) => {
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {watchlists.length !== 0 ? (
           watchlists?.map((watchlist, key) => {
+            const isOwner = watchlist?.members.find(
+              (item) => item.role === "OWNER",
+            );
             return (
               <Link
                 key={key}
@@ -35,7 +38,7 @@ const WatchlistCard = ({ watchlists = [], username }) => {
                       {watchlist.name}
                     </h3>
                     <p className="watchlist-card-desc text-white/30">
-                      By {watchlist?.owner?.username || username}
+                      By {isOwner?.user?.username || username}
                     </p>
                   </div>
                 </div>
