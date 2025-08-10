@@ -31,7 +31,21 @@ export const GET = async (req) => {
         },
         items: {
           select: {
-            movie: true,
+            movie: {
+              include: {
+                watchedMovies: {
+                  select: { id: true },
+                },
+                favoriteMovies: {
+                  select: { id: true },
+                },
+              },
+            },
+          },
+        },
+        SavedWatchlist: {
+          where: {
+            userId: data.user.id,
           },
         },
       },
@@ -44,12 +58,29 @@ export const GET = async (req) => {
       );
     }
 
-    const membersById = watchlist.members.find(
+    const { members, items, SavedWatchlist, ...rest } = watchlist;
+
+    const membersById = members.find(
       (member) => member.userId === data?.user?.id,
     );
+    const role = membersById?.role;
+    const isSaved = SavedWatchlist.length > 0;
+    const enrichedItems = items.map((item) => {
+      const movie = item.movie;
+      return {
+        ...movie,
+        isWatched: movie.watchedMovies.length > 0,
+        isFavorite: movie.favoriteMovies.length > 0,
+      };
+    });
 
-    const role = membersById.role;
-    return NextResponse.json({ ...watchlist, userRole: role });
+    return NextResponse.json({
+      ...rest,
+      members,
+      items: enrichedItems,
+      userRole: role,
+      saved: isSaved,
+    });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -75,6 +106,8 @@ export const POST = async (req) => {
     const movieId = rawMovieId ? parseInt(rawMovieId, 10) : null;
     const picture = formData.get("picture");
     const inviteToken = nanoid(16);
+
+    console.log(formData)
 
     let imageUrl = null;
 
@@ -162,6 +195,12 @@ export const POST = async (req) => {
           { error: "Invalid watchlist ID" },
           { status: 403 },
         );
+
+      if (existingWatchlist.role === "VIEWER")
+        return NextResponse.json(
+          { error: "You're not allowed adding movie to this watchlist" },
+          { status: 500 },
+        );
     }
 
     // Handle adding movie logic
@@ -199,13 +238,22 @@ export const POST = async (req) => {
       data: { watchlistId: selectedWatchlistId, movieId: finalMovieId },
     });
 
-    await prisma.watchlistMember.create({
-      data: {
-        watchlistId: selectedWatchlistId,
+    const existingMembership = await prisma.watchlistMember.findFirst({
+      where: {
         userId: user.id,
-        role: "OWNER",
+        watchlistId: selectedWatchlistId,
       },
     });
+
+    if (!existingMembership) {
+      await prisma.watchlistMember.create({
+        data: {
+          watchlistId: selectedWatchlistId,
+          userId: user.id,
+          role: "OWNER", // or COLLABORATOR if applicable
+        },
+      });
+    }
 
     return NextResponse.json({
       message: watchlistId

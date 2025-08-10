@@ -5,12 +5,18 @@ const TMDB_API = {
   apiKey: process.env.NEXT_APP_APIKEY,
 
   getMovieDetailUrl: (movieId) =>
-    `${TMDB_API.baseUrl}/movie/${movieId}?api_key=${TMDB_API.apiKey}&append_to_response=release_dates`,
+    `${TMDB_API.baseUrl}/movie/${movieId}?append_to_response=release_dates`,
 };
 
 async function fetchMovieDetails(movie) {
   try {
-    const response = await fetch(TMDB_API.getMovieDetailUrl(movie.id));
+    const response = await fetch(TMDB_API.getMovieDetailUrl(movie.id), {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${TMDB_API.apiKey}`,
+        Accept: "application/json",
+      },
+    });
 
     if (!response.ok) {
       console.warn(`Failed to fetch certification for movie ID: ${movie.id}`);
@@ -51,11 +57,16 @@ export async function GET(req) {
     const page = searchParams.get("page") || "1";
 
     const url = new URL(`${TMDB_API.baseUrl}/search/movie`);
-    url.searchParams.append("api_key", TMDB_API.apiKey);
     url.searchParams.append("query", searchParams.get("query"));
     url.searchParams.append("page", page);
 
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${TMDB_API.apiKey}`,
+        Accept: "application/json",
+      },
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch data from TMDB");

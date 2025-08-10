@@ -20,6 +20,7 @@ model User {
   watchedMovies      WatchedMovie[]
   favoriteMovies     favoriteMovie[]
   members            watchlistMember[]
+  SavedWatchlist     SavedWatchlist[]
 }
 
 model Movie {
@@ -48,17 +49,18 @@ model Movie {
 }
 
 model Watchlist {
-  id          Int               @id @default(autoincrement())
-  createdAt   DateTime          @default(now())
-  description String?
-  name        String
-  picture     String?
-  updatedAt   DateTime          @updatedAt
-  inviteToken String?           @unique
-  isPublic    Boolean           @default(true)
-  token       String            @unique
-  items       WatchlistItem[]
-  members     watchlistMember[]
+  id             Int               @id @default(autoincrement())
+  createdAt      DateTime          @default(now())
+  description    String?
+  name           String
+  picture        String?
+  updatedAt      DateTime          @updatedAt
+  inviteToken    String?           @unique
+  isPublic       Boolean           @default(true)
+  token          String            @unique
+  items          WatchlistItem[]
+  members        watchlistMember[]
+  SavedWatchlist SavedWatchlist[]
 }
 
 model watchlistMember {
@@ -126,7 +128,19 @@ model favoriteMovie {
   @@index([movieId])
 }
 
+model SavedWatchlist {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id") @db.Uuid
+  watchlistId Int
+  user        User      @relation(fields: [userId], references: [id])
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, watchlistId]) // prevent saving the same watchlist twice
+}
+
 enum MemberRole {
   OWNER
   COLLABORATOR
+  VIEWER
 }
