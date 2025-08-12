@@ -17,10 +17,10 @@ model User {
   id                 String            @id @default(uuid()) @map("id") @db.Uuid
   last_email_sent_at DateTime?
   comments           Comment[]
+  SavedWatchlist     SavedWatchlist[]
   watchedMovies      WatchedMovie[]
   favoriteMovies     favoriteMovie[]
   members            watchlistMember[]
-  SavedWatchlist     SavedWatchlist[]
 }
 
 model Movie {
@@ -58,9 +58,9 @@ model Watchlist {
   inviteToken    String?           @unique
   isPublic       Boolean           @default(true)
   token          String            @unique
+  SavedWatchlist SavedWatchlist[]
   items          WatchlistItem[]
   members        watchlistMember[]
-  SavedWatchlist SavedWatchlist[]
 }
 
 model watchlistMember {
@@ -132,11 +132,11 @@ model SavedWatchlist {
   id          String    @id @default(cuid())
   userId      String    @map("user_id") @db.Uuid
   watchlistId Int
+  createdAt   DateTime  @default(now())
   user        User      @relation(fields: [userId], references: [id])
   watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
-  createdAt   DateTime  @default(now())
 
-  @@unique([userId, watchlistId]) // prevent saving the same watchlist twice
+  @@unique([userId, watchlistId])
 }
 
 enum MemberRole {

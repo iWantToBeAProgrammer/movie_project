@@ -1,6 +1,6 @@
 export const fetchMovieDetails = async (movieId, tmdbId) => {
   let url = "/api/movie-details?";
-
+  
   if (movieId) {
     url += `movieId=${movieId}`;
   } else if (tmdbId) {
