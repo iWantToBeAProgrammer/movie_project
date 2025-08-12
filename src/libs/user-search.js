@@ -1,11 +1,11 @@
-export async function getUserSearch(query) {
+export async function getUserSearchData(query, page = 1) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASEURL}/api/search?query=${query}`,
+      `${process.env.NEXT_PUBLIC_BASEURL}/api/user-search?query=${encodeURIComponent(query)}&page=${page}`,
     );
 
     if (!response.ok) {
-      throw new Error("Failed to fetch data");
+      throw new Error("Failed to fetch user data");
     }
 
     return await response.json();
