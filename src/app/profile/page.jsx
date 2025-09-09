@@ -1,16 +1,10 @@
 "use client";
 
-import WatchlistCard from "@/components/Profile/WatchlistCard";
 import { createWatchlist, updateProfileData } from "@/libs/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import CardMovieList from "@/components/MovieList/CardMovieList";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
-import WatchlistModal from "@/components/Watchlist/WatchlistModal";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Navbar from "@/components/Navbar";
-import { HiOutlinePencil } from "react-icons/hi";
 import { useProfileData } from "@/hooks/useProfileData";
 import { useAuth } from "../contexts/AuthContext";
 import Loading from "../loading";

@@ -1,6 +1,6 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchWatchlistData, togglePrivacy } from "@/libs/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { togglePrivacy } from "@/libs/api";
 import Image from "next/image";
 import WatchlistThumbnail from "@/components/Profile/Thumbnail/WatchlistThumbnail";
 import Loading from "@/app/loading";
@@ -8,7 +8,7 @@ import BackNavigation from "@/components/Common/BackNavigation";
 import WatchlistItemCard from "@/components/Watchlist/WatchlistItemCard";
 import { useRouter } from "next/navigation";
 import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
-import { IoPersonAddOutline } from "react-icons/io5";
+import { IoPersonAddOutline, IoTicketOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { TbForbid } from "react-icons/tb";
@@ -18,22 +18,15 @@ import { ShareNetwork } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import SaveButton from "@/components/Watchlist/WatchlistSavedButton";
 import Link from "next/link";
+import { useWatchlist } from "@/hooks/useWatchlistQueries";
+import TicketModal from "./components/TicketModal";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
   const router = useRouter();
   const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const { user } = useAuth();
-  const {
-    data: watchlist,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["watchlist", token],
-    queryFn: () => fetchWatchlistData(token),
-    enabled: !!token,
-  });
+  const { data: watchlist, isLoading, isError, error } = useWatchlist(token);
 
   const handleAddCollaborator = () => {
     navigator.clipboard.writeText(
@@ -135,10 +128,8 @@ export default function WatchlistDetail({ params }) {
     (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
   );
 
-  console.log(filteredMembers);
-
   return (
-    <div className="mx-auto flex flex-col items-center justify-center">
+    <div className="mx-auto flex w-full flex-col items-center justify-center">
       <BackNavigation />
       <WatchlistBackdrop imageUrl={watchlist.picture || thumbnailUrl}>
         <div className="flex h-full w-full max-w-(--breakpoint-xl) items-end gap-4">
@@ -223,6 +214,17 @@ export default function WatchlistDetail({ params }) {
       <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
         <div className="mt-8 flex h-12 w-full items-center justify-start">
           <div className="watchlist-actions flex items-center gap-4">
+            {isOwned && (
+              <button
+                onClick={() =>
+                  document.getElementById("generate_ticket").showModal()
+                }
+                className="btn flex btn-circle h-16 w-16 items-center justify-center text-neutral transition-all duration-200 ease-in-out btn-primary hover:scale-105 hover:bg-secondary"
+              >
+                <IoTicketOutline size={32} />
+              </button>
+            )}
+
             {!isOwned && (
               <SaveButton isSavedInitial={watchlist?.saved} token={token} />
             )}
@@ -261,7 +263,7 @@ export default function WatchlistDetail({ params }) {
                     ) : (
                       <CiUnlock
                         size={32}
-                        className="transition-acll text-white/50 duration-300 ease-in-out hover:scale-110 hover:text-white/100"
+                        className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
                       />
                     )}
                   </button>
@@ -287,7 +289,11 @@ export default function WatchlistDetail({ params }) {
           <h1 className="text-4xl">Movies</h1>
         </div>
         <div className="flex flex-col gap-4">
-          <WatchlistItemCard watchlistItem={watchlistItem} />
+          <WatchlistItemCard
+            watchlistId={watchlist.id}
+            watchlistItem={watchlistItem}
+            token={token}
+          />
         </div>
       </div>
 
@@ -386,6 +392,16 @@ export default function WatchlistDetail({ params }) {
             })}
           </ul>
         </div>
+      </dialog>
+
+      <dialog
+        id="generate_ticket"
+        className="modal modal-middle max-md:modal-bottom"
+      >
+        <TicketModal items={watchlistItem} />
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
     </div>
   );

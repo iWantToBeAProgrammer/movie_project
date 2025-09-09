@@ -28,7 +28,6 @@ export default function SearchResultsPage({ params }) {
   }
 
 
-  console.log(data)
   return (
     <>
       <Navbar />

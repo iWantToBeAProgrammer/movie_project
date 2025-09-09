@@ -31,7 +31,7 @@ const WatchlistThumbnail = ({ movies, setThumbnailUrl = () => {} }) => {
     imagesToLoad.forEach((movie, index) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.src = `${process.env.NEXT_APP_BASEIMG}${movie.movie.posterPath}`;
+      img.src = `${process.env.NEXT_APP_BASEIMG}${movie?.movie?.posterPath || movie.posterPath}`;
 
       img.onload = () => {
         images[index] = img;
