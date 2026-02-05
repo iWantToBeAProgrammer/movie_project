@@ -8,6 +8,7 @@ import { getMovieData } from "@/libs/api-libs";
 import Header from "./Header";
 import { IoPlayCircleOutline } from "react-icons/io5";
 import Link from "next/link";
+import { FaStar } from "react-icons/fa";
 
 const PopularCard = ({ results = [] }) => {
   const [movieDetails, setMovieDetails] = useState([]);
@@ -18,10 +19,10 @@ const PopularCard = ({ results = [] }) => {
         results.map(async (movie) => {
           const details = await getMovieData(
             movie.id,
-            "&append_to_response=genres"
+            "&append_to_response=genres",
           );
           return { ...movie, genres: details.genres || [] };
-        })
+        }),
       );
       setMovieDetails(movieData);
     };
@@ -32,109 +33,85 @@ const PopularCard = ({ results = [] }) => {
   }, [results]);
 
   if (!results || results.length === 0) {
-    return <p>No data available</p>;
+    return (
+      <p className="text-center text-sm text-white/50">No data available</p>
+    );
   }
 
   return (
-    <>
-      <div className="flex justify-between mb-8 items-center">
-        <Header title={"popular viewed movies"} linkHref={"/movies"} />
-
+    <div className="w-full">
+      {/* Header Compact */}
+      <div className="mb-4 flex items-center justify-between px-4 md:px-0">
+        <Header title={"Popular Movies"} linkHref={"/movies"} />
         <Link
           href={"/movies"}
-          className="h-10  px-6 py-2 text-sm font-bold bg-linear-to-r from-primary to-secondary text-white rounded-xl hover:opacity-90 transition"
+          className="rounded-lg bg-gradient-to-r from-primary to-secondary px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:opacity-90 md:text-sm"
         >
           Explore More
         </Link>
       </div>
 
-      <div className="w-full mt-20 tracking-wider">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 gap-y-16 lg:px-0 px-6">
-          {movieDetails.slice(0, 6).map((movie) => {
-            const {
-              id,
-              title,
-              release_date,
-              vote_average,
-              poster_path,
-              genres,
-            } = movie;
-            const releaseYear = release_date?.slice(0, 4) || "Unknown";
+      {/* Grid System: Mulai dari 2 kolom (HP) sampai 5 kolom (Desktop Besar) */}
+      <div className="grid grid-cols-2 gap-3 px-4 sm:grid-cols-3 md:grid-cols-4 md:gap-4 md:px-0 lg:grid-cols-5 lg:gap-6">
+        {movieDetails.slice(0, 10).map((movie) => {
+          // Menampilkan lebih banyak item (10) karena compact
+          const { id, title, release_date, vote_average, poster_path, genres } =
+            movie;
+          const releaseYear = release_date?.slice(0, 4) || "N/A";
 
-            return (
-              <div
-                key={id}
-                className="relative bg-black text-white rounded-lg border border-secondary shadow-md group hover:bg-opacity-50 transition-all ease-in-out duration-300 flex flex-col"
-                style={{ height: "100%" }}
-              >
-                {/* Poster */}
-                <div className="flex justify-center">
-                  <div className="relative w-3/4 aspect-2/3 overflow-hidden rounded-lg shadow-lg transform -translate-y-8 group-hover:translate-y-28 transition-all duration-500 ease-in-out">
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w500${poster_path}`}
-                      fill
-                      alt={title || "Movie poster"}
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                      <Link
-                        className="text-8xl hover:scale-125 transition-all duration-300 ease-in-out"
-                        href={`/movies/${id}`}
-                      >
-                        <IoPlayCircleOutline />
-                      </Link>
-                    </div>
-                  </div>
+          return (
+            <div
+              key={id}
+              className="group relative overflow-hidden rounded-lg bg-neutral-900 shadow-md transition-all duration-300 hover:shadow-xl"
+            >
+              {/* Image Container dengan Aspect Ratio */}
+              <div className="relative aspect-[2/3] w-full overflow-hidden">
+                <Image
+                  src={`https://image.tmdb.org/t/p/w300${poster_path}`} // Pakai w300 agar ringan
+                  fill
+                  className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                  alt={title || "Movie poster"}
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                />
+
+                {/* Dark Overlay & Play Button on Hover */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
+                  <Link
+                    href={`/movies/${id}`}
+                    className="scale-50 transform text-white transition-transform duration-300 group-hover:scale-100"
+                  >
+                    <IoPlayCircleOutline size={50} />
+                  </Link>
                 </div>
 
-                {/* Content */}
-                <div className="mt-auto p-4 group-hover:opacity-0 transition-opacity duration-300 ease-in-out">
-                  <p
-                    id="rating"
-                    className="text-sm font-semibold text-center group-hover:text-white mb-6"
-                  >
-                    {vote_average.toFixed(2)}/10
-                  </p>
-
-                  <div className="flex justify-center items-center">
-                    <h1
-                      id="title"
-                      className="text-xl uppercase flex-wrap text-center"
-                    >
-                      {title}
-                    </h1>
-                  </div>
-
-                  <h1
-                    id="title-year"
-                    className="text-lg uppercase flex justify-center items-center flex-wrap text-center"
-                  >
-                    ({releaseYear})
-                  </h1>
-
-                  <div
-                    id="genres"
-                    className="genres text-sm px-4 font-semibold items-center flex gap-3 my-6 justify-center flex-wrap"
-                  >
-                    {genres && genres.length > 0
-                      ? genres.map((genre, index) => (
-                          <span key={genre.id} className="flex items-center">
-                            <h1 className="font-raleway text-center">
-                              {genre.name}
-                            </h1>
-                            {index < genres.length - 1 && (
-                              <span className="text-secondary ml-2">/</span>
-                            )}
-                          </span>
-                        ))
-                      : "No genres"}
-                  </div>
+                {/* Rating Badge (Pojok Kiri Atas) */}
+                <div className="absolute top-2 left-2 flex items-center gap-1 rounded-md bg-black/60 px-1.5 py-0.5 backdrop-blur-md">
+                  <FaStar className="text-[10px] text-yellow-400" />
+                  <span className="text-[10px] font-bold text-white">
+                    {vote_average.toFixed(1)}
+                  </span>
                 </div>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Compact Content Info */}
+              <div className="p-3">
+                <h3 className="truncate text-sm font-bold text-white transition-colors group-hover:text-primary md:text-base">
+                  {title}
+                </h3>
+
+                <div className="mt-1 flex items-center justify-between">
+                  <p className="text-xs text-white/60">{releaseYear}</p>
+                  {/* Genre (Hanya tampilkan 1 agar tidak berantakan) */}
+                  <p className="max-w-[50%] truncate text-right text-[10px] text-white/40">
+                    {genres?.[0]?.name}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
-const { NextResponse } = require("next/server");
+import { NextResponse } from "next/server";
 
 export const GET = async (req) => {
   const { searchParams } = new URL(req.url);
@@ -13,19 +13,27 @@ export const GET = async (req) => {
     );
   }
 
-  const comments = await prisma.comment.findMany({
-    where: { movieId },
-    include: {
-      user: {
-        select: { username: true },
+  try {
+    const comments = await prisma.comment.findMany({
+      where: { movieId },
+      include: {
+        user: {
+          select: {
+            username: true,
+            profilePicture: true, // Penting: Frontend butuh foto profil
+          },
+        },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+      // Kita urutkan berdasarkan waktu dibuat
+      orderBy: {
+        createdAt: "desc", // Komentar baru di atas
+      },
+    });
 
-  return NextResponse.json(comments);
+    return NextResponse.json(comments);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 };
 
 export const POST = async (req) => {
@@ -38,7 +46,8 @@ export const POST = async (req) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { movieId, content } = await req.json();
+  // Ambil parentId dari body request
+  const { movieId, content, parentId } = await req.json();
 
   if (!movieId || !content) {
     return NextResponse.json(
@@ -47,13 +56,30 @@ export const POST = async (req) => {
     );
   }
 
-  const comment = await prisma.comment.create({
-    data: {
-      userId: user.id,
-      movieId: parseInt(movieId, 10),
-      content,
-    },
-  });
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        userId: user.id,
+        movieId: parseInt(movieId, 10),
+        content,
+        // Masukkan parentId jika ada (untuk reply), null jika tidak (root comment)
+        parentId: parentId ? parseInt(parentId, 10) : null,
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+            profilePicture: true,
+          },
+        },
+      },
+    });
 
-  return NextResponse.json(comment, { status: 201 });
+    return NextResponse.json(
+      { message: "Comment posted successfully", ...comment },
+      { status: 201 },
+    );
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 };

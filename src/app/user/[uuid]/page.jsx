@@ -36,7 +36,6 @@ export default function PublicProfilePage() {
     source: "public",
   }));
 
-  console.log(watchlists)
 
   return (
     <UserProfileLayout

@@ -28,7 +28,7 @@ export default async function TopRatedPage() {
   return (
     <div className="container max-w-(--breakpoint-xl) mx-auto overflow-hidden">
       <Navbar />
-      <div className="flex flex-col mt-24">
+      <div className="flex flex-col mt-16">
         <HeaderMovieList title={"Top Rated Movies"} />
         <div className="grid grid-cols-5 gap-12">
           <Suspense fallback={<Loading />}>

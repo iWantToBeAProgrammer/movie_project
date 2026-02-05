@@ -1,5 +1,3 @@
-// /app/api/watchlist/[token]/members/[userId]/route.js
-
 import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
 import { NextResponse } from "next/server";
@@ -24,7 +22,10 @@ export async function DELETE(req, { params }) {
   });
 
   if (!ownerCheck) {
-    return NextResponse.json({ error: "Only the owner can remove members." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Only the owner can remove members." },
+      { status: 403 },
+    );
   }
 
   await prisma.watchlistMember.deleteMany({

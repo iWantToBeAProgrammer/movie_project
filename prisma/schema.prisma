@@ -98,8 +98,12 @@ model Comment {
   userId    String   @map("user_id") @db.Uuid
   movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentId  Int?      
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
 
   @@index([movieId])
+  @@index([parentId])
 }
 
 model WatchedMovie {
