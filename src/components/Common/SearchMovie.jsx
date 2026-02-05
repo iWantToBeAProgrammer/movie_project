@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
@@ -10,6 +12,7 @@ import { useRouter } from "next/navigation";
 export default function SearchMovie() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery] = useDebounce(searchQuery, 300);
+  const router = useRouter();
 
   const { data, isLoading } = useQuery({
     queryKey: ["search", debouncedQuery],
@@ -17,48 +20,61 @@ export default function SearchMovie() {
     enabled: debouncedQuery.length > 2,
   });
 
-  const limitedData = data?.results?.slice(0, 4);
-  const router = useRouter();
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (debouncedQuery) {
+      router.push(`/search/${encodeURIComponent(debouncedQuery)}`);
+    }
+  };
 
   return (
-    <div className="dropdown">
-      <form
-        className="mb-2 join"
-        method="GET"
-        action={`/search/${encodeURIComponent(debouncedQuery)}`}
-      >
+    <div className="dropdown dropdown-end">
+      {/* Form Search */}
+      <form className="relative join" onSubmit={handleSearch}>
         <input
-          className="input input-lg join-item w-96 glass bg-accent/80 font-raleway text-xl font-semibold text-white focus:outline-hidden"
-          placeholder="Search"
+          className="input input-md join-item w-48 glass bg-accent/80 font-raleway text-sm font-semibold text-white transition-all duration-300 focus:outline-hidden sm:w-64 md:input-lg md:w-80 md:text-xl lg:w-96"
+          placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button type="submit" className="btn join-item btn-lg btn-primary">
-          <MagnifyingGlass size={24} />
+        <button
+          type="submit"
+          className="btn join-item text-white btn-md btn-primary md:btn-lg"
+        >
+          <MagnifyingGlass size={20} className="md:h-6 md:w-6" />
         </button>
       </form>
+
+      {/* Dropdown Results */}
       {debouncedQuery.length > 2 && (
-        <div className="dropdown-content card z-1 w-full bg-[#D9D9D9] p-0 text-primary-content shadow-sm card-sm">
-          <div className="card-body text-black">
+        <div className="dropdown-content menu z-50 mt-2 w-full rounded-box bg-[#D9D9D9] p-0 shadow-lg">
+          <div className="p-2 text-black md:p-4">
             {isLoading ? (
-              <span className="loading loading-spinner"></span>
+              <div className="flex justify-center p-4">
+                <span className="loading text-primary loading-spinner"></span>
+              </div>
             ) : data?.results?.length > 0 ? (
-              <div>
-                <SearchMovieCard results={limitedData} />
+              <>
+                <SearchMovieCard results={data.results.slice(0, 4)} />
                 <Link
-                  tabIndex={0}
-                  role="button"
                   href={`/search/${encodeURIComponent(debouncedQuery)}`}
-                  className="flex w-full items-center justify-center pb-2 font-bold text-black uppercase"
+                  className="btn mt-2 w-full text-xs font-bold text-black hover:text-white uppercase btn-ghost btn-sm md:text-sm"
+                  onClick={() => {
+                    if (document.activeElement instanceof HTMLElement) {
+                      document.activeElement.blur();
+                    }
+                  }}
                 >
                   View All Results
                 </Link>
-              </div>
+              </>
             ) : (
-              <p className="font-bold">
-                " Sorry, we couldn’t find the movie… but our hearts are always
-                here for you! ❤️🎬 "
-              </p>
+              <div className="p-4 text-center">
+                <p className="text-sm font-bold md:text-base">
+                  "Sorry, we couldn’t find the movie… <br />
+                  but our hearts are always here for you! ❤️🎬"
+                </p>
+              </div>
             )}
           </div>
         </div>

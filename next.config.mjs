@@ -6,7 +6,7 @@ const nextConfig = {
         hostname: "image.tmdb.org",
       },
       {
-        hostname: "zxedgqllnwqzxbpiitxm.supabase.co",
+        hostname: "zvqmfukwxitfwonmibhw.supabase.co",
       },
       {
         hostname: "i.ytimg.com",

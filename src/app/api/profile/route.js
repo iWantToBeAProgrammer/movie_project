@@ -93,7 +93,7 @@ export const PUT = async (req) => {
 
     const filePath = `profile/${user.id}-${Date.now()}.${fileExt}`;
     const { error: uploadError } = await supabase.storage
-      .from("user-avatar") // adjust to your bucket name
+      .from("user-avatar") 
       .upload(filePath, file, {
         contentType: file.type,
         upsert: false,
