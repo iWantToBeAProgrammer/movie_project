@@ -20,13 +20,12 @@ export const GET = async (req) => {
         user: {
           select: {
             username: true,
-            profilePicture: true, // Penting: Frontend butuh foto profil
+            profilePicture: true,
           },
         },
       },
-      // Kita urutkan berdasarkan waktu dibuat
       orderBy: {
-        createdAt: "desc", // Komentar baru di atas
+        createdAt: "desc",
       },
     });
 
@@ -46,7 +45,6 @@ export const POST = async (req) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Ambil parentId dari body request
   const { movieId, content, parentId } = await req.json();
 
   if (!movieId || !content) {
@@ -62,7 +60,6 @@ export const POST = async (req) => {
         userId: user.id,
         movieId: parseInt(movieId, 10),
         content,
-        // Masukkan parentId jika ada (untuk reply), null jika tidak (root comment)
         parentId: parentId ? parseInt(parentId, 10) : null,
       },
       include: {

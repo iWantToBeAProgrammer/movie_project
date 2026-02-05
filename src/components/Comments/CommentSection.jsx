@@ -4,9 +4,7 @@ import { useState, useMemo } from "react";
 import ErrorNotification from "../Auth/ErrorNotification";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { useComments, useAddComment } from "@/hooks/useComments";
-import Image from "next/image";
-import { BsReplyFill } from "react-icons/bs";
+import { useComments } from "@/hooks/useComments";
 import CommentForm from "./CommentForm";
 import CommentItem from "./CommentItem";
 

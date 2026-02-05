@@ -41,15 +41,13 @@ const CommentForm = ({
       <input
         type="text"
         placeholder={placeholder}
-        // Style Input Original Kamu
         className="w-full rounded-lg border border-white bg-transparent p-3 text-white focus:border-secondary focus:outline-none"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        autoFocus={!!parentId} // Autofocus jika ini form reply
+        autoFocus={!!parentId} 
       />
       <button
         type="submit"
-        // Style Button Original Kamu
         className="btn rounded-lg border-none bg-secondary px-4 text-white btn-lg"
         disabled={isPending}
       >
