@@ -223,3 +223,107 @@ export const PaperTextureSvg = ({ color = "#4A3B2A" }) => (
     <path d="M160 40 L170 45" stroke={color} strokeWidth="0.5" opacity="0.1" />
   </svg>
 );
+
+// ... (BarcodeSvg, dll yang lama biarkan saja) ...
+
+// BARU: Ikon Hati (Heart)
+export const HeartSvg = ({ color = "#FF69B4" }) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill={color}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+  </svg>
+);
+
+// BARU: Ikon Pita (Bow) - Simbol Coquette
+export const BowSvg = ({ color = "#FF69B4" }) => (
+  <svg
+    width="60"
+    height="60"
+    viewBox="0 0 100 100"
+    fill={color}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M50 55 C60 55 70 45 80 40 C90 35 100 40 95 50 C90 60 80 65 70 60 L80 80 L65 75 L55 60 C55 60 55 60 50 60 C45 60 45 60 45 60 L35 75 L20 80 L30 60 C20 65 10 60 5 50 C0 40 10 35 20 40 C30 45 40 55 50 55 Z" />
+    <circle cx="50" cy="55" r="5" fill="white" opacity="0.5" />
+  </svg>
+);
+
+// BARU: Awan (Cloud)
+export const CloudSvg = ({ color = "#E0F7FA" }) => (
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 100 50"
+    preserveAspectRatio="none"
+    fill={color}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M10 40 C 0 40, 0 20, 20 20 C 20 10, 40 0, 50 10 C 60 0, 80 10, 80 20 C 100 20, 100 40, 90 40 Z" />
+  </svg>
+);
+
+// BARU: Kilau (Sparkle)
+export const SparkleSvg = ({ color = "#FFD700" }) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill={color}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+  </svg>
+);
+
+// ... (Asset sebelumnya: BarcodeSvg, HeartSvg, BowSvg, dll biarkan saja) ...
+
+// BARU: Polkadot Pattern (SVG Manual, Aman)
+export const PolkadotPatternSvg = ({ color }) => (
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="10" cy="10" r="2" fill={color} />
+    <circle cx="30" cy="30" r="2" fill={color} />
+    <circle cx="50" cy="10" r="2" fill={color} />
+    <circle cx="70" cy="30" r="2" fill={color} />
+    <circle cx="90" cy="10" r="2" fill={color} />
+
+    <circle cx="10" cy="50" r="2" fill={color} />
+    <circle cx="30" cy="70" r="2" fill={color} />
+    <circle cx="50" cy="50" r="2" fill={color} />
+    <circle cx="70" cy="70" r="2" fill={color} />
+    <circle cx="90" cy="50" r="2" fill={color} />
+
+    <circle cx="10" cy="90" r="2" fill={color} />
+    <circle cx="50" cy="90" r="2" fill={color} />
+    <circle cx="90" cy="90" r="2" fill={color} />
+  </svg>
+);
+
+// BARU: Diagonal Stripes Pattern (SVG Manual, Aman)
+export const DiagonalStripeSvg = ({ color }) => (
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <line x1="-20" y1="20" x2="20" y2="-20" stroke={color} strokeWidth="1" />
+    <line x1="0" y1="40" x2="40" y2="0" stroke={color} strokeWidth="1" />
+    <line x1="20" y1="60" x2="60" y2="0" stroke={color} strokeWidth="1" />
+    <line x1="0" y1="80" x2="80" y2="0" stroke={color} strokeWidth="1" />
+    <line x1="0" y1="120" x2="120" y2="0" stroke={color} strokeWidth="1" />
+    <line x1="40" y1="120" x2="140" y2="20" stroke={color} strokeWidth="1" />
+    <line x1="80" y1="120" x2="160" y2="40" stroke={color} strokeWidth="1" />
+  </svg>
+);
