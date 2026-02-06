@@ -107,7 +107,7 @@ export const POST = async (req) => {
     const picture = formData.get("picture");
     const inviteToken = nanoid(16);
 
-    console.log(formData)
+    console.log(formData);
 
     let imageUrl = null;
 
@@ -274,15 +274,62 @@ export async function PUT(req) {
     if (error || !user)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { id, name, description, picture } = await req.json();
+    const formData = await req.formData();
+    const id = formData.get("id");
+    const name = formData.get("name");
+    const description = formData.get("description");
+    const picture = formData.get("picture");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Watchlist ID is required" },
+        { status: 400 },
+      );
+    }
+
+    const membership = await prisma.watchlistMember.findFirst({
+      where: {
+        watchlistId: parseInt(id),
+        userId: user.id,
+        role: "OWNER",
+      },
+    });
+
+    if (!membership) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    let imageUrl = undefined;
+
+    if (picture instanceof File) {
+      const fileExt = picture.name.split(".").pop();
+      const filePath = `watchlists/${user.id}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("watchlist-pictures")
+        .upload(filePath, picture, { upsert: false });
+
+      if (uploadError) throw new Error(uploadError.message);
+
+      const { data: publicURLData } = supabase.storage
+        .from("watchlist-pictures")
+        .getPublicUrl(filePath);
+
+      imageUrl = publicURLData.publicUrl;
+    }
 
     const updatedWatchlist = await prisma.watchlist.update({
-      where: { id, userId: user.id },
-      data: { name, description, picture },
+      where: { id: parseInt(id) },
+      data: {
+        name,
+        description,
+        ...(imageUrl && { picture: imageUrl }),
+      },
     });
 
     return NextResponse.json({ watchlist: updatedWatchlist }, { status: 200 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -298,8 +345,25 @@ export async function DELETE(req) {
 
     const { id } = await req.json();
 
+    const membership = await prisma.watchlistMember.findFirst({
+      where: {
+        watchlistId: parseInt(id),
+        userId: user.id,
+        role: "OWNER",
+      },
+    });
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: "You are not the owner of this watchlist" },
+        { status: 403 },
+      );
+    }
+
     await prisma.watchlist.delete({
-      where: { id, userId: user.id },
+      where: {
+        id: parseInt(id),
+      },
     });
 
     return NextResponse.json(

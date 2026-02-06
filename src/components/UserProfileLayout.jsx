@@ -9,6 +9,8 @@ import WatchlistModal from "@/components/Watchlist/WatchlistModal";
 import CardMovieList from "./MovieList/CardMovieList";
 
 export default function UserProfileLayout({
+  setWatchlistData,
+  onOpenCreate,
   userInfo,
   watchedMovies,
   favoriteMovies,
@@ -28,6 +30,16 @@ export default function UserProfileLayout({
   const totalWatchlist = watchlists.length;
   const totalFavorites = favoriteMovies.length;
   const totalWatched = watchedMovies.length;
+
+  const handleEditWatchlist = (watchlist) => {
+    setWatchlistData({
+      id: watchlist.id,
+      name: watchlist.name,
+      description: watchlist.description || "",
+      picture: watchlist.picture,
+    });
+    document.getElementById("watchlist-modal").showModal();
+  };
 
   return (
     <div className="profile-container mx-auto mt-28 w-full max-w-(--breakpoint-xl) overflow-hidden">
@@ -96,16 +108,18 @@ export default function UserProfileLayout({
               {!isPublicView && (
                 <div className="mb-4 flex w-full justify-end">
                   <button
-                    onClick={() =>
-                      document.getElementById("watchlist-modal").showModal()
-                    }
+                    onClick={onOpenCreate}
                     className="add-watchlist-button rounded-2xl bg-neutral/90 p-4 transition-all duration-200 ease-in-out btn-md hover:scale-110 hover:bg-neutral"
                   >
                     <Plus size={32} className="text-primary" weight="bold" />
                   </button>
                 </div>
               )}
-              <WatchlistCard watchlists={watchlists} />
+              <WatchlistCard
+                watchlists={watchlists}
+                username={userInfo.username}
+                onEdit={handleEditWatchlist}
+              />
             </div>
             <button
               role="tab"

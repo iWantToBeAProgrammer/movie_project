@@ -32,20 +32,16 @@ export default function WatchlistDetail({ params }) {
     navigator.clipboard.writeText(
       `${process.env.NEXT_PUBLIC_BASEURL}/watchlist/invite/${watchlist?.inviteToken}`,
     );
-
     toast.success("Link Copied to Clipboard");
   };
 
   const shareWatchlistUrl = (watchlistToken, inviteToken) => {
     const baseUrl = `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/view`;
     const url = new URL(baseUrl);
-
     url.searchParams.set("token", watchlistToken);
-
     if (inviteToken) {
       url.searchParams.set("inviteToken", inviteToken);
     }
-
     return url.toString();
   };
 
@@ -54,7 +50,6 @@ export default function WatchlistDetail({ params }) {
       watchlist.token,
       watchlist.isPublic ? undefined : watchlist.inviteToken,
     );
-
     navigator.clipboard.writeText(shareUrl);
     toast.success("Link copied to clipboard!");
   };
@@ -62,13 +57,9 @@ export default function WatchlistDetail({ params }) {
   const handleLeaveWatchlist = async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/members/me`,
-      {
-        method: "DELETE",
-      },
+      { method: "DELETE" },
     );
-
     if (!response.ok) throw new Error("Failed to fetch watchlist");
-
     const results = await response.json();
     toast.success(results.message);
   };
@@ -88,39 +79,25 @@ export default function WatchlistDetail({ params }) {
 
   const privacyButtonToggle = (e) => {
     e.preventDefault();
-
     privacyMutation.mutate({ token, isPublic: !watchlist.isPublic });
   };
 
   const handleRemoveMember = async (member) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist/${token}/members/${member.userId}`,
-      {
-        method: "DELETE",
-      },
+      { method: "DELETE" },
     );
-
     if (!response.ok) throw new Error("Failed to fetch watchlist");
-
     const results = await response.json();
     toast.success(results?.message);
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  if (isLoading) return <Loading />;
+  if (isError) return <p>Error loading watchlist: {error.message}</p>;
+  if (!watchlist) return <p>Watchlist not found.</p>;
 
-  if (isError) {
-    return <p>Error loading watchlist: {error.message}</p>;
-  }
-
-  if (!watchlist) {
-    return <p>Watchlist not found.</p>; // ✅ Handle missing data case safely
-  }
-
-  const totalMovies = watchlist.items?.length || 0; // ✅ A
+  const totalMovies = watchlist.items?.length || 0;
   const watchlistItem = watchlist?.items;
-
   const isOwned =
     watchlist?.userRole === "OWNER" || watchlist?.userRole === "COLLABORATOR";
 
@@ -131,15 +108,19 @@ export default function WatchlistDetail({ params }) {
   return (
     <div className="mx-auto flex w-full flex-col items-center justify-center">
       <BackNavigation />
+
+      {/* Header Section */}
       <WatchlistBackdrop imageUrl={watchlist.picture || thumbnailUrl}>
-        <div className="flex h-full w-full max-w-(--breakpoint-xl) items-end gap-4">
-          <div className="watchlist-image-wrapper h-64 w-64 overflow-hidden">
+        <div className="flex h-full w-full max-w-(--breakpoint-xl) items-end gap-6 pb-6">
+          {/* Cover Image */}
+          <div className="watchlist-image-wrapper h-48 w-48 shrink-0 overflow-hidden rounded-xl shadow-2xl md:h-56 md:w-56">
             {watchlist.picture ? (
               <Image
                 src={`${watchlist.picture}`}
                 width={512}
                 height={512}
-                className="aspect-square h-full w-full rounded-2xl object-cover object-center"
+                className="aspect-square h-full w-full object-cover object-center"
+                alt={watchlist.name}
               />
             ) : (
               <WatchlistThumbnail
@@ -149,146 +130,152 @@ export default function WatchlistDetail({ params }) {
             )}
           </div>
 
-          <div className="flex flex-col justify-end gap-3 font-sans_caption">
-            <h1 className="font-raleway text-4xl">{watchlist.name}</h1>
-            <p className="line-clamp-3 text-xl text-slate-300 hover:line-clamp-4">
+          {/* Text Content */}
+          <div className="mb-1 flex flex-col justify-end gap-2 font-sans_caption">
+            <h1 className="font-raleway text-3xl font-bold text-white drop-shadow-md md:text-5xl">
+              {watchlist.name}
+            </h1>
+            <p className="line-clamp-2 max-w-2xl text-sm text-slate-300 md:text-base">
               {watchlist.description}
             </p>
-            <div className="flex w-full items-center gap-2">
-              <div className="avatar-group -space-x-3">
-                {filteredMembers ? (
-                  filteredMembers.map((member, key) => {
-                    return (
-                      <div
-                        className="avatar border-base-100 outline-base-100"
-                        key={key}
-                      >
-                        <div className="w-8">
+
+            {/* Metadata & Members */}
+            <div className="mt-2 flex items-center gap-4 text-sm font-medium text-white/80">
+              <div className="flex items-center gap-2">
+                <div className="avatar-group -space-x-3 rtl:space-x-reverse">
+                  {filteredMembers && filteredMembers.length > 0 ? (
+                    filteredMembers.slice(0, 3).map((member, key) => (
+                      <div className="avatar border-none" key={key}>
+                        <div className="h-8 w-8">
                           <Image
                             src={
                               member.user.profilePicture ||
                               "/assets/images/noimage.jpg"
                             }
-                            width={40}
-                            height={40}
+                            width={32}
+                            height={32}
+                            alt={member.user.username}
                           />
                         </div>
                       </div>
-                    );
-                  })
-                ) : (
-                  <div className="w-8">
-                    <Image
-                      src="/assets/images/noimage.jpg"
-                      width={40}
-                      height={40}
-                      className="h-full w-full rounded-full object-cover object-center"
-                    />
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() =>
-                  filteredMembers.length === 1
-                    ? filteredMembers[0]?.userId === user.id
-                      ? router.push("/profile")
-                      : router.push(`/user/${filteredMembers[0]?.userId}`)
-                    : document.getElementById("shared_modal").showModal()
-                }
-              >
-                <p className="cursor-pointer hover:underline">
+                    ))
+                  ) : (
+                    <div className="avatar border-none">
+                      <div className="h-8 w-8">
+                        <Image
+                          src="/assets/images/noimage.jpg"
+                          width={32}
+                          height={32}
+                          alt="No Member"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() =>
+                    filteredMembers.length === 1
+                      ? filteredMembers[0]?.userId === user.id
+                        ? router.push("/profile")
+                        : router.push(`/user/${filteredMembers[0]?.userId}`)
+                      : document.getElementById("shared_modal").showModal()
+                  }
+                  className="transition-colors hover:text-white hover:underline"
+                >
                   {filteredMembers.length === 1
                     ? filteredMembers[0]?.user.username
                     : filteredMembers.length === 2
-                      ? `${filteredMembers[0]?.user.username} and ${filteredMembers[1]?.user.username}`
-                      : `${filteredMembers[0]?.user.username} and ${filteredMembers.length - 1} others`}
-                </p>
-              </button>
-
-              <p>• {totalMovies} Movies</p>
+                      ? `${filteredMembers[0]?.user.username} & ${filteredMembers[1]?.user.username}`
+                      : `${filteredMembers[0]?.user.username} & ${filteredMembers.length - 1} others`}
+                </button>
+              </div>
+              <span className="text-white/40">•</span>
+              <p>{totalMovies} Movies</p>
             </div>
           </div>
         </div>
       </WatchlistBackdrop>
 
-      <div className="mb-24 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-5">
-        <div className="mt-8 flex h-12 w-full items-center justify-start">
-          <div className="watchlist-actions flex items-center gap-4">
+      {/* Content Container */}
+      <div className="mb-12 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-6 px-4 md:px-0">
+        {/* Compact Action Bar */}
+        <div className="mt-6 flex w-full items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Primary Actions */}
             {isOwned && (
               <button
                 onClick={() =>
                   document.getElementById("generate_ticket").showModal()
                 }
-                className="btn flex btn-circle h-16 w-16 items-center justify-center text-neutral transition-all duration-200 ease-in-out btn-primary hover:scale-105 hover:bg-secondary"
+                className="btn btn-circle h-12 w-12 text-neutral btn-primary hover:scale-105"
+                title="Generate Ticket"
               >
-                <IoTicketOutline size={32} />
+                <IoTicketOutline size={24} />
               </button>
             )}
 
             {!isOwned && (
               <SaveButton isSavedInitial={watchlist?.saved} token={token} />
             )}
-            {watchlist.userRole === "OWNER" && (
-              <div className="flex items-center gap-4">
-                <div
-                  className="tooltip font-semibold tooltip-accent"
-                  data-tip="Add to Collaborator"
-                >
-                  <button
-                    className="cursor-pointer"
-                    onClick={handleAddCollaborator}
-                  >
-                    <IoPersonAddOutline
-                      size={32}
-                      className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                    />
-                  </button>
-                </div>
 
-                <div
-                  className="tooltip font-semibold tooltip-accent"
-                  data-tip={
-                    watchlist?.isPublic ? "Make private" : "Make Public"
-                  }
-                >
-                  <button
-                    className="cursor-pointer"
-                    onClick={privacyButtonToggle}
+            {/* Secondary Actions Toolbar (Glassmorphism) */}
+            <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm">
+              {watchlist.userRole === "OWNER" && (
+                <>
+                  <div
+                    className="tooltip tooltip-accent"
+                    data-tip="Add Collaborator"
                   >
-                    {watchlist?.isPublic ? (
-                      <CiLock
-                        size={32}
-                        className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                      />
-                    ) : (
-                      <CiUnlock
-                        size={32}
-                        className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                      />
-                    )}
-                  </button>
-                </div>
+                    <button
+                      onClick={handleAddCollaborator}
+                      className="btn btn-circle text-white/60 btn-ghost btn-sm hover:text-white"
+                    >
+                      <IoPersonAddOutline size={20} />
+                    </button>
+                  </div>
+                  <div
+                    className="tooltip tooltip-accent"
+                    data-tip={
+                      watchlist?.isPublic ? "Make Private" : "Make Public"
+                    }
+                  >
+                    <button
+                      onClick={privacyButtonToggle}
+                      className="btn btn-circle text-white/60 btn-ghost btn-sm hover:text-white"
+                    >
+                      {watchlist?.isPublic ? (
+                        <CiLock size={22} />
+                      ) : (
+                        <CiUnlock size={22} />
+                      )}
+                    </button>
+                  </div>
+                  <div className="mx-1 h-4 w-px bg-white/20"></div>
+                </>
+              )}
+              <div
+                className={`tooltip tooltip-accent ${!watchlist?.isPublic && watchlist.userRole === "VIEWER" && "hidden"}`}
+                data-tip="Share"
+              >
+                <button
+                  onClick={handleShareWatchlist}
+                  className="btn btn-circle text-white/60 btn-ghost btn-sm hover:text-white"
+                >
+                  <ShareNetwork size={20} />
+                </button>
               </div>
-            )}
-
-            <div
-              className={`tooltip font-semibold tooltip-accent ${!watchlist?.isPublic && watchlist.userRole === "VIEWER" && "hidden"}`}
-              data-tip="Share"
-            >
-              <button className="cursor-pointer" onClick={handleShareWatchlist}>
-                <ShareNetwork
-                  size={32}
-                  className="text-white/50 transition-all duration-300 ease-in-out hover:scale-110 hover:text-white/100"
-                />
-              </button>
             </div>
           </div>
         </div>
-        <div className="flex space-x-10 border-b border-slate-500 py-2 text-slate-500">
-          <h1 className="text-4xl">#</h1>
-          <h1 className="text-4xl">Movies</h1>
+
+        {/* List Header */}
+        <div className="flex items-center border-b border-white/10 pb-2 text-sm font-semibold tracking-wider text-slate-400 uppercase">
+          <div className="w-12 text-center">#</div>
+          <div>Movies</div>
         </div>
-        <div className="flex flex-col gap-4">
+
+        {/* Movie List */}
+        <div className="flex flex-col gap-3">
           <WatchlistItemCard
             watchlistId={watchlist.id}
             watchlistItem={watchlistItem}
@@ -297,67 +284,78 @@ export default function WatchlistDetail({ params }) {
         </div>
       </div>
 
+      {/* Member Modal */}
       <dialog id="shared_modal" className="modal">
-        <div className="modal-box overflow-hidden px-4 pb-12">
+        <div className="modal-box border border-white/10 bg-neutral text-white">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
-            <button className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm">
+            <button className="btn absolute top-2 right-2 btn-circle text-white/60 btn-ghost btn-sm hover:text-white">
               ✕
             </button>
           </form>
-          <h3 className="text-lg font-bold">Shared Watchlist</h3>
-          <div className="divider"></div>
-          <ul className="list rounded-box bg-base-100 shadow-md">
+          <h3 className="mb-4 text-lg font-bold">Members</h3>
+          <div className="flex flex-col gap-2">
             {filteredMembers.map((member, key) => {
               const isMe = member.userId === user.id;
               const isOwner = member.role === "OWNER";
               const iAmOwner = watchlist.members.some(
                 (m) => m.userId === user.id && m.role === "OWNER",
               );
+
               return (
-                <li className="list-row" key={key}>
-                  <div>
+                <div
+                  key={key}
+                  className="flex items-center justify-between rounded-lg bg-base-100/50 p-3 transition-colors hover:bg-base-100"
+                >
+                  <div className="flex items-center gap-3">
                     <Image
-                      className="size-10 rounded-box"
                       src={
                         member.user.profilePicture ||
                         "/assets/images/noimage.jpg"
                       }
-                      height={50}
-                      width={50}
+                      height={40}
+                      width={40}
+                      className="rounded-full object-cover"
+                      alt={member.user.username}
                     />
-                  </div>
-                  <div>
-                    <div className="flex h-full items-center">
-                      {/* {member.user.username} */}
-                      {!isMe ? (
-                        <Link
-                          href={`/user/${member.userId}`}
-                          className="hover:underline"
-                        >
-                          {member.user.username}
-                        </Link>
-                      ) : (
-                        member.user.username
-                      )}
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">
+                        {!isMe ? (
+                          <Link
+                            href={`/user/${member.userId}`}
+                            className="hover:underline"
+                          >
+                            {member.user.username}
+                          </Link>
+                        ) : (
+                          "You"
+                        )}
+                      </span>
+                      <span className="text-xs text-white/50">
+                        {member.role}
+                      </span>
                     </div>
                   </div>
+
+                  {/* Role Actions */}
                   {iAmOwner && !isOwner ? (
                     <div className="dropdown dropdown-end">
                       <div
                         tabIndex={0}
                         role="button"
-                        className="flex h-full cursor-pointer items-center justify-center font-semibold tracking-wide text-white/100"
+                        className="btn gap-1 text-white/70 btn-ghost btn-xs"
                       >
-                        {member.role} <CaretDown size={16} />
+                        Manage <CaretDown size={12} />
                       </div>
                       <ul
                         tabIndex={0}
-                        className="dropdown-content menu z-1 w-64 rounded-lg bg-neutral p-0 text-black shadow-sm"
+                        className="dropdown-content menu z-1 w-48 rounded-box border border-white/10 bg-neutral p-2 shadow"
                       >
-                        <li className="rounded-lg p-1 transition-all duration-300 ease-in-out hover:bg-primary hover:text-neutral">
-                          <button onClick={() => handleRemoveMember(member)}>
-                            <TbForbid /> Remove From Watchlist
+                        <li>
+                          <button
+                            onClick={() => handleRemoveMember(member)}
+                            className="text-red-400 hover:bg-red-400/10 hover:text-red-300"
+                          >
+                            <TbForbid /> Remove
                           </button>
                         </li>
                       </ul>
@@ -367,33 +365,36 @@ export default function WatchlistDetail({ params }) {
                       <div
                         tabIndex={0}
                         role="button"
-                        className="flex h-full cursor-pointer items-center justify-center font-semibold tracking-wide text-white/100"
+                        className="btn gap-1 text-white/70 btn-ghost btn-xs"
                       >
-                        {member.role} <CaretDown size={16} />
+                        Options <CaretDown size={12} />
                       </div>
                       <ul
                         tabIndex={0}
-                        className="dropdown-content menu z-1 w-52 rounded-lg bg-neutral p-2 text-black shadow-sm"
+                        className="dropdown-content menu z-1 w-48 rounded-box border border-white/10 bg-neutral p-2 shadow"
                       >
                         <li>
-                          <button onClick={handleLeaveWatchlist}>
-                            <DoorOpen /> Leave Watchlist
+                          <button
+                            onClick={handleLeaveWatchlist}
+                            className="text-red-400 hover:bg-red-400/10 hover:text-red-300"
+                          >
+                            <DoorOpen /> Leave
                           </button>
                         </li>
                       </ul>
                     </div>
-                  ) : (
-                    <span className="flex h-full items-center justify-center font-semibold tracking-wide text-white/50">
-                      {member.role}
-                    </span>
-                  )}
-                </li>
+                  ) : null}
+                </div>
               );
             })}
-          </ul>
+          </div>
         </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
 
+      {/* Ticket Modal */}
       <dialog
         id="generate_ticket"
         className="modal modal-middle max-md:modal-bottom"
