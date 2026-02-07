@@ -35,14 +35,14 @@ export default async function Home() {
 
       <Hero movieResults={nowPlaying.results} />
 
-      <div className="container mx-auto max-w-(--breakpoint-xl) overflow-hidden">
-        <div className="movie-list-wrapper flex flex-col gap-20">
-          <div className="now-playing flex flex-col">
+      <div className="container mx-auto max-w-(--breakpoint-xl) overflow-hidden px-4 sm:px-6 lg:px-8">
+        <div className="movie-list-wrapper flex flex-col gap-10 md:gap-16 lg:gap-20">
+          <div className="now-playing flex flex-col gap-4">
             <Header title="Now Playing" linkHref="/movies/now-playing" />
             <Card results={nowPlaying.results} />
           </div>
 
-          <div className="top-rated flex flex-col">
+          <div className="top-rated flex flex-col gap-4">
             <Header title="Top Rated" linkHref="/movies/top-rated" />
             <Card results={topRated.results} />
           </div>
@@ -52,10 +52,11 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="print-desc mt-24 flex justify-center">
+        <div className="print-desc mt-12 flex justify-center md:mt-24">
           <PrintDesc />
         </div>
-        <div className="faq mx-auto mt-24 flex max-w-(--breakpoint-lg)">
+
+        <div className="faq mx-auto mt-12 flex max-w-(--breakpoint-lg) md:mt-24">
           <Faq />
         </div>
       </div>
