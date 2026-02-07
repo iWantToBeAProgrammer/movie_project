@@ -28,7 +28,33 @@ export const createWatchlist = async (watchlistData) => {
   return res.json();
 };
 
-export const togglePrivacy = async ({token, isPublic}) => {
+export const updateWatchlist = async (data) => {
+  const formData = new FormData();
+
+  formData.append("id", data.id);
+  formData.append("name", data.name);
+  formData.append("description", data.description || "");
+
+  if (data.picture instanceof File) {
+    formData.append("picture", data.picture);
+  } else if (typeof data.picture === "string") {
+    formData.append("picture", data.picture);
+  }
+
+  const response = await fetch("/api/watchlist", {
+    method: "PUT",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to update watchlist");
+  }
+
+  return response.json();
+};
+
+export const togglePrivacy = async ({ token, isPublic }) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASEURL}/api/watchlist?token=${token}`,
     {

@@ -1,6 +1,10 @@
 "use client";
 
-import { createWatchlist, updateProfileData } from "@/libs/api";
+import {
+  createWatchlist,
+  updateProfileData,
+  updateWatchlist,
+} from "@/libs/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -9,6 +13,7 @@ import { useProfileData } from "@/hooks/useProfileData";
 import { useAuth } from "../contexts/AuthContext";
 import Loading from "../loading";
 import UserProfileLayout from "@/components/UserProfileLayout";
+import BackNavigation from "@/components/Common/BackNavigation";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -20,6 +25,7 @@ export default function Profile() {
   const [tabValue, setTabValue] = useState("watchlist");
 
   const [watchlistData, setWatchlistData] = useState({
+    id: null,
     name: "",
     description: "",
     picture: null,
@@ -43,6 +49,19 @@ export default function Profile() {
     },
   });
 
+  const editMutation = useMutation({
+    mutationFn: updateWatchlist,
+    onSuccess: (data) => {
+      toast.success("Watchlist updated successfully!");
+      queryClient.invalidateQueries(["watchlist"]);
+      document.getElementById("watchlist-modal")?.close();
+      setWatchlistData({ id: null, name: "", description: "", picture: null });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update watchlist");
+    },
+  });
+
   const updateMutation = useMutation({
     mutationFn: updateProfileData,
     onSuccess: () => {
@@ -62,14 +81,12 @@ export default function Profile() {
     joinedWatchlists,
     savedWatchlists,
   } = useProfileData(user.id);
-
   const isLoading =
     userInfo.isLoading ||
     watchedMovies.isLoading ||
     favoriteMovies.isLoading ||
     joinedWatchlists.isLoading ||
     savedWatchlists.isLoading;
-
   if (isLoading) return <Loading />;
 
   const watchlists = [
@@ -100,12 +117,22 @@ export default function Profile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createMutation.mutate(watchlistData);
+
+    if (watchlistData.id) {
+      editMutation.mutate(watchlistData);
+    } else {
+      createMutation.mutate(watchlistData);
+    }
   };
 
   const handleUpdateUserSubmit = (e) => {
     e.preventDefault();
     updateMutation.mutate(updatedUserData);
+  };
+
+  const handleOpenCreateModal = () => {
+    setWatchlistData({ id: null, name: "", description: "", picture: null });
+    document.getElementById("watchlist-modal").showModal();
   };
 
   const formattedData = {
@@ -116,6 +143,9 @@ export default function Profile() {
   return (
     <>
       <Navbar />
+      <div className="hidden lg:flex">
+        <BackNavigation />
+      </div>
       <UserProfileLayout
         userInfo={userInfo.data}
         watchedMovies={formattedData.watchedMovies}
@@ -127,6 +157,7 @@ export default function Profile() {
         setUpdatedUserData={setUpdatedUserData}
         watchlistData={watchlistData}
         setWatchlistData={setWatchlistData}
+        onOpenCreate={handleOpenCreateModal}
         handleUserImageChange={handleUserImageChange}
         handleChange={handleChange}
         handleImageChange={handleImageChange}

@@ -140,17 +140,28 @@ const Hero = ({ movieResults }) => {
       >
         <div className="blur-overlay absolute h-full w-full backdrop-blur-md"></div>
         <div className="relative hero flex h-full w-full items-center justify-center">
-          <div className="hero-wrapper flex h-[80%] w-full max-w-(--breakpoint-xl) justify-between rounded-2xl bg-[image:var(--backdrop-url)] bg-cover bg-center bg-no-repeat px-8 pb-12 font-bebas_neue text-3xl">
-            <div className="hero-left-content relative z-30 me-6 flex h-full w-[40%] flex-col items-start justify-end">
-              <h1 className="mb-2">
-                {result.title} ({result.release_date.slice(0, 4)})
+          {/* RESPONSIVE UPDATE: flex-col untuk mobile, lg:flex-row untuk desktop */}
+          {/* Width dan Padding disesuaikan */}
+          <div className="hero-wrapper flex h-full w-full max-w-(--breakpoint-xl) flex-col justify-end rounded-none bg-[image:var(--backdrop-url)] bg-cover bg-center bg-no-repeat px-4 pb-24 font-bebas_neue text-3xl lg:h-[80%] lg:flex-row lg:justify-between lg:rounded-2xl lg:px-8 lg:pb-12">
+            {/* RESPONSIVE UPDATE: w-full di mobile, lg:w-[40%] di desktop */}
+            {/* margin bottom ditambah di mobile agar tidak terlalu mepet */}
+            <div className="hero-left-content relative z-30 mb-4 flex h-auto w-full flex-col items-start justify-end lg:me-6 lg:mb-0 lg:h-full lg:w-[40%]">
+              {/* Ukuran font judul responsif */}
+              <h1 className="mb-2 text-5xl leading-none lg:text-7xl">
+                {result.title}
               </h1>
-              <div className="flex items-center gap-4 text-2xl lg:gap-16 lg:text-4xl">
+              <span className="mb-2 text-xl text-gray-300 lg:text-3xl">
+                ({result.release_date.slice(0, 4)})
+              </span>
+
+              <div className="flex items-center gap-4 text-lg lg:gap-16 lg:text-4xl">
                 <Certification result={certification} />
                 <span>{result.release_date}</span>
               </div>
-              <div className="genres my-8 flex items-center gap-3 font-raleway text-xl font-medium">
-                <h1 className="me-6">Genre</h1>
+
+              {/* Genre responsif: text-sm di mobile, text-xl di desktop, flex-wrap agar tidak overflow */}
+              <div className="genres my-4 flex flex-wrap items-center gap-2 font-raleway text-sm font-medium lg:my-8 lg:gap-3 lg:text-xl">
+                <h1 className="me-2 lg:me-6">Genre</h1>
                 {movieDetails.genres.map((data, index) => {
                   return (
                     <div key={data.id} className="flex items-center gap-2">
@@ -164,16 +175,19 @@ const Hero = ({ movieResults }) => {
                   );
                 })}
               </div>
-              <div className="hero-description line-clamp-3 font-raleway_italic text-base hover:line-clamp-none">
+
+              {/* Description line clamp responsif */}
+              <div className="hero-description line-clamp-3 cursor-pointer font-raleway_italic text-sm hover:line-clamp-none md:line-clamp-4 lg:line-clamp-3 lg:text-base">
                 {result.overview}
               </div>
 
-              <div className="hero-button-wrapper mt-4 flex items-center gap-2 lg:mt-8 lg:gap-8">
-                <div className="dropdown dropdown-bottom">
+              <div className="hero-button-wrapper mt-4 flex items-center gap-3 lg:mt-8 lg:gap-8">
+                <div className="dropdown dropdown-top lg:dropdown-bottom">
                   <div
                     role="button"
                     tabIndex={0}
-                    className="btn w-24 text-sm shadow-xl btn-sm btn-neutral lg:w-48 lg:text-xl"
+                    // Tombol sedikit lebih lebar di mobile agar mudah ditekan
+                    className="btn h-10 w-32 text-xs shadow-xl btn-sm btn-neutral md:text-sm lg:h-12 lg:w-48 lg:text-xl"
                   >
                     Add To Watchlist
                   </div>
@@ -188,7 +202,8 @@ const Hero = ({ movieResults }) => {
                 </div>
 
                 <button
-                  className="btn w-24 text-sm shadow-xl btn-sm btn-neutral lg:w-48 lg:text-xl"
+                  // Tombol sedikit lebih lebar di mobile
+                  className="btn h-10 w-32 text-xs shadow-xl btn-sm btn-neutral lg:h-12 lg:w-48 lg:text-sm lg:text-xl"
                   onClick={() =>
                     router.push(`/movies/${result.id}?autoplay=true`)
                   }
@@ -197,11 +212,14 @@ const Hero = ({ movieResults }) => {
                 </button>
               </div>
             </div>
-            <div className="hero-right-content reltaive z-30 h-full w-1/2">
+
+            {/* RESPONSIVE UPDATE: Hidden di mobile, Block di Large Screen */}
+            {/* Menyembunyikan teaser di HP karena memakan tempat terlalu banyak */}
+            <div className="hero-right-content relative z-30 hidden h-full w-1/2 lg:block">
               <Teaser movieTeaser={movieTeaser} />
             </div>
 
-            <div className="bottom-overlay absolute bottom-0 left-0 z-0 h-full w-full bg-linear-to-b from-black/20 to-black/80"></div>
+            <div className="bottom-overlay absolute bottom-0 left-0 z-0 h-full w-full bg-linear-to-b from-black/20 via-black/40 to-black/90"></div>
           </div>
         </div>
       </div>

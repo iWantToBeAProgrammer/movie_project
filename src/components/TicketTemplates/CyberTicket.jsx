@@ -1,0 +1,234 @@
+import { BarcodeSvg, SkylineDividerSvg } from "./Shared";
+
+const colors = {
+  bg: "#121212",
+  accent: "#ff4d00",
+  text: "#ffffff",
+  muted: "#666666",
+};
+
+const CyberTicketRow = ({ movie, index }) => (
+  <div
+    style={{
+      display: "flex",
+      width: "100%",
+      height: "340px", // FIXED
+      backgroundColor: "#1a1a1a",
+      borderRadius: "24px",
+      overflow: "hidden",
+      border: `3px solid ${colors.accent}`,
+      boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+      position: "relative",
+    }}
+  >
+    {/* Watermark Number */}
+    <div
+      style={{
+        display: "flex",
+        position: "absolute",
+        right: -20,
+        bottom: -50,
+        fontSize: 255, // FIXED
+        fontWeight: 900,
+        color: "white",
+        opacity: 0.05,
+        zIndex: 0,
+      }}
+    >
+      {index + 1}
+    </div>
+
+    {/* Poster */}
+    <div
+      style={{
+        display: "flex",
+        padding: "20px",
+        alignItems: "center",
+        zIndex: 1,
+        position: "relative",
+      }}
+    >
+      <img
+        src={movie.posterUrl}
+        style={{
+          width: "195px", // FIXED
+          height: "285px", // FIXED
+          objectFit: "cover",
+          borderRadius: "16px",
+          border: `2px solid ${colors.accent}`,
+        }}
+      />
+    </div>
+
+    {/* Info */}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        padding: "20px 10px",
+        justifyContent: "center",
+        zIndex: 1,
+        position: "relative",
+        minWidth: 0, // PENTING BUAT TRUNCATE
+      }}
+    >
+      <div
+        style={{
+          display: "block",
+          fontSize: "50px", // FIXED
+          fontWeight: 900,
+          color: "white",
+          lineHeight: 1.1,
+          marginBottom: 10,
+          textTransform: "uppercase",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "100%",
+        }}
+      >
+        {movie.title || "UNKNOWN TITLE"}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 15,
+          marginBottom: 15,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            backgroundColor: colors.accent,
+            color: "black",
+            padding: "4px 15px",
+            borderRadius: 6,
+            fontWeight: 700,
+            fontSize: 20, // FIXED
+          }}
+        >
+          {new Date().getFullYear()}
+        </div>
+        <SkylineDividerSvg color={colors.accent} />
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          color: colors.muted,
+          fontSize: 20, // FIXED
+          fontFamily: "monospace",
+          fontWeight: "bold",
+        }}
+      >
+        ADMIT ONE • VIP ACCESS
+      </div>
+    </div>
+
+    {/* Barcode Section */}
+    <div
+      style={{
+        display: "flex",
+        borderLeft: "3px dashed #333",
+        height: "100%",
+        alignItems: "center",
+        padding: "0 20px",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 20,
+        zIndex: 1,
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          transform: "rotate(90deg)",
+          fontSize: 18,
+          color: colors.muted,
+          fontWeight: 700,
+          whiteSpace: "nowrap",
+        }}
+      >
+        TCK-{String(movie.id).slice(0, 6)}
+      </div>
+      <BarcodeSvg />
+    </div>
+  </div>
+);
+
+export const CyberTicket = ({ movies }) => (
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      height: "100%",
+      backgroundColor: colors.bg,
+      color: colors.text,
+      fontFamily: "sans-serif",
+      padding: "50px 40px",
+      gap: "30px",
+      alignItems: "center",
+      justifyContent: movies.length < 4 ? "center" : "flex-start",
+    }}
+  >
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginBottom: 20,
+      }}
+    >
+      <h1
+        style={{
+          fontSize: 70,
+          fontWeight: 900,
+          letterSpacing: "0.1em",
+          margin: 0,
+          color: colors.accent,
+        }}
+      >
+        MY WATCHLIST
+      </h1>
+      <div
+        style={{
+          display: "flex",
+          fontSize: 28,
+          letterSpacing: "0.3em",
+          opacity: 0.7,
+        }}
+      >
+        OFFICIAL SELECTION
+      </div>
+    </div>
+
+    {movies.map((movie, index) => (
+      <CyberTicketRow key={movie.id} movie={movie} index={index} />
+    ))}
+
+    <div
+      style={{
+        display: "flex",
+        marginTop: "auto",
+        alignItems: "center",
+        gap: 15,
+        opacity: 0.5,
+      }}
+    >
+      <div
+        style={{ display: "flex", width: 40, height: 2, background: "white" }}
+      ></div>
+      <div style={{ display: "flex", fontSize: 20, fontWeight: 700 }}>
+        GENERATED BY MOVIELIST
+      </div>
+      <div
+        style={{ display: "flex", width: 40, height: 2, background: "white" }}
+      ></div>
+    </div>
+  </div>
+);
