@@ -26,7 +26,7 @@ export default function WatchlistBackdrop({ imageUrl, children }) {
 
   return (
     <div
-      className="h-80 w-full flex items-center justify-center text-white"
+      className="h-48 lg:h-80 w-full flex items-center justify-center text-white"
       style={{ background: `linear-gradient(to top,oklch(0.18 0.0067 17.8) 12%, ${bgColor} 100%` }}
     >
       {children}
