@@ -9,7 +9,7 @@ import HeaderMovieList from "@/components/MovieList/HeaderMovieList";
 import Navbar from "@/components/Navbar";
 import BackNavigation from "@/components/Common/BackNavigation";
 
-export default async function MoviesPage() {
+export default function MoviesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [movieData, setMovieData] = useState({ results: [], total_pages: 1 });
 
@@ -17,7 +17,7 @@ export default async function MoviesPage() {
     const fetchData = async () => {
       const data = await getMovieData(
         "popular",
-        `&language=en-US&page=${currentPage}&region=ID`
+        `&language=en-US&page=${currentPage}&region=ID`,
       );
       setMovieData(data);
     };
@@ -27,11 +27,12 @@ export default async function MoviesPage() {
 
   return (
     <>
-      <div className="container max-w-(--breakpoint-xl) mx-auto overflow-hidden">
-      <Navbar />
-        <div className="flex flex-col mt-16">
+      <div className="container mx-auto max-w-(--breakpoint-xl) overflow-hidden px-4 md:px-8 xl:px-0">
+        <Navbar />
+        <div className="mt-8 flex flex-col md:mt-12 lg:mt-16">
           <HeaderMovieList title={"Popular Viewed Movies"} />
-          <div className="grid grid-cols-5 gap-12">
+
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5 xl:gap-12">
             <Suspense fallback={<Loading />}>
               <CardMovieList results={movieData.results} />
             </Suspense>

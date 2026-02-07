@@ -28,7 +28,7 @@ const BackNavigation = ({ fallback = "/" }) => {
         tabIndex={0}
         role="button"
         onClick={handleBack}
-        className="back-button absolute top-7 left-5 z-50 cursor-pointer"
+        className="back-button absolute top-5 left-5 z-50 cursor-pointer"
       >
         <CaretLeft size={36} weight="bold" />
       </button>
