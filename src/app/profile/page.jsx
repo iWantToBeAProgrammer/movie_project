@@ -13,6 +13,7 @@ import { useProfileData } from "@/hooks/useProfileData";
 import { useAuth } from "../contexts/AuthContext";
 import Loading from "../loading";
 import UserProfileLayout from "@/components/UserProfileLayout";
+import BackNavigation from "@/components/Common/BackNavigation";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -142,6 +143,9 @@ export default function Profile() {
   return (
     <>
       <Navbar />
+      <div className="hidden lg:flex">
+        <BackNavigation />
+      </div>
       <UserProfileLayout
         userInfo={userInfo.data}
         watchedMovies={formattedData.watchedMovies}

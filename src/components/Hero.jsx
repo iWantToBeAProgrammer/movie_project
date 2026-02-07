@@ -187,7 +187,7 @@ const Hero = ({ movieResults }) => {
                     role="button"
                     tabIndex={0}
                     // Tombol sedikit lebih lebar di mobile agar mudah ditekan
-                    className="btn h-10 w-32 text-xs shadow-xl btn-sm btn-neutral lg:h-12 lg:w-48 lg:text-sm lg:text-xl"
+                    className="btn h-10 w-32 text-xs shadow-xl btn-sm btn-neutral md:text-sm lg:h-12 lg:w-48 lg:text-xl"
                   >
                     Add To Watchlist
                   </div>

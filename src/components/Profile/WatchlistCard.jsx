@@ -58,17 +58,16 @@ const WatchlistCard = ({ watchlists = [], username, onEdit }) => {
   return (
     <>
       <ConfirmationModal
-        isOpen={!!deleteTargetId} // Buka jika ada ID target
+        isOpen={!!deleteTargetId}
         onClose={() => setDeleteTargetId(null)}
         onConfirm={handleConfirmDelete}
         title="Delete Watchlist"
         message="Are you sure you want to delete this watchlist? This action cannot be undone and you will lose all saved movies in this list."
         confirmLabel="Delete"
         isDanger={true}
-        isLoading={isDeleting} // Loading state dari React Query
+        isLoading={isDeleting}
       />
 
-      {/* Overlay Penutup Menu */}
       {openMenuId && (
         <div
           className="fixed inset-0 z-40 cursor-default"
@@ -76,7 +75,7 @@ const WatchlistCard = ({ watchlists = [], username, onEdit }) => {
         ></div>
       )}
 
-      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-2 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {watchlists.length !== 0 ? (
           watchlists?.map((watchlist, index) => {
             const uniqueId = watchlist.id || index;
