@@ -4,12 +4,10 @@ import toast from "react-hot-toast";
 
 export default function TicketModal({ items }) {
   const [selectedMovies, setSelectedMovies] = useState([]);
-  // Default tema langsung ke 'cyber' sesuai template Satori kita
   const [selectedTheme, setSelectedTheme] = useState("cyber");
   const [step, setStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // --- LOGIC: SELECT MOVIES ---
   const handleToggleMovie = (movie) => {
     const isSelected = selectedMovies.some((m) => m.id === movie.id);
 
@@ -38,13 +36,13 @@ export default function TicketModal({ items }) {
     }
   };
 
-  // --- LOGIC: DOWNLOAD VIA API (SATORI) ---
   const handleDownload = async () => {
     setIsGenerating(true);
     try {
       const moviesData = selectedMovies.map((m) => ({
         id: m.id,
         title: m.title || m.name,
+        overview: m.overview || "",
         posterUrl: m.posterPath
           ? `${process.env.NEXT_PUBLIC_BASEIMG || process.env.NEXT_APP_BASEIMG}${m.posterPath}`
           : "https://placehold.co/400x600?text=No+Image",
@@ -79,7 +77,6 @@ export default function TicketModal({ items }) {
     }
   };
 
-  // --- RENDER STEP 1: SELECT MOVIES ---
   const renderStep1 = () => (
     <>
       <div
@@ -130,7 +127,6 @@ export default function TicketModal({ items }) {
     <div className="flex flex-col items-center gap-8 py-10">
       <h3 className="text-xl font-bold">Choose Ticket Style</h3>
       <div className="flex flex-wrap justify-center gap-4">
-        {/* Pastikan value theme sesuai dengan case di backend/index.js */}
         {["cyber", "modern", "cute", "vintage", "horror"].map((theme) => (
           <button
             key={theme}
@@ -151,14 +147,12 @@ export default function TicketModal({ items }) {
     </div>
   );
 
-  // --- RENDER STEP 3: PREVIEW (SESUAI TEMPLATE CYBER STORY) ---
   const renderStep3 = () => {
-    // Definisi Style untuk Preview (Miripin sama Template Satori)
     const getThemeStyle = () => {
       switch (selectedTheme) {
         case "cute":
           return {
-            wrapper: "bg-[#FFF0F5] border-[#FFB6C1]", // Lavender blush
+            wrapper: "bg-[#FFF0F5] border-[#FFB6C1]",
             header: "text-[#FF1493] drop-shadow-sm font-black",
             card: "bg-white border-4 border-[#FFB6C1] rounded-[20px] shadow-sm",
             text: "text-[#FF1493] font-bold",
@@ -167,7 +161,7 @@ export default function TicketModal({ items }) {
           };
         case "vintage":
           return {
-            wrapper: "bg-[#E8DCC5] border-[#8B4513]", // Old Paper
+            wrapper: "bg-[#E8DCC5] border-[#8B4513]",
             header:
               "text-[#4A3B2A] font-serif tracking-widest border-b-4 border-[#4A3B2A] pb-2",
             card: "bg-[#F4EBD9] border-2 border-[#4A3B2A] rounded-sm shadow-md",
@@ -219,7 +213,6 @@ export default function TicketModal({ items }) {
         <div
           className={`relative flex aspect-[9/16] w-[280px] flex-col items-center overflow-hidden rounded-xl border-4 p-5 shadow-2xl transition-all duration-500 ${style.wrapper}`}
         >
-          {/* Header */}
           <div className="mb-6 w-full text-center">
             <h1 className={`text-2xl ${style.header}`}>WATCHLIST</h1>
             <p
@@ -236,7 +229,6 @@ export default function TicketModal({ items }) {
                 key={movie.id}
                 className={`flex w-full items-center gap-3 p-3 transition-all ${style.card}`}
               >
-                {/* Poster Kecil */}
                 <div
                   className={`relative h-14 w-10 flex-shrink-0 overflow-hidden ${selectedTheme === "cute" ? "rounded-md" : "rounded-sm"}`}
                 >

@@ -196,12 +196,9 @@ export default function WatchlistDetail({ params }) {
         </div>
       </WatchlistBackdrop>
 
-      {/* Content Container */}
       <div className="mb-12 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-6 px-4 md:px-0">
-        {/* Compact Action Bar */}
         <div className="mt-6 flex w-full items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Primary Actions */}
             {isOwned && (
               <button
                 onClick={() =>
@@ -218,7 +215,6 @@ export default function WatchlistDetail({ params }) {
               <SaveButton isSavedInitial={watchlist?.saved} token={token} />
             )}
 
-            {/* Secondary Actions Toolbar (Glassmorphism) */}
             <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm">
               {watchlist.userRole === "OWNER" && (
                 <>

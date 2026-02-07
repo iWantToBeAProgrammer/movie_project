@@ -15,288 +15,306 @@ const colors = {
   sepia: "#D4A574",
 };
 
-const VintageTicketRow = ({ movie, index }) => (
-  <div
-    style={{
-      display: "flex",
-      width: "100%",
-      height: "340px",
-      backgroundColor: colors.cardBg,
-      borderRadius: "4px",
-      overflow: "hidden",
-      // FIX: Ganti solid (Aman)
-      borderWidth: "3px",
-      borderStyle: "solid",
-      borderColor: colors.accent,
-      position: "relative",
-      marginBottom: "30px",
-      boxShadow: "5px 5px 0px rgba(74, 59, 42, 0.2)",
-    }}
-  >
-    {/* Texture Overlay */}
+const VintageTicketRow = ({ movie, index }) => {
+  const truncateText = (text, maxLength) => {
+    if (!text) return "No synopsis available.";
+    if (text.length <= maxLength) return text;
+    return text.substr(0, maxLength) + "...";
+  };
+  return (
     <div
       style={{
         display: "flex",
-        position: "absolute",
-        top: 0,
-        left: 0,
         width: "100%",
-        height: "100%",
-        opacity: 0.15,
-        zIndex: 0,
-      }}
-    >
-      <PaperTextureSvg color={colors.accent} />
-    </div>
-
-    {/* Film Strip Atas */}
-    <div
-      style={{
-        display: "flex",
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "20px",
-        opacity: 0.3,
-        zIndex: 0,
-      }}
-    >
-      <FilmStripSvg color={colors.accent} />
-    </div>
-
-    {/* Vintage Stamp */}
-    <div
-      style={{
-        display: "flex",
-        position: "absolute",
-        top: 10,
-        right: 10,
-        width: "80px",
-        height: "80px",
-        opacity: 0.3,
-        transform: "rotate(15deg)",
-        zIndex: 0,
-      }}
-    >
-      <VintageStampSvg color={colors.border} />
-    </div>
-
-    {/* Watermark Number */}
-    <div
-      style={{
-        display: "flex",
-        position: "absolute",
-        right: -10,
-        bottom: -50,
-        fontSize: 255,
-        fontWeight: 900,
-        color: colors.accent,
-        opacity: 0.08,
-        fontFamily: "sans-serif",
-        zIndex: 0,
-      }}
-    >
-      {index + 1}
-    </div>
-
-    {/* --- POSTER --- */}
-    <div
-      style={{
-        display: "flex",
-        padding: "25px 20px 20px 20px",
-        alignItems: "center",
+        height: "340px",
+        backgroundColor: colors.cardBg,
+        borderRadius: "4px",
+        overflow: "hidden",
+        borderWidth: "3px",
+        borderStyle: "solid",
+        borderColor: colors.accent,
         position: "relative",
-        zIndex: 1,
+        marginBottom: "30px",
+        boxShadow: "5px 5px 0px rgba(74, 59, 42, 0.2)",
       }}
     >
-      <img
-        src={movie.posterUrl}
-        alt="poster"
-        style={{
-          width: "195px",
-          height: "285px",
-          objectFit: "cover",
-          // FIX: Ganti solid
-          borderWidth: "5px",
-          borderStyle: "solid",
-          borderColor: colors.accent,
-        }}
-      />
-      {/* Sepia Filter Overlay */}
+      {/* Texture Overlay */}
       <div
         style={{
           display: "flex",
           position: "absolute",
-          top: 25,
-          left: 20,
-          width: "195px",
-          height: "285px",
-          backgroundColor: colors.sepia,
-          opacity: 0.2,
-        }}
-      />
-    </div>
-
-    {/* --- INFO --- */}
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-        padding: "20px 10px",
-        justifyContent: "center",
-        position: "relative",
-        minWidth: 0,
-        zIndex: 1,
-      }}
-    >
-      {/* Title */}
-      <div
-        style={{
-          display: "block",
-          fontSize: "50px",
-          fontWeight: 900,
-          color: colors.accent,
-          marginBottom: 10,
-          lineHeight: 1.1,
-          textTransform: "uppercase",
-          // FIX: Ganti solid
-          borderBottom: `3px solid ${colors.accent}`,
-          paddingBottom: "8px",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: "100%",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          opacity: 0.15,
+          zIndex: 0,
         }}
       >
-        {movie.title || "CLASSIC TITLE"}
+        <PaperTextureSvg color={colors.accent} />
       </div>
 
-      {/* Year */}
+      {/* Film Strip Atas */}
       <div
         style={{
           display: "flex",
-          alignItems: "center",
-          marginBottom: 15,
-          marginTop: 5,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "20px",
+          opacity: 0.3,
+          zIndex: 0,
         }}
       >
-        <div
+        <FilmStripSvg color={colors.accent} />
+      </div>
+
+      {/* Vintage Stamp */}
+      <div
+        style={{
+          display: "flex",
+          position: "absolute",
+          top: 10,
+          right: 10,
+          width: "80px",
+          height: "80px",
+          opacity: 0.3,
+          transform: "rotate(15deg)",
+          zIndex: 0,
+        }}
+      >
+        <VintageStampSvg color={colors.border} />
+      </div>
+
+      {/* Watermark Number */}
+      <div
+        style={{
+          display: "flex",
+          position: "absolute",
+          right: -10,
+          bottom: -50,
+          fontSize: 255,
+          fontWeight: 900,
+          color: colors.accent,
+          opacity: 0.08,
+          fontFamily: "sans-serif",
+          zIndex: 0,
+        }}
+      >
+        {index + 1}
+      </div>
+
+      {/* --- POSTER --- */}
+      <div
+        style={{
+          display: "flex",
+          padding: "25px 20px 20px 20px",
+          alignItems: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <img
+          src={movie.posterUrl}
+          alt="poster"
           style={{
-            display: "flex",
+            width: "195px",
+            height: "285px",
+            objectFit: "cover",
             // FIX: Ganti solid
-            border: `2px solid ${colors.accent}`,
-            color: colors.accent,
-            padding: "4px 15px",
-            fontSize: 20,
-            fontWeight: "bold",
-            marginRight: 15,
+            borderWidth: "5px",
+            borderStyle: "solid",
+            borderColor: colors.accent,
           }}
-        >
-          EST. {new Date().getFullYear()}
-        </div>
+        />
+        {/* Sepia Filter Overlay */}
         <div
           style={{
             display: "flex",
-            height: 2,
-            flex: 1,
-            backgroundColor: colors.accent,
+            position: "absolute",
+            top: 25,
+            left: 20,
+            width: "195px",
+            height: "285px",
+            backgroundColor: colors.sepia,
+            opacity: 0.2,
           }}
         />
       </div>
 
-      {/* Footer Text */}
+      {/* --- INFO --- */}
       <div
         style={{
           display: "flex",
-          color: colors.accent,
-          fontSize: 20,
-          fontFamily: "monospace",
-          letterSpacing: "1px",
-          fontWeight: "bold",
+          flexDirection: "column",
+          flex: 1,
+          padding: "20px 10px",
+          justifyContent: "center",
+          position: "relative",
+          minWidth: 0,
+          zIndex: 1,
         }}
       >
-        ADMIT ONE • CINEMA
-      </div>
+        {/* Title */}
+        <div
+          style={{
+            display: "block",
+            fontSize: "50px",
+            fontWeight: 900,
+            color: colors.accent,
+            marginBottom: 10,
+            lineHeight: 1.1,
+            textTransform: "uppercase",
+            borderBottom: `3px solid ${colors.accent}`,
+            paddingBottom: "8px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "100%",
+          }}
+        >
+          {movie.title || "CLASSIC TITLE"}
+        </div>
 
-      {/* Dots Decoration */}
-      <div style={{ display: "flex", marginTop: 10 }}>
-        {[...Array(6)].map((_, i) => (
+        <div
+          style={{
+            display: "flex",
+            fontSize: "18px",
+            lineHeight: "1.4",
+            color: colors.accent,
+            opacity: 0.8,
+            marginBottom: 3,
+            height: "76px",
+            overflow: "hidden",
+          }}
+        >
+          {truncateText(movie.overview, 95)}
+        </div>
+
+        {/* Year */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: 15,
+          }}
+        >
           <div
-            key={i}
             style={{
               display: "flex",
-              width: "6px",
-              height: "6px",
-              borderRadius: "50%",
+              border: `2px solid ${colors.accent}`,
+              color: colors.accent,
+              padding: "4px 15px",
+              fontSize: 20,
+              fontWeight: "bold",
+              marginRight: 15,
+            }}
+          >
+            EST. {new Date().getFullYear()}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              height: 2,
+              flex: 1,
               backgroundColor: colors.accent,
-              marginRight: "8px",
-              opacity: 0.4,
             }}
           />
-        ))}
+        </div>
+
+        {/* Footer Text */}
+        <div
+          style={{
+            display: "flex",
+            color: colors.accent,
+            fontSize: 20,
+            fontFamily: "monospace",
+            letterSpacing: "1px",
+            fontWeight: "bold",
+          }}
+        >
+          ADMIT ONE • CINEMA
+        </div>
+
+        {/* Dots Decoration */}
+        <div style={{ display: "flex", marginTop: 10 }}>
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                backgroundColor: colors.accent,
+                marginRight: "8px",
+                opacity: 0.4,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* --- BARCODE --- */}
+      <div
+        style={{
+          display: "flex",
+          // FIX: Ganti solid
+          borderLeft: `3px solid ${colors.accent}`,
+          height: "100%",
+          alignItems: "center",
+          padding: "0 20px",
+          flexDirection: "column",
+          justifyContent: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {/* Scissor Icon */}
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            left: -14,
+            top: 25,
+            backgroundColor: colors.cardBg,
+            padding: 2,
+          }}
+        >
+          <ScissorSvg color={colors.accent} />
+        </div>
+
+        {/* Number Vertical */}
+        <div
+          style={{
+            display: "flex",
+            transform: "rotate(90deg)",
+            fontSize: 18,
+            fontWeight: 700,
+            color: colors.accent,
+            fontFamily: "monospace",
+            marginBottom: 30,
+            whiteSpace: "nowrap",
+          }}
+        >
+          NO. {String(movie.id).padStart(6, "0").slice(0, 6)}
+        </div>
+
+        {/* Barcode */}
+        <div
+          style={{
+            display: "flex",
+            backgroundColor: colors.accent,
+            padding: "5px",
+          }}
+        >
+          <BarcodeSvg />
+        </div>
       </div>
     </div>
-
-    {/* --- BARCODE --- */}
-    <div
-      style={{
-        display: "flex",
-        // FIX: Ganti solid
-        borderLeft: `3px solid ${colors.accent}`,
-        height: "100%",
-        alignItems: "center",
-        padding: "0 20px",
-        flexDirection: "column",
-        justifyContent: "center",
-        position: "relative",
-        zIndex: 1,
-      }}
-    >
-      {/* Scissor Icon */}
-      <div
-        style={{
-          display: "flex",
-          position: "absolute",
-          left: -14,
-          top: 25,
-          backgroundColor: colors.cardBg,
-          padding: 2,
-        }}
-      >
-        <ScissorSvg color={colors.accent} />
-      </div>
-
-      {/* Number Vertical */}
-      <div
-        style={{
-          display: "flex",
-          transform: "rotate(90deg)",
-          fontSize: 18,
-          fontWeight: 700,
-          color: colors.accent,
-          fontFamily: "monospace",
-          marginBottom: 30,
-          whiteSpace: "nowrap",
-        }}
-      >
-        NO. {String(movie.id).padStart(6, "0").slice(0, 6)}
-      </div>
-
-      {/* Barcode */}
-      <div
-        style={{
-          display: "flex",
-          backgroundColor: colors.accent,
-          padding: "5px",
-        }}
-      >
-        <BarcodeSvg />
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 export const VintageTicket = ({ movies }) => {
   const displayMovies = movies.slice(0, 4);

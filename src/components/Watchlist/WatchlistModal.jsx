@@ -7,29 +7,21 @@ const WatchlistModal = ({
   handleImageChange,
   handleChange,
 }) => {
-  // 1. Cek apakah ini mode Edit (jika ada ID berarti Edit)
   const isEditMode = Boolean(watchlistData?.watchlistId || watchlistData?.id);
 
-  // 2. Logika untuk preview gambar agar aman
   const getImagePreview = () => {
-    // Jika user baru upload file baru
     if (watchlistData?.picture instanceof File) {
       return URL.createObjectURL(watchlistData.picture);
     }
-    // Jika data dari database (String URL) dan tidak kosong
     if (typeof watchlistData?.picture === "string" && watchlistData?.picture) {
       return watchlistData.picture;
     }
-    // Default fallback
     return "/assets/images/watchlist-default.jpg";
   };
 
   return (
     <div className="modal-box max-w-2xl bg-[#1e1e1e] text-white">
-      {" "}
-      {/* Tambah bg agar aman dark mode */}
       <form method="dialog" className="mb-4">
-        {/* 3. Judul Dinamis */}
         <h1 className="text-2xl font-bold">
           {isEditMode ? "Edit Details" : "Create Watchlist"}
         </h1>
@@ -43,7 +35,6 @@ const WatchlistModal = ({
         encType="multipart/form-data"
       >
         <div className="grid grid-cols-3 gap-6">
-          {/* Kolom Kiri: Image Upload */}
           <div className="watchlist-image">
             <label
               htmlFor="picture"
@@ -53,7 +44,6 @@ const WatchlistModal = ({
                 width={600}
                 height={600}
                 className="aspect-square h-full w-full object-cover object-center transition-opacity group-hover:opacity-75"
-                // 4. Panggil fungsi helper preview image
                 src={getImagePreview()}
                 alt="Watchlist Preview"
               />
@@ -76,7 +66,6 @@ const WatchlistModal = ({
             </label>
           </div>
 
-          {/* Kolom Kanan: Input Fields */}
           <div className="watchlist-form-content col-span-2 flex h-full flex-col gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-sm font-bold text-gray-400">Name</label>
@@ -87,7 +76,7 @@ const WatchlistModal = ({
                 name="name"
                 value={watchlistData?.name || ""}
                 onChange={handleChange}
-                required // Tambahkan required agar tidak submit kosong
+                required
               />
             </div>
 
@@ -105,7 +94,6 @@ const WatchlistModal = ({
             </div>
 
             <div className="mt-2 flex justify-end">
-              {/* 5. Tombol Dinamis */}
               <button
                 className="btn rounded-full border-none bg-white px-8 font-bold text-black btn-primary hover:bg-gray-200"
                 type="submit"
