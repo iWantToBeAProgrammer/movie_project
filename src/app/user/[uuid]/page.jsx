@@ -28,19 +28,20 @@ export default function PublicProfilePage() {
     queryFn: getUserData,
   });
 
+  if (isLoading) return <Loading />;
+
   // Flatten and format data
   const watchlists = data.members.map((m) => ({
     ...m.watchlist,
     source: "public",
   }));
 
-  if (isLoading) return <Loading />;
 
   return (
     <UserProfileLayout
       userInfo={data}
-      watchedMovies={[]}
-      favoriteMovies={[]}
+      watchedMovies={[]} // Not exposed
+      favoriteMovies={[]} // Not exposed
       watchlists={watchlists}
       tabValue={tabValue}
       setTabValue={setTabValue}

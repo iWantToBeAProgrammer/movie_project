@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 import { createClient } from "@/libs/supabaseServer";
 
+// HTML to close the popup window
 function buildPopupCloseHtml(redirectUrl) {
   return `
     <html>

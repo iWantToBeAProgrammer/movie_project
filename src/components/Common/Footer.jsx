@@ -19,45 +19,23 @@ const Footer = () => {
         {/* Mobile: Flex Column, Desktop: Flex Row */}
         <div className="flex flex-col gap-10 lg:flex-row lg:gap-20">
           {/* Logo Section */}
-          <div className="flex flex-col items-start gap-4">
-            <div>
-              <Link href="/">
-                <Image
-                  src={"/assets/images/logo.png"}
-                  width={150}
-                  height={150}
-                  alt="CINEMATix Logo"
-                  className="h-auto w-32 md:w-[150px]"
-                />
-              </Link>
-              <p className="mt-2 text-lg text-slate-300 italic">
-                &quot;Every Movie Tells Your Tale&quot;
-              </p>
-            </div>
-
-            {/* --- TMDB ATTRIBUTION (WAJIB ADA) --- */}
-            <div className="flex flex-col gap-2 rounded-lg border border-white/10 bg-white/5 p-3 backdrop-blur-sm">
-              <div className="flex items-center gap-2">
-                <Image
-                  src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
-                  alt="TMDB Logo"
-                  width={80}
-                  height={30}
-                  className="h-4 w-auto"
-                />
-                <span className="text-[10px] font-bold text-slate-400">
-                  Data Provider
-                </span>
-              </div>
-              <p className="max-w-[250px] text-[10px] leading-tight text-slate-500">
-                This product uses the TMDB API but is not endorsed or certified
-                by TMDB.
-              </p>
-            </div>
-            {/* ------------------------------------ */}
+          <div className="flex flex-col items-start">
+            <Link href="/">
+              <Image
+                src={"/assets/images/logo.png"}
+                width={150}
+                height={150}
+                alt="CINEMATix Logo"
+                className="h-auto w-32 md:w-[150px]" // Resize logo dikit di mobile
+              />
+            </Link>
+            <p className="mt-2 text-base text-gray-300 md:text-lg">
+              "Every Movie Tells Your Tale"
+            </p>
           </div>
 
           {/* Links Section Wrapper */}
+          {/* Mobile: Grid 2 Kolom (biar hemat tempat), Desktop: Flex Row (layout asli) */}
           <div className="grid grid-cols-2 gap-8 md:grid-cols-3 md:gap-10 lg:flex lg:flex-1 lg:justify-between">
             {/* Column 1 */}
             <div className="flex flex-col">
@@ -111,23 +89,21 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="mt-12 flex w-full md:mt-24">
+          {/* Mobile: Stack vertical & Center text, Desktop: Space between */}
           <div className="flex w-full flex-col-reverse items-center justify-between gap-6 border-t border-slate-600 pt-6 text-center md:flex-row md:gap-0 md:pt-4 md:text-left">
             <h3 className="text-sm text-slate-400 md:text-base">
-              © 2024 CINEMATix project. All rights reserved
+              © 2020 CINEMATix project. All rights reserved
             </h3>
 
             <ul className="flex flex-wrap justify-center gap-4 text-sm text-slate-400 md:gap-6 md:text-base">
               <li className="cursor-pointer transition-colors hover:text-white hover:underline">
-                {/* Update href ini */}
-                <Link href={"/terms-conditions"}>Terms & Conditions</Link>
+                <Link href={"/"}>Terms & Conditions</Link>
               </li>
               <li className="cursor-pointer transition-colors hover:text-white hover:underline">
-                {/* Update href ini */}
-                <Link href={"/privacy-policy"}>Privacy Policy</Link>
+                <Link href={"/"}>Privacy Policy</Link>
               </li>
               <li className="cursor-pointer transition-colors hover:text-white hover:underline">
-                {/* Update href ini */}
-                <Link href={"/terms-of-use"}>Terms Of Use</Link>
+                <Link href={"/"}>Terms Of Use</Link>
               </li>
             </ul>
           </div>

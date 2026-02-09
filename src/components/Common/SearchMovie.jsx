@@ -28,23 +28,18 @@ export default function SearchMovie() {
   };
 
   return (
-    // Class w-full penting agar di mobile dia memenuhi container drawer
-    <div className="dropdown dropdown-end dropdown-bottom w-full">
+    <div className="dropdown dropdown-end">
       {/* Form Search */}
-      <form className="relative join w-full" onSubmit={handleSearch}>
+      <form className="relative join" onSubmit={handleSearch}>
         <input
-          // PERBAIKAN RESPONSIVE:
-          // 1. w-full di mobile (biar ngisi drawer)
-          // 2. sm:w-64 dst untuk desktop
-          // 3. text-base di mobile (biar iPhone gak auto-zoom pas ngetik)
-          className="input-bordered input input-sm join-item w-full bg-white/10 text-white placeholder-white/60 backdrop-blur-md transition-all duration-300 focus:bg-white/20 focus:outline-none sm:w-64 md:input-md md:w-72 lg:w-80"
-          placeholder="Search movie..."
+          className="input input-md join-item w-48 glass bg-accent/80 font-raleway text-sm font-semibold text-white transition-all duration-300 focus:outline-hidden sm:w-64 md:input-lg md:w-80 md:text-xl lg:w-96"
+          placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <button
           type="submit"
-          className="btn join-item border-none bg-primary text-white btn-sm hover:bg-primary/80 md:btn-md"
+          className="btn join-item text-white btn-md btn-primary md:btn-lg"
         >
           <MagnifyingGlass size={20} className="md:h-6 md:w-6" />
         </button>
@@ -52,40 +47,32 @@ export default function SearchMovie() {
 
       {/* Dropdown Results */}
       {debouncedQuery.length > 2 && (
-        <div
-          tabIndex={0}
-          // PERBAIKAN:
-          // 1. md:w-[400px]: Di desktop lebih lebar biar info lega
-          // 2. w-full: Di mobile ngikutin lebar input
-          // 3. max-h-[60vh] overflow-y-auto: Biar bisa discroll kalau hasil banyak
-          className="dropdown-content menu z-50 mt-2 w-full rounded-xl bg-[#e5e5e5] p-0 shadow-2xl md:w-[400px]"
-        >
-          <div className="custom-scrollbar max-h-[60vh] overflow-y-auto p-2 text-black md:p-3">
+        <div className="dropdown-content menu z-50 mt-2 w-full rounded-box bg-[#D9D9D9] p-0 shadow-lg">
+          <div className="p-2 text-black md:p-4">
             {isLoading ? (
               <div className="flex justify-center p-4">
                 <span className="loading text-primary loading-spinner"></span>
               </div>
             ) : data?.results?.length > 0 ? (
               <>
-                <SearchMovieCard results={data.results.slice(0, 5)} />
-                <div className="px-2 pt-2 pb-1">
-                  <Link
-                    href={`/search/${encodeURIComponent(debouncedQuery)}`}
-                    className="btn w-full text-xs font-bold text-black uppercase btn-ghost btn-sm hover:bg-black/10"
-                    onClick={() => {
-                      if (document.activeElement instanceof HTMLElement) {
-                        document.activeElement.blur();
-                      }
-                    }}
-                  >
-                    View All Results
-                  </Link>
-                </div>
+                <SearchMovieCard results={data.results.slice(0, 4)} />
+                <Link
+                  href={`/search/${encodeURIComponent(debouncedQuery)}`}
+                  className="btn mt-2 w-full text-xs font-bold text-black hover:text-white uppercase btn-ghost btn-sm md:text-sm"
+                  onClick={() => {
+                    if (document.activeElement instanceof HTMLElement) {
+                      document.activeElement.blur();
+                    }
+                  }}
+                >
+                  View All Results
+                </Link>
               </>
             ) : (
               <div className="p-4 text-center">
-                <p className="text-sm font-medium text-gray-600">
-                  Movie not found for &quot;{debouncedQuery}&quot;
+                <p className="text-sm font-bold md:text-base">
+                  "Sorry, we couldn’t find the movie… <br />
+                  but our hearts are always here for you! ❤️🎬"
                 </p>
               </div>
             )}

@@ -14,72 +14,66 @@ import {
 import WatchlistModal from "./Watchlist/WatchlistModal";
 import WatchlistDropdown from "./Watchlist/WatchlistDropdown";
 import { useAuth } from "@/app/contexts/AuthContext";
+import ErrorNotification from "./Auth/ErrorNotification";
 import { useWatchlistMutation } from "@/hooks/useFormMutation";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const { user } = useAuth();
+
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["movie-details", movieId],
     queryFn: () => fetchMovieDetails(movieId),
-    // Hapus suspense: true jika menyebabkan masalah hydration di Next.js app router
-    // suspense: true,
+    suspense: true,
   });
-
   const [isFavoriteHovered, setIsFavoriteHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(data?.favoriteMovie || false);
   const [isWatched, setIsWatched] = useState(data?.watched || false);
 
-  // --- PERBAIKAN: Definisi mutation langsung di sini ---
+  const createToggleMutation = (actionFn, queryKey) => {
+    return useMutation({
+      mutationFn: () => actionFn(movieId),
 
-  // Helper untuk konfigurasi mutation (bukan hook, cuma object config)
-  const getMutationConfig = (queryKey) => ({
-    onMutate: async () => {
-      await queryClient.cancelQueries([queryKey, movieId]);
-      const previousState = queryClient.getQueryData([queryKey, movieId]);
+      onMutate: async () => {
+        await queryClient.cancelQueries([queryKey, movieId]);
 
-      // Optimistic update state lokal query
-      queryClient.setQueryData([queryKey, movieId], (old) => {
-        // Logika update sesuaikan dengan struktur data return API
-        return old;
-      });
+        const previousState = queryClient.getQueryData([queryKey, movieId]);
 
-      return { previousState };
-    },
-    onError: (err, _, context) => {
-      queryClient.setQueryData([queryKey, movieId], context.previousState);
-      toast.error(err.message || "Something went wrong");
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries([queryKey, movieId]);
-      // Invalidate juga movie-details agar sinkron
-      queryClient.invalidateQueries(["movie-details", movieId]);
-    },
-    onSuccess: (data) => {
-      toast.success(data?.message);
-    },
-  });
+        queryClient.setQueryData([queryKey, movieId], {
+          [queryKey]: !previousState?.[queryKey],
+        });
 
-  // 1. Mutation Watched
-  const watchedMutation = useMutation({
-    mutationFn: () => markAsWatched(movieId),
-    ...getMutationConfig("watched"),
-  });
+        return { previousState };
+      },
 
-  // 2. Mutation Favorite
-  const favoriteMutation = useMutation({
-    mutationFn: () => toggleFavorite(movieId),
-    ...getMutationConfig("favorite"),
-  });
+      onError: (err, _, context) => {
+        // Rollback UI if mutation fails
+        queryClient.setQueryData([queryKey, movieId], context.previousState);
+        toast.error(err.message || "Something went wrong");
+      },
 
-  // --- Form Mutation Hook (Sudah benar) ---
+      onSettled: () => {
+        queryClient.invalidateQueries([queryKey, movieId]);
+      },
+
+      onSuccess: (data) => {
+        toast.success(data?.message);
+      },
+    });
+  };
+
+  const watchedMutation = createToggleMutation(markAsWatched, "watched");
+  const favoriteMutation = createToggleMutation(toggleFavorite, "favorite");
+
   const {
     formData: watchlistData,
     handleChange,
     handleImageChange,
     handleSubmit,
     handleSubmitWithId,
+    isLoading,
   } = useWatchlistMutation({
     initialData: {
       watchlistId: null,
@@ -96,7 +90,6 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   const handleSubmitToExistingWatchlist = (watchlistId) => {
     handleSubmitWithId(watchlistId);
   };
-
   const handleAddToWatchlistClick = () => {
     !user
       ? document.getElementById("error-notification").showModal()
@@ -107,7 +100,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
     if (!user) {
       document.getElementById("error-notification").showModal();
     } else {
-      setIsFavorite((prev) => !prev);
+      setIsFavorite((prev) => !prev); // Instantly update local state
       favoriteMutation.mutate();
     }
   };
@@ -122,18 +115,12 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
   };
 
   const getFavoriteIcon = () => {
-    // Gunakan data realtime dari server jika ada, fallback ke local state
-    const isFav = data?.favoriteMovie ?? isFavorite;
-
-    return isFav || isFavoriteHovered ? (
+    return isFavorite || isFavoriteHovered ? (
       <IoStar size={28} className="inline-block" />
     ) : (
       <IoStarOutline size={28} className="inline-block" />
     );
   };
-
-  // Gunakan data realtime untuk status watched juga
-  const isWatchedStatus = data?.watched ?? isWatched;
 
   const buttonConfig = {
     add: {
@@ -143,7 +130,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
       renderAsDropdown: true,
     },
     watched: {
-      text: isWatchedStatus ? "Didn't Watch It" : "Watched It",
+      text: isWatched ? "Didn't Watch It" : "Watched It",
       icon: <Eye size={20} className="mr-2 inline-block" />,
       className:
         "bg-transparent border border-secondary border-4 text-secondary hover:bg-secondary hover:text-white",
@@ -152,7 +139,7 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
     },
     favorite: {
       icon: getFavoriteIcon(),
-      className: "bg-transparent text-yellow-400 border border-4 border-white",
+      className: "bg-transparent  text-yellow-400 border border-4 border-white",
       onClick: handleFavoriteClick,
       renderAsDropdown: false,
       onMouseEnter: () => setIsFavoriteHovered(true),
@@ -193,11 +180,10 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
           {config.icon}
           {config.text}
         </div>
-        {/* Pastikan WatchlistDropdown support props ini */}
         <WatchlistDropdown
           showModal={handleAddToWatchlistClick}
           handleSubmitToExistingWatchlist={handleSubmitToExistingWatchlist}
-          watchlists={data?.watchlists || []} // Default array kosong biar gak error map
+          watchlists={data?.watchlists}
         />
       </div>
 
@@ -209,6 +195,8 @@ const CustomButton = ({ type, size = "medium", className = "", movieId }) => {
           watchlistData={watchlistData}
         />
       </dialog>
+
+     
     </>
   );
 };
