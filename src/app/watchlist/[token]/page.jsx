@@ -1,5 +1,8 @@
 "use client";
+
+// 1. Imports
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+// Import updateWatchlist LANGSUNG dari API, bukan dari hook queries
 import { togglePrivacy, updateWatchlist } from "@/libs/api";
 import Image from "next/image";
 import WatchlistThumbnail from "@/components/Profile/Thumbnail/WatchlistThumbnail";
@@ -11,6 +14,8 @@ import WatchlistBackdrop from "@/components/Watchlist/WatchlistBackdrop";
 import { IoPersonAddOutline, IoTicketOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { TbForbid } from "react-icons/tb";
+import { CaretDown, DoorOpen } from "@phosphor-icons/react";
 import { CiLock, CiUnlock } from "react-icons/ci";
 import { ShareNetwork, PencilSimple } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
@@ -23,13 +28,31 @@ import { useWatchlistMutation } from "@/hooks/useFormMutation";
 
 export default function WatchlistDetail({ params }) {
   const { token } = params;
+
+  // --- BAGIAN 1: SEMUA HOOKS (WAJIB DI PALING ATAS) ---
   const router = useRouter();
-  const [thumbnailUrl, setThumbnailUrl] = useState(null);
   const { user } = useAuth();
-  const { data: watchlist, isLoading, isError, error } = useWatchlist(token);
   const queryClient = useQueryClient();
 
-  // --- HOOK UNTUK EDIT WATCHLIST ---
+  // State Hooks
+  const [thumbnailUrl, setThumbnailUrl] = useState(null);
+
+  // Query Hooks
+  const { data: watchlist, isLoading, isError, error } = useWatchlist(token);
+
+  // Mutation Hooks (Privacy)
+  const privacyMutation = useMutation({
+    mutationFn: togglePrivacy,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      queryClient.invalidateQueries(["watchlist", token]);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Custom Form Mutation Hook (Edit Watchlist)
   const {
     formData,
     setFormData,
@@ -44,22 +67,25 @@ export default function WatchlistDetail({ params }) {
       description: "",
       picture: null,
     },
-    mutationFn: updateWatchlist,
+    // FIX 2: Gunakan fungsi API langsung.
+    // useFormMutation akan menangani pemanggilan function ini.
+    mutationFn: (data) => updateWatchlist(data),
+
     queryKey: ["watchlist", token],
     modalId: "edit_watchlist_modal",
-
     onSuccess: () => {
       toast.success("Watchlist updated successfully! 🎉");
       queryClient.invalidateQueries(["watchlist", token]);
       document.getElementById("edit_watchlist_modal").close();
     },
-
     onError: (err) => {
       toast.error(err.message || "Failed to update watchlist");
     },
   });
 
+
   const handleEditClick = () => {
+    if (!watchlist) return;
     setFormData({
       id: watchlist.id,
       name: watchlist.name,
@@ -87,6 +113,7 @@ export default function WatchlistDetail({ params }) {
   };
 
   const handleShareWatchlist = () => {
+    if (!watchlist) return;
     const shareUrl = shareWatchlistUrl(
       watchlist.token,
       watchlist.isPublic ? undefined : watchlist.inviteToken,
@@ -105,19 +132,9 @@ export default function WatchlistDetail({ params }) {
     toast.success(results.message);
   };
 
-  const privacyMutation = useMutation({
-    mutationFn: togglePrivacy,
-    onSuccess: (data) => {
-      toast.success(data.message);
-      queryClient.invalidateQueries(["watchlist", token]);
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
   const privacyButtonToggle = (e) => {
     e.preventDefault();
+    if (!watchlist) return;
     privacyMutation.mutate({ token, isPublic: !watchlist.isPublic });
   };
 
@@ -131,9 +148,15 @@ export default function WatchlistDetail({ params }) {
     toast.success(results?.message);
   };
 
+  // --- BAGIAN 3: CONDITIONAL RETURNS (LOADING/ERROR) ---
+  // FIX 1: Pengecekan ini HARUS dilakukan SEBELUM mengakses watchlist.items
+
   if (isLoading) return <Loading />;
   if (isError) return <p>Error loading watchlist: {error.message}</p>;
   if (!watchlist) return <p>Watchlist not found.</p>;
+
+  // --- BAGIAN 4: DATA PROCESSING (Safe to do here) ---
+  // Kode di bawah ini aman karena kita sudah return di atas jika watchlist null/undefined
 
   const totalMovies = watchlist.items?.length || 0;
   const watchlistItem = watchlist?.items;
@@ -144,6 +167,7 @@ export default function WatchlistDetail({ params }) {
     (member) => member.role === "OWNER" || member.role === "COLLABORATOR",
   );
 
+  // --- BAGIAN 5: RENDER JSX ---
   return (
     <div className="mx-auto flex w-full flex-col items-center justify-center">
       <BackNavigation />
@@ -172,11 +196,9 @@ export default function WatchlistDetail({ params }) {
             <h1 className="line-clamp-1 font-raleway text-xl font-bold text-white drop-shadow-md md:line-clamp-none md:text-5xl">
               {watchlist.name}
             </h1>
-
             <p className="line-clamp-1 max-w-xs text-xs text-slate-300 md:line-clamp-2 md:text-base">
               {watchlist.description || "No description"}
             </p>
-
             <div className="mt-1 flex items-center gap-3 text-xs font-medium text-white/80 md:mt-2 md:gap-4 md:text-sm">
               <div className="flex items-center gap-2">
                 <div className="avatar-group -space-x-2 md:-space-x-3 rtl:space-x-reverse">
@@ -235,7 +257,6 @@ export default function WatchlistDetail({ params }) {
 
       {/* Body Content */}
       <div className="mb-12 flex h-full w-full max-w-(--breakpoint-xl) flex-col gap-4 px-4 md:gap-6 md:px-0">
-        {/* Action Bar */}
         <div className="mt-4 flex w-full flex-wrap items-center justify-between gap-3 md:mt-6">
           <div className="flex items-center gap-2 md:gap-3">
             {isOwned && (
@@ -249,13 +270,11 @@ export default function WatchlistDetail({ params }) {
                 <IoTicketOutline size={20} className="md:size-6" />
               </button>
             )}
-
             {!isOwned && (
               <SaveButton isSavedInitial={watchlist?.saved} token={token} />
             )}
           </div>
 
-          {/* Right Actions (Owner Tools) */}
           <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 backdrop-blur-md md:px-3 md:py-1.5">
             {watchlist.userRole === "OWNER" && (
               <>
@@ -270,8 +289,6 @@ export default function WatchlistDetail({ params }) {
                     <IoPersonAddOutline size={18} className="md:size-5" />
                   </button>
                 </div>
-
-                {/* TOMBOL EDIT */}
                 <div
                   className="tooltip tooltip-left tooltip-accent md:tooltip-top"
                   data-tip="Edit Watchlist"
@@ -283,7 +300,6 @@ export default function WatchlistDetail({ params }) {
                     <PencilSimple size={18} className="md:size-5" />
                   </button>
                 </div>
-
                 <div
                   className="tooltip tooltip-left tooltip-accent md:tooltip-top"
                   data-tip={
@@ -318,7 +334,6 @@ export default function WatchlistDetail({ params }) {
           </div>
         </div>
 
-        {/* List Header */}
         <div className="flex items-center border-b border-white/10 pb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase md:text-sm">
           <div className="w-8 text-center md:w-12">#</div>
           <div>Movies</div>
@@ -333,9 +348,7 @@ export default function WatchlistDetail({ params }) {
         </div>
       </div>
 
-      {/* MODAL - MEMBER */}
       <dialog id="shared_modal" className="modal modal-bottom sm:modal-middle">
-        {/* Isi modal member sama seperti sebelumnya */}
         <div className="modal-box border border-white/10 bg-neutral text-white">
           <form method="dialog">
             <button className="btn absolute top-2 right-2 btn-circle text-white/60 btn-ghost btn-sm hover:text-white">
@@ -375,10 +388,9 @@ export default function WatchlistDetail({ params }) {
         </form>
       </dialog>
 
-      {/* MODAL - EDIT WATCHLIST */}
       <dialog
         id="edit_watchlist_modal"
-        className="modal modal-middle sm:modal-middle"
+        className="modal modal-bottom sm:modal-middle"
       >
         <WatchlistModal
           watchlistData={formData}
@@ -389,10 +401,9 @@ export default function WatchlistDetail({ params }) {
         />
       </dialog>
 
-      {/* MODAL - TICKET */}
       <dialog
         id="generate_ticket"
-        className="modal modal-middle sm:modal-middle"
+        className="modal modal-bottom sm:modal-middle"
       >
         <TicketModal items={watchlistItem} />
         <form method="dialog" className="modal-backdrop">

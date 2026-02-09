@@ -14,11 +14,12 @@ import Link from "next/link";
 const Card = ({ results = [] }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  // FIX: Hook moved here, BEFORE the conditional return
+  const router = useRouter();
+
   if (!results || results.length === 0) {
     return <p>No data available</p>;
   }
-
-  const router = useRouter();
 
   return (
     <div

@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎬 CINEMATix
 
-## Getting Started
+> **Your aesthetic movie companion. Track, share, and vibe with your film taste.** 🍿✨
 
-First, run the development server:
+<div align="center">
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+</div>
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🧐 What's the Tea? (About)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+**CINEMATix** bukan sekadar database film biasa. Ini adalah platform buat kamu yang _obsessed_ sama film tapi butuh tempat yang rapi buat nyimpen semuanya.
 
-## Learn More
+Dibangun dengan **Next.js App Router** terbaru, project ini menggabungkan performa yang _blazingly fast_ dengan UI yang _eye-pleasing_. Fitur andalannya? **Collaborative Watchlist**. Iya, kamu bisa bikin list film bareng bestie kamu, generate tiket virtual buat pamer di story, dan tracking film apa aja yang udah kamu tonton.
 
-To learn more about Next.js, take a look at the following resources:
+_No more "mau nonton apa ya?" confusion. We got you._
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Features that Slap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+🔥 **Dynamic Watchlists**
+Create, edit, and delete watchlists with a seamless UI. Ganti cover image, deskripsi, dan nama watchlist sesuka hati (modal editing-nya udah smooth banget!).
 
-## Deploy on Vercel
+🤝 **Collaboration Mode**
+Invite temen kamu jadi collaborator di watchlist. _Build your movie empire together._
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🎟️ **Ticket Generator**
+Ubah watchlist kamu jadi tiket virtual yang estetik. _Shareable content for your socials!_
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+🔎 **Smart Search**
+Powered by TMDB API with **debounced search**. Ketik dikit, hasil langsung muncul. _No lag, just speed._
+
+🔐 **Secure Auth**
+Login aman pake **Supabase Auth**. Data user terproteksi, session aman.
+
+🎨 **Aesthetic UI/UX**
+Dark mode by default (karena mata programmer butuh istirahat), responsif di HP maupun laptop. Dibuat pake Tailwind CSS + DaisyUI.
+
+## 🛠️ The Stack (Tech Sauce)
+
+Project ini dibuat pake teknologi-teknologi yang lagi _hype_ dan _reliable_ di industri:
+
+- **Framework:** [Next.js 14](https://nextjs.org/) (App Router) - _The React Framework for the Web._
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) - _Utility-first CSS framework._
+- **Database & Auth:** [Supabase](https://supabase.com/) & [Prisma ORM](https://www.prisma.io/).
+- **State Management:** [TanStack Query](https://tanstack.com/query/latest) - _Server state management done right._
+- **Icons:** [Phosphor Icons](https://phosphoricons.com/) & React Icons.
+- **Forms:** React Hook Form (with custom mutation hooks).
+- **UI Components:** DaisyUI & SwiperJS.
+
+## ✍️ Author
+
+**Erdin Purwa Putra,**
+**Juan Stevenson**
+_Informatics Engineering Student & Software Engineer Wannabe_
+
+---
+
+_Made with ❤️ and a lot of caffeine ☕._

@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 
 const WatchlistItemCard = ({ watchlistItem = [], token }) => {
   const [movieStates, setMovieStates] = useState({});
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (watchlistItem.length > 0) {
@@ -58,42 +59,58 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
     modalId: "watchlist_modal",
   });
 
-  const queryClient = useQueryClient();
+  // --- PERBAIKAN DISINI ---
+  // Definisikan helper konfigurasi (bukan hook)
+  const getMutationConfig = (queryKey) => ({
+    onMutate: async ({ movieId }) => {
+      // Terima movieId dari variables
+      await queryClient.cancelQueries([queryKey, movieId]);
+      const previousState = queryClient.getQueryData([queryKey, movieId]);
 
-  const createToggleMutation = (actionFn, queryKey) => {
-    const movieId = formData.movieId;
-    return useMutation({
-      mutationFn: () => actionFn(movieId),
-      onMutate: async () => {
-        await queryClient.cancelQueries([queryKey, movieId]);
-        const previousState = queryClient.getQueryData([queryKey, movieId]);
-        queryClient.setQueryData([queryKey, movieId], {
-          [queryKey]: !previousState?.[queryKey],
-        });
-        return { previousState };
-      },
-      onError: (err, _, context) => {
-        if (err.code === 401) {
-          document.getElementById("error-notification").showModal();
-          return;
-        }
-        queryClient.setQueryData([queryKey, movieId], context.previousState);
-        toast.error(err.message || "Something went wrong");
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries([queryKey, movieId]);
-      },
-      onSuccess: (data) => {
-        toast.success(data?.message);
-      },
-    });
-  };
+      queryClient.setQueryData([queryKey, movieId], (old) => {
+        // Logika optimistik (sesuaikan struktur data jika perlu)
+        return !old;
+      });
 
-  const watchedMutation = createToggleMutation(markAsWatched, "watched");
-  const favoriteMutation = createToggleMutation(toggleFavorite, "favorite");
+      return { previousState };
+    },
+    onError: (err, { movieId }, context) => {
+      // Akses movieId dari variables
+      if (err.code === 401) {
+        document.getElementById("error-notification").showModal();
+        return;
+      }
+      queryClient.setQueryData([queryKey, movieId], context.previousState);
+      toast.error(err.message || "Something went wrong");
+    },
+    onSettled: (_, __, { movieId }) => {
+      // Akses movieId dari variables
+      queryClient.invalidateQueries([queryKey, movieId]);
+    },
+    onSuccess: (data) => {
+      toast.success(data?.message);
+    },
+  });
+
+  // 1. Watched Mutation
+  const watchedMutation = useMutation({
+    mutationFn: ({ movieId }) => markAsWatched(movieId),
+    ...getMutationConfig("watched"),
+  });
+
+  // 2. Favorite Mutation
+  const favoriteMutation = useMutation({
+    mutationFn: ({ movieId }) => toggleFavorite(movieId),
+    ...getMutationConfig("favorite"),
+  });
+
+  // --- END PERBAIKAN ---
 
   const handleWatchedClick = (movieId) => {
+    // Panggil mutate dengan object { movieId }
     watchedMutation.mutate({ movieId });
+
+    // Optimistic UI update lokal
     setMovieStates((prev) => ({
       ...prev,
       [movieId]: { ...prev[movieId], isWatched: !prev[movieId]?.isWatched },
@@ -101,7 +118,10 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
   };
 
   const handleFavoriteClick = (movieId) => {
+    // Panggil mutate dengan object { movieId }
     favoriteMutation.mutate({ movieId });
+
+    // Optimistic UI update lokal
     setMovieStates((prev) => ({
       ...prev,
       [movieId]: { ...prev[movieId], isFavorite: !prev[movieId]?.isFavorite },
@@ -124,7 +144,6 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
 
   const handleSubmitToExistingWatchlist = (watchlistId, movieId) => {
     handleSubmitWithId(watchlistId, "watchlistId", { movieId });
-    // Menutup dropdown setelah memilih (opsional, cari elemen active element lalu blur)
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -198,7 +217,7 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
                     </div>
                   </div>
 
-                  {/* Dropdown Menu - FIXED */}
+                  {/* Dropdown Menu */}
                   <div className="dropdown dropdown-end">
                     <button
                       type="button"
@@ -216,7 +235,6 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
                       tabIndex={0}
                       className="dropdown-content menu z-50 mt-1 w-56 rounded-xl border border-white/10 bg-[#1a1a1a] p-2 text-xs font-medium shadow-2xl md:w-64 md:text-sm"
                     >
-                      {/* FIX: Menggunakan <details> untuk Submenu (Accordion style) agar tidak error di mobile */}
                       <li>
                         <details>
                           <summary className="group flex justify-between py-2 active:bg-white/10">
@@ -225,7 +243,6 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
                             </span>
                           </summary>
 
-                          {/* List Watchlist Scrollable & Compact */}
                           <ul className="mt-1 max-h-40 overflow-y-auto rounded-lg bg-black/20 p-1">
                             {otherWatchlistsLoading ? (
                               <li className="px-2 py-1 text-center opacity-50">
@@ -321,12 +338,12 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
                   </div>
                 </div>
 
-                {/* Overview Text - Compact */}
+                {/* Overview Text */}
                 <p className="line-clamp-2 text-[11px] leading-relaxed text-slate-400 md:line-clamp-2 md:text-sm">
                   {item.overview || "No overview available."}
                 </p>
 
-                {/* Badges - Compact */}
+                {/* Badges */}
                 <div className="mt-auto flex flex-wrap gap-2 pt-1">
                   {isWatched && (
                     <div className="badge gap-1 badge-xs py-2 text-[10px] badge-primary md:badge-sm md:text-xs">

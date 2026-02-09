@@ -17,9 +17,6 @@ import BackNavigation from "@/components/Common/BackNavigation";
 
 export default function Profile() {
   const { user } = useAuth();
-
-  if (!user) return <Loading />;
-
   const queryClient = useQueryClient();
 
   const [tabValue, setTabValue] = useState("watchlist");
@@ -80,21 +77,25 @@ export default function Profile() {
     favoriteMovies,
     joinedWatchlists,
     savedWatchlists,
-  } = useProfileData(user.id);
+  } = useProfileData(user?.id);
+
+  if (!user) return <Loading />;
+
   const isLoading =
     userInfo.isLoading ||
     watchedMovies.isLoading ||
     favoriteMovies.isLoading ||
     joinedWatchlists.isLoading ||
     savedWatchlists.isLoading;
+
   if (isLoading) return <Loading />;
 
   const watchlists = [
-    ...joinedWatchlists.data.map((item) => ({
+    ...(joinedWatchlists.data || []).map((item) => ({
       ...item.watchlist,
       source: "joined",
     })),
-    ...savedWatchlists.data.map((item) => ({
+    ...(savedWatchlists.data || []).map((item) => ({
       ...item.watchlist,
       source: "saved",
     })),
@@ -136,8 +137,8 @@ export default function Profile() {
   };
 
   const formattedData = {
-    favoriteMovies: favoriteMovies.data.map((item) => item.movie),
-    watchedMovies: watchedMovies.data.map((item) => item.movie),
+    favoriteMovies: (favoriteMovies.data || []).map((item) => item.movie),
+    watchedMovies: (watchedMovies.data || []).map((item) => item.movie),
   };
 
   return (

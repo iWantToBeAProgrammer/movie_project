@@ -41,8 +41,18 @@ export default function UserProfileLayout({
     document.getElementById("watchlist-modal").showModal();
   };
 
+  const getProfilePreview = () => {
+    if (updatedUserData?.profilePicture instanceof File) {
+      return URL.createObjectURL(updatedUserData.profilePicture);
+    }
+    if (updatedUserData?.profilePicture) {
+      return updatedUserData.profilePicture;
+    }
+    return userInfo?.profilePicture || "/assets/images/noimage.jpg";
+  };
+
   return (
-    <div className="profile-container mx-auto mt-16 w-full max-w-(--breakpoint-xl) overflow-hidden px-4 pt-6 sm:pt-8 md:pt-20 lg:mt-0 lg:pt-28">
+    <div className="profile-container relative mx-auto mt-16 w-full max-w-7xl overflow-x-hidden px-4 pt-6 sm:pt-8 md:pt-20 lg:mt-0 lg:pt-28">
       <div className="profile-wrapper flex flex-col gap-6 lg:flex-row lg:gap-8">
         <div className="profile-content-left w-full lg:w-3/4">
           <header className="flex flex-col gap-4 sm:flex-row sm:gap-6">
@@ -70,10 +80,10 @@ export default function UserProfileLayout({
                 priority
               />
               {!isPublicView && (
-                <div className="profile-image-overlay absolute inset-0 z-10 flex flex-col items-center justify-center transition-colors duration-200 *:hidden hover:bg-black/70 hover:*:block">
+                <div className="profile-image-overlay absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/50 opacity-0 transition-opacity duration-300 hover:bg-black/70 hover:opacity-100">
                   <HiOutlinePencil
                     size={32}
-                    className="sm:size-40 md:size-16"
+                    className="text-white sm:size-40 md:size-10"
                     weight="bold"
                   />
                 </div>
@@ -110,166 +120,166 @@ export default function UserProfileLayout({
           </header>
 
           {/* Tabs Section */}
-          <div
-            role="tablist"
-            className="tabs-bordered mt-6 tabs w-full overflow-x-auto sm:mt-8 md:mt-12"
-          >
-            <button
-              role="tab"
-              className={`tab ${
-                tabValue === "watchlist" ? "tab-active" : ""
-              } h-10 min-w-max font-bebas_neue text-lg whitespace-nowrap transition-colors duration-200 sm:h-12 sm:text-xl md:text-2xl`}
-              onClick={() => setTabValue("watchlist")}
-            >
-              Watchlists
-            </button>
-            <div
-              role="tabpanel"
-              className="relative tab-content w-full border-t-white/30 py-4 sm:py-6 md:py-8"
-            >
-              {!isPublicView && (
-                <div className="mb-3 flex w-full justify-end sm:mb-4">
-                  <button
-                    onClick={onOpenCreate}
-                    className="add-watchlist-button group relative flex h-10 w-10 items-center justify-center rounded-lg bg-neutral/90 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-neutral active:scale-95 sm:h-12 sm:w-12 sm:rounded-xl md:rounded-2xl"
-                    title="Add new watchlist"
-                  >
-                    <Plus
-                      size={24}
-                      className="text-primary group-hover:size-28"
-                      weight="bold"
-                    />
-                  </button>
+          <div className="mt-6 w-full sm:mt-8 md:mt-12">
+            <div role="tablist" className="tabs-bordered tabs w-full">
+              <button
+                role="tab"
+                className={`tab ${
+                  tabValue === "watchlist" ? "tab-active" : ""
+                } h-10 min-w-max font-bebas_neue text-lg whitespace-nowrap transition-colors duration-200 sm:h-12 sm:text-xl md:text-2xl`}
+                onClick={() => setTabValue("watchlist")}
+              >
+                Watchlists
+              </button>
+
+              <button
+                role="tab"
+                onClick={() => setTabValue("favorites")}
+                className={`tab ${isPublicView && "tab-disabled"} ${
+                  tabValue === "favorites" ? "tab-active" : ""
+                } h-10 min-w-max font-bebas_neue text-lg whitespace-nowrap transition-colors duration-200 sm:h-12 sm:text-xl md:text-2xl`}
+              >
+                Favorites
+              </button>
+
+              <button
+                onClick={() => setTabValue("watched")}
+                role="tab"
+                className={`tab ${isPublicView && "tab-disabled"} ${
+                  tabValue === "watched" ? "tab-active" : ""
+                } h-10 min-w-max font-bebas_neue text-lg whitespace-nowrap transition-colors duration-200 sm:h-12 sm:text-xl md:text-2xl`}
+              >
+                Watched
+              </button>
+            </div>
+
+            {/* TAB PANELS (Dipisah biar structure lebih bersih dan ga bikin lebar layout) */}
+            <div className="mt-4 w-full border-t border-white/30 pt-4 sm:pt-6 md:pt-8">
+              {tabValue === "watchlist" && (
+                <>
+                  {!isPublicView && (
+                    <div className="mb-3 flex w-full justify-end sm:mb-4">
+                      <button
+                        onClick={onOpenCreate}
+                        className="add-watchlist-button group relative flex h-10 w-10 items-center justify-center rounded-lg bg-neutral/90 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-neutral active:scale-95 sm:h-12 sm:w-12 sm:rounded-xl md:rounded-2xl"
+                        title="Add new watchlist"
+                      >
+                        <Plus
+                          size={24}
+                          className="text-primary group-hover:size-28"
+                          weight="bold"
+                        />
+                      </button>
+                    </div>
+                  )}
+                  <WatchlistCard
+                    watchlists={watchlists}
+                    username={userInfo.username}
+                    onEdit={handleEditWatchlist}
+                  />
+                </>
+              )}
+
+              {tabValue === "favorites" && (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:gap-4">
+                  {favoriteMovies.length > 0 ? (
+                    <CardMovieList results={favoriteMovies} />
+                  ) : (
+                    <p className="col-span-full py-8 text-center text-xs text-white/30 sm:text-sm">
+                      No favorite movies yet.
+                    </p>
+                  )}
                 </div>
               )}
-              <WatchlistCard
-                watchlists={watchlists}
-                username={userInfo.username}
-                onEdit={handleEditWatchlist}
-              />
-            </div>
 
-            <button
-              role="tab"
-              onClick={() => setTabValue("favorites")}
-              className={`tab ${isPublicView && "tab-disabled"} ${
-                tabValue === "favorites" ? "tab-active" : ""
-              } h-10 min-w-max font-bebas_neue text-lg whitespace-nowrap transition-colors duration-200 sm:h-12 sm:text-xl md:text-2xl`}
-            >
-              Favorites
-            </button>
-            <div
-              role="tabpanel"
-              className="tab-content w-full border-t-white/30 py-4 sm:py-6 md:py-8"
-            >
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:gap-4">
-                {favoriteMovies.length > 0 ? (
-                  <CardMovieList results={favoriteMovies} />
-                ) : (
-                  <p className="col-span-full py-8 text-center text-xs text-white/30 sm:text-sm">
-                    No favorite movies yet.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setTabValue("watched")}
-              role="tab"
-              className={`tab ${isPublicView && "tab-disabled"} ${
-                tabValue === "watched" ? "tab-active" : ""
-              } h-10 min-w-max font-bebas_neue text-lg whitespace-nowrap transition-colors duration-200 sm:h-12 sm:text-xl md:text-2xl`}
-            >
-              Watched
-            </button>
-            <div
-              role="tabpanel"
-              className="tab-content w-full border-t-white/30 py-4 sm:py-6 md:py-8"
-            >
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:gap-4">
-                {watchedMovies.length > 0 ? (
-                  <CardMovieList results={watchedMovies} />
-                ) : (
-                  <p className="col-span-full py-8 text-center text-xs text-white/30 sm:text-sm">
-                    No watched movies yet.
-                  </p>
-                )}
-              </div>
+              {tabValue === "watched" && (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:gap-4">
+                  {watchedMovies.length > 0 ? (
+                    <CardMovieList results={watchedMovies} />
+                  ) : (
+                    <p className="col-span-full py-8 text-center text-xs text-white/30 sm:text-sm">
+                      No watched movies yet.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div className="profile-content-right w-full lg:w-1/4"></div>
       </div>
 
-      {/* Watchlist Modal */}
-      <dialog className="modal" id="watchlist-modal">
+      {/* --- Watchlist Modal --- */}
+      {/* FIX 2: Pastikan class modal-bottom dan sm:modal-middle ada di sini */}
+      <dialog
+        id="watchlist-modal"
+        className="modal fixed inset-0 !flex modal-bottom h-screen w-screen !items-center !justify-center overflow-y-auto p-4 lg:p-0 pl-10 lg:pl-0"
+      >
         <WatchlistModal
           handleChange={handleChange}
           handleImageChange={handleImageChange}
           handleSubmit={handleSubmit}
           watchlistData={watchlistData}
         />
+        {/* Backdrop agar bisa klik luar untuk close */}
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
 
-      {/* Profile Modal */}
-      <dialog className="modal" id="profile-modal">
-        <div className="modal-box w-full max-w-xs p-6 sm:max-w-sm sm:p-8 md:max-w-xl md:p-10">
+      {/* --- Profile Modal --- */}
+      {/* FIX 3: Structure Modal Profile dirapikan */}
+      <dialog id="profile-modal" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box w-full max-w-sm bg-[#1e1e1e] p-6 text-white md:max-w-xl md:p-10">
           <form method="dialog">
-            <button className="btn absolute top-2 right-2 btn-circle btn-ghost transition-colors btn-sm hover:bg-white/10">
+            <button className="btn absolute top-2 right-2 btn-circle text-white/60 btn-ghost transition-colors btn-sm hover:bg-white/10 hover:text-white">
               ✕
             </button>
           </form>
 
           <form
-            className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 md:gap-8"
+            className="flex flex-col items-center gap-6 sm:flex-row sm:gap-8"
             onSubmit={handleUpdateUserSubmit}
           >
-            {/* Profile Picture */}
-            <div className="profile-picture-modal flex-shrink-0 overflow-hidden rounded-lg sm:rounded-xl md:rounded-2xl">
-              <label
-                htmlFor="profilePicture"
-                className="group relative block cursor-pointer"
-              >
+            {/* Profile Picture Upload */}
+            <div className="flex-shrink-0">
+              <label className="group relative block h-28 w-28 cursor-pointer overflow-hidden rounded-xl border-2 border-dashed border-white/20 transition-all hover:border-white/50 md:h-40 md:w-40">
                 <Image
                   width={512}
                   height={512}
-                  className="aspect-square h-24 w-24 object-cover object-center transition-opacity duration-200 group-hover:opacity-75 sm:h-28 sm:w-28 md:h-40 md:w-40"
-                  src={
-                    updatedUserData?.profilePicture instanceof File
-                      ? URL.createObjectURL(updatedUserData?.profilePicture)
-                      : updatedUserData?.profilePicture ||
-                        "/assets/images/noimage.jpg"
-                  }
+                  className="h-full w-full object-cover object-center transition-opacity duration-200 group-hover:opacity-50"
+                  src={getProfilePreview()}
                   alt="User Profile Preview"
                 />
                 <input
                   type="file"
                   name="profilePicture"
-                  id="profilePicture"
                   className="hidden"
                   accept="image/*"
                   onChange={handleUserImageChange}
                 />
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center transition-colors duration-200 *:hidden group-hover:bg-black/50 group-hover:*:block">
-                  <HiOutlinePencil
-                    size={32}
-                    className="sm:size-40 md:size-48"
-                    weight="bold"
-                  />
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="rounded-full bg-black/50 p-2 backdrop-blur-sm">
+                    <HiOutlinePencil size={24} className="text-white" />
+                  </div>
                 </div>
               </label>
             </div>
 
             {/* Form Data */}
-            <div className="form-data flex h-full w-full flex-col items-center justify-end gap-3 sm:w-auto sm:items-end sm:gap-4">
-              <label className="floating-label w-full sm:w-auto">
-                <span className="mb-1 block text-sm font-medium">Username</span>
+            <div className="flex h-full w-full flex-col justify-center gap-4">
+              <div className="form-control w-full">
+                <label className="label px-0">
+                  <span className="label-text font-bold text-gray-400">
+                    Username
+                  </span>
+                </label>
                 <input
                   type="text"
-                  placeholder="Username"
-                  className="input input-sm w-full transition-all focus:ring-2 focus:ring-primary/50 focus:outline-none sm:input-md sm:w-56 md:input-lg md:w-72"
+                  placeholder="Enter new username"
+                  className="input-bordered input w-full bg-[#2a2a2a] text-white focus:border-primary focus:outline-none"
                   name="username"
-                  value={updatedUserData?.username}
+                  value={updatedUserData?.username || ""}
                   onChange={(e) =>
                     setUpdatedUserData((prev) => ({
                       ...prev,
@@ -277,16 +287,22 @@ export default function UserProfileLayout({
                     }))
                   }
                 />
-              </label>
+              </div>
+
               <button
                 type="submit"
-                className="btn w-full px-4 transition-all duration-200 btn-sm btn-primary hover:shadow-lg active:scale-95 sm:w-auto sm:px-5 sm:btn-md md:px-6 md:btn-lg"
+                className="btn mt-2 w-full font-bold text-white shadow-lg btn-primary hover:brightness-110 sm:w-auto"
               >
-                Save
+                Save Changes
               </button>
             </div>
           </form>
         </div>
+
+        {/* Backdrop agar bisa klik luar untuk close */}
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
     </div>
   );

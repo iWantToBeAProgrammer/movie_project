@@ -2,12 +2,7 @@
 
 import { useAuth } from "@/app/contexts/AuthContext";
 import { supabase } from "@/libs/supabase";
-import {
-  CaretDown,
-  MagnifyingGlass,
-  UserCircle,
-  List,
-} from "@phosphor-icons/react";
+import { CaretDown, List, UserCircle } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,7 +29,7 @@ const Navbar = () => {
   return (
     <nav className="absolute top-0 left-0 z-50 flex w-full justify-center px-4 py-2">
       <div className="navbar max-w-7xl px-6">
-        {/* Mobile Menu (Drawer/Dropdown) */}
+        {/* --- MOBILE MENU (Drawer/Dropdown) --- */}
         <div className="navbar-start lg:hidden">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost">
@@ -42,8 +37,14 @@ const Navbar = () => {
             </div>
             <ul
               tabIndex={0}
-              className="dropdown-content menu z-50 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 text-neutral shadow"
+              className="dropdown-content menu z-50 mt-3 w-80 rounded-box bg-base-100 p-2 text-neutral shadow"
             >
+              <li className="mb-2 border-b border-gray-200 pb-2 md:hidden">
+                <div className="pointer-events-auto">
+                  <SearchMovie />
+                </div>
+              </li>
+
               {menuItems.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href}>{item.label}</Link>
@@ -53,7 +54,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Logo */}
         <div className="navbar-start hidden lg:flex">
           <Link href="/" className="transition hover:opacity-80">
             <Image
@@ -65,7 +65,6 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Center Logo for Mobile */}
         <div className="navbar-center lg:hidden">
           <Link href="/">
             <Image
@@ -79,7 +78,7 @@ const Navbar = () => {
 
         {/* Desktop Menu & Search */}
         <div className="navbar-end flex items-center gap-4">
-          {/* Dropdown Movie List */}
+          {/* Dropdown Movie List (Desktop) */}
           <div className="dropdown-hover dropdown dropdown-end hidden lg:block">
             <div
               tabIndex={0}
@@ -100,6 +99,7 @@ const Navbar = () => {
             </ul>
           </div>
 
+          {/* 2. SearchMovie Desktop (hidden di mobile) */}
           <div className="hidden md:block">
             <SearchMovie />
           </div>
@@ -120,7 +120,7 @@ const Navbar = () => {
                 className="btn avatar btn-circle btn-ghost transition hover:scale-105"
               >
                 {userImage ? (
-                  <div className="relative w-24 overflow-hidden rounded-full border border-white/20 md:w-11">
+                  <div className="relative w-8 overflow-hidden rounded-full border border-white/20 md:w-11">
                     <Image
                       src={userImage}
                       alt="Profile"
@@ -130,14 +130,14 @@ const Navbar = () => {
                     />
                   </div>
                 ) : (
-                  <div
-                    tabIndex={0}
-                    role="button"
-                    className="flex items-center justify-center rounded-full bg-accent p-1"
-                  >
-                    <p className="w-full h-full flex justify-center items-center">
-                        <UserCircle size={42} />
-                    </p>
+                  <div className="flex items-center justify-center rounded-full bg-accent p-1">
+                    <Image
+                      src="/assets/images/noimage.jpg"
+                      alt="Profile"
+                      fill
+                      className="object-cover md:h-[42px] md:w-[42px] rounded-full"
+                      sizes="44px"
+                    />
                   </div>
                 )}
               </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Minus, Star } from "@phosphor-icons/react";
+import { Star } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ColorThief from "color-thief-browser";
@@ -13,8 +13,15 @@ const SearchMovieCard = ({ results }) => {
   useEffect(() => {
     if (!results || results.length === 0) return;
 
+    // Logic ColorThief tetap sama, tapi kita bungkus try-catch extra
+    // agar tidak error di beberapa browser mobile
     const colorPromises = results.map((result) => {
       return new Promise((resolve) => {
+        if (!result.poster_path) {
+          resolve({ id: result.id, dominantColor: "rgba(0,0,0,0.1)" });
+          return;
+        }
+
         const img = new window.Image();
         img.crossOrigin = "Anonymous";
         img.src = `${process.env.NEXT_APP_BASEIMG}${result.poster_path}`;
@@ -23,8 +30,13 @@ const SearchMovieCard = ({ results }) => {
           try {
             const colorThief = new ColorThief();
             const palette = colorThief.getPalette(img, 2);
-            const dominantColor = `rgba(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]}, 0.2)`;
-            resolve({ id: result.id, dominantColor });
+            // Fallback jika palette kosong
+            if (palette && palette.length > 0) {
+              const dominantColor = `rgba(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]}, 0.2)`;
+              resolve({ id: result.id, dominantColor });
+            } else {
+              resolve({ id: result.id, dominantColor: "rgba(0,0,0,0.1)" });
+            }
           } catch (error) {
             resolve({
               id: result.id,
@@ -51,7 +63,7 @@ const SearchMovieCard = ({ results }) => {
   if (!results || results.length === 0) return null;
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col gap-1">
       {results.map((result) => {
         const movieColor = movieColors[result.id] || {
           dominantColor: "transparent",
@@ -70,26 +82,40 @@ const SearchMovieCard = ({ results }) => {
                 ? movieColor.dominantColor
                 : "transparent",
             }}
-            className="flex items-center gap-3 rounded-lg border-b border-white/10 p-2 transition-colors duration-300 ease-in-out last:border-none hover:backdrop-blur-sm"
+            // RESPONSIVE FIX: Padding lebih kecil di mobile, rounded lebih rapi
+            className="group flex items-center gap-3 rounded-lg p-2 transition-all duration-300 ease-in-out hover:bg-white/50"
+            onClick={() => {
+              if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+              }
+            }}
           >
-            <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md shadow-sm">
+            {/* Poster Thumbnail */}
+            <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md shadow-sm md:h-16 md:w-12">
               <Image
-                src={`${process.env.NEXT_APP_BASEIMG}${result.poster_path}`}
+                src={
+                  result.poster_path
+                    ? `${process.env.NEXT_APP_BASEIMG}${result.poster_path}`
+                    : "/assets/images/noimage.jpg" // Pastikan ada fallback image
+                }
                 alt={result.title}
                 fill
                 className="object-cover"
-                sizes="40px"
+                sizes="48px"
               />
             </div>
 
+            {/* Info Wrapper: min-w-0 penting agar truncate jalan di flex item */}
             <div className="flex min-w-0 flex-1 flex-col justify-center">
-              <h3 className="truncate text-sm leading-tight font-bold text-black md:text-base">
+              <h3 className="truncate text-sm font-bold text-black md:text-base">
                 {result.title}
               </h3>
 
-              <div className="mt-1 flex items-center gap-2 text-xs text-black/70">
+              <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-black/70">
                 <span>{releaseYear}</span>
-                <span className="text-black/30">•</span>
+
+                <span className="hidden text-black/30 sm:inline">•</span>
+
                 <div className="flex items-center gap-1">
                   <Star weight="fill" className="text-yellow-500" size={12} />
                   <span className="font-semibold">
@@ -97,14 +123,14 @@ const SearchMovieCard = ({ results }) => {
                   </span>
                 </div>
 
-                <span className="text-black/30">•</span>
-
-                {result.certification ? (
-                  <span className="rounded border border-black/20 px-1 text-[10px] font-bold">
-                    {result.certification}
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-black/40 italic">NR</span>
+                {/* Hide certification on very small screens if needed, or keep it */}
+                {result.certification && (
+                  <>
+                    <span className="text-black/30">•</span>
+                    <span className="rounded border border-black/20 px-1 text-[10px] font-bold">
+                      {result.certification}
+                    </span>
+                  </>
                 )}
               </div>
             </div>

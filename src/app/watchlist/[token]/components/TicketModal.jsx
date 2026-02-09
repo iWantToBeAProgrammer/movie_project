@@ -285,7 +285,7 @@ export default function TicketModal({ items }) {
     );
 
   return (
-    <div className="relative modal-box w-11/12 max-w-4xl overflow-hidden p-0">
+    <div className="relative modal-box w-11/12 max-w-4xl overflow-hidden p-0 rounded-2xl ml-10">
       <div className="sticky top-0 z-20 bg-base-100 px-6 py-4 shadow-sm">
         <h2 className="mb-4 text-center text-2xl font-bold">
           Ticket Generator
@@ -299,7 +299,7 @@ export default function TicketModal({ items }) {
         </ul>
       </div>
 
-      <div className="max-h-[60vh] min-h-[400px] overflow-y-auto px-6 py-4">
+      <div className="max-h-[55vh] min-h-[380px] overflow-y-auto px-6 py-4">
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
         {step === 3 && renderStep3()}

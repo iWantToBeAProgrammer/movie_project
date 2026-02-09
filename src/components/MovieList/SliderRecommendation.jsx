@@ -11,11 +11,11 @@ import { Suspense } from "react";
 import Loading from "@/app/loading";
 
 const SliderRecommendation = ({ results = [] }) => {
+  const router = useRouter();
+
   if (!results || results.length === 0) {
     return <p>No data available</p>;
   }
-
-  const router = useRouter();
 
   return (
     <div className="w-full">

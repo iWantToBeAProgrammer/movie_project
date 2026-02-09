@@ -2,55 +2,55 @@
 
 import Image from "next/image";
 import React from "react";
-import { useRouter } from "next/navigation";
 import { FaRegStar } from "react-icons/fa";
 import { IoPlayCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 
 const CardMovieList = ({ results = [] }) => {
-  const router = useRouter();
-
   return (
     <>
       {results.map((result) => {
         const releaseYear =
           result.release_date?.slice(0, 4) ||
           result.releaseDates?.slice(0, 4) ||
-          "Unknown Release Dates";
-        
-
+          "Unknown";
 
         return (
           <div key={result.id} className="w-full">
-            <div className="group relative aspect-2/3 w-full overflow-hidden rounded-lg">
-              <Image
-                src={`${process.env.NEXT_APP_BASEIMG}${
-                  result.poster_path || result.posterPath
-                }`}
-                fill
-                className="object-cover"
-                alt={result.title || "Movie poster"}
-              />
+            <Link href={`/movies/${result?.id}`}>
+              <div className="group relative aspect-[2/3] w-full cursor-pointer overflow-hidden rounded-lg">
+                <Image
+                  src={`${process.env.NEXT_APP_BASEIMG}${
+                    result.poster_path || result.posterPath
+                  }`}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  alt={result.title || "Movie poster"}
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                />
 
-              <div className="h-full w-full bg-black/0 transition-colors duration-300 ease-in-out group-hover:translate-y-0 hover:bg-black/70">
-                <div className="flex h-full flex-col items-center justify-center gap-4 p-4 text-white">
-                  <Link
-                    className="text-6xl transition-all duration-300 ease-in-out hover:scale-125"
-                    href={`/movies/${result?.id}`}
-                  >
-                    <IoPlayCircleOutline />
-                  </Link>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <IoPlayCircleOutline className="text-6xl text-white drop-shadow-md transition-transform duration-300 group-hover:scale-110" />
                 </div>
               </div>
-            </div>
-            <div className="mt-2 flex flex-col gap-2 font-bebas_neue">
-              <div className="flex justify-center gap-2 text-lg">
-                <h1 className="line-clamp-1">{result.title}</h1>
-                <p>{`(${releaseYear})`}</p>
+            </Link>
+
+            {/* Movie Info */}
+            <div className="mt-2 flex flex-col gap-1 font-bebas_neue">
+              <div className="flex flex-wrap justify-center gap-2 text-lg leading-tight">
+                <Link
+                  href={`/movies/${result?.id}`}
+                  className="line-clamp-1 transition-colors hover:text-primary"
+                >
+                  {result.title}
+                </Link>
+                <span className="text-gray-400">{`(${releaseYear})`}</span>
               </div>
-              <div className="flex items-center justify-center gap-2">
-                <FaRegStar className="text-yellow-400" />
-                <p>{result.vote_average.toFixed(2)}</p>
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-300">
+                <FaRegStar className="mb-0.5 text-yellow-400" />
+                <p>
+                  {result.vote_average ? result.vote_average.toFixed(1) : "N/A"}
+                </p>
               </div>
             </div>
           </div>

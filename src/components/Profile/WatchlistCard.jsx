@@ -62,12 +62,13 @@ const WatchlistCard = ({ watchlists = [], username, onEdit }) => {
         onClose={() => setDeleteTargetId(null)}
         onConfirm={handleConfirmDelete}
         title="Delete Watchlist"
-        message="Are you sure you want to delete this watchlist? This action cannot be undone and you will lose all saved movies in this list."
+        message="Are you sure? This action cannot be undone."
         confirmLabel="Delete"
         isDanger={true}
         isLoading={isDeleting}
       />
 
+      {/* Overlay buat nutup menu kalo klik diluar */}
       {openMenuId && (
         <div
           className="fixed inset-0 z-40 cursor-default"
@@ -75,11 +76,10 @@ const WatchlistCard = ({ watchlists = [], username, onEdit }) => {
         ></div>
       )}
 
-      <div className="mt-2 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5">
         {watchlists.length !== 0 ? (
           watchlists?.map((watchlist, index) => {
             const uniqueId = watchlist.id || index;
-
             const isOwner = watchlist?.members?.some(
               (item) =>
                 item.role === "OWNER" && item.user.username === username,
@@ -88,85 +88,82 @@ const WatchlistCard = ({ watchlists = [], username, onEdit }) => {
             return (
               <div
                 key={uniqueId}
-                className="watchlist-card group relative h-64 w-48 rounded-2xl font-sans_caption transition-colors duration-200 ease-out md:h-80 md:w-60"
+                // PERBAIKAN 1: Hapus 'overflow-hidden' agar dropdown tidak terpotong
+                className="group relative flex w-full flex-col rounded-xl bg-white/5 transition-all hover:bg-white/10"
               >
                 <Link
                   href={`/watchlist/${watchlist.token}`}
                   onClick={() => setOpenMenuId(null)}
-                  className="block h-full w-full rounded-2xl px-4 pt-4 hover:bg-white/10"
+                  className="flex h-full flex-col"
                 >
-                  <div className="watchlist-card-wrapper relative flex flex-col items-center gap-3 text-center md:items-start md:text-start">
-                    <div className="thumbnail-image-wrapper h-36 w-36 overflow-hidden rounded-2xl shadow-lg md:h-52 md:w-52">
-                      {watchlist.picture ? (
-                        <Image
-                          src={`${watchlist.picture}`}
-                          alt={watchlist.name}
-                          width={512}
-                          height={512}
-                          className="h-full w-full object-cover object-center"
-                        />
-                      ) : (
-                        <WatchlistThumbnail movies={watchlist.items} />
-                      )}
-                    </div>
+                  {/* Thumbnail Section */}
+                  {/* PERBAIKAN 2: Tambah 'rounded-t-xl' agar sudut atas gambar tetap melengkung */}
+                  <div className="relative aspect-square w-full overflow-hidden rounded-t-xl bg-black/40">
+                    {watchlist.picture ? (
+                      <Image
+                        src={`${watchlist.picture}`}
+                        alt={watchlist.name}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                      />
+                    ) : (
+                      <WatchlistThumbnail movies={watchlist.items} />
+                    )}
 
-                    <div className="watchlist-card-content flex w-full flex-col">
-                      <h3 className="watchlist-card-name line-clamp-1 text-left text-base font-bold text-white md:text-lg">
+                    {/* Privacy Badge */}
+                    <div className="absolute top-2 left-2 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-medium backdrop-blur-sm">
+                      {watchlist.isPublic ? "Public" : "Private"}
+                    </div>
+                  </div>
+
+                  {/* Content Section */}
+                  <div className="flex flex-1 flex-col justify-between p-3">
+                    <div>
+                      <h3 className="line-clamp-1 font-raleway text-sm font-bold text-white md:text-base">
                         {watchlist.name}
                       </h3>
-                      <p className="watchlist-card-desc line-clamp-1 text-left text-xs text-[#b3b3b3]">
-                        {watchlist.isPublic ? "Public" : "Private"} • By{" "}
-                        {watchlist.members.find((m) => m.role === "OWNER")?.user
-                          ?.username || "Unknown"}
+                      <p className="mt-0.5 line-clamp-1 text-[10px] text-gray-400 md:text-xs">
+                        {watchlist.items?.length || 0} movies •{" "}
+                        {
+                          watchlist.members.find((m) => m.role === "OWNER")
+                            ?.user?.username
+                        }
                       </p>
                     </div>
                   </div>
                 </Link>
 
-                {/* TOMBOL MENU (OVERLAY) */}
-                <div
-                  className={`absolute top-2 right-2 z-50 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out md:right-4 ${
-                    openMenuId === uniqueId
-                      ? "bg-black/60 opacity-100"
-                      : "bg-black/40 opacity-0 group-hover:opacity-100 hover:scale-105 hover:bg-black/60"
-                  }`}
-                >
-                  <div className="dropdown dropdown-right">
-                    <button
-                      type="button"
-                      onClick={(e) => handleMenuClick(e, uniqueId)}
-                      className="flex h-full w-full cursor-pointer items-center justify-center text-white"
+                {/* Menu Button (Absolute Top Right) */}
+                <div className="absolute top-1 right-1 z-50">
+                  <button
+                    onClick={(e) => handleMenuClick(e, uniqueId)}
+                    className={`btn btn-circle border-none bg-black/40 text-white btn-xs hover:bg-black/60 ${openMenuId === uniqueId ? "opacity-100" : "opacity-0 transition-opacity group-hover:opacity-100"}`}
+                  >
+                    <HiOutlineDotsVertical size={14} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {openMenuId === uniqueId && (
+                    <ul
+                      className="menu absolute top-8 right-0 z-50 w-48 rounded-lg bg-[#222] p-1 text-xs text-white shadow-xl ring-1 ring-white/10"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <HiOutlineDotsVertical size={24} />
-                    </button>
-
-                    {/* --- DROPDOWN MENU CONTENT --- */}
-                    {openMenuId === uniqueId && (
-                      <ul
-                        className="dropdown-content ring-opacity-5 menu absolute top-10 right-0 w-56 rounded-md bg-[#282828] p-1 text-sm text-white shadow-xl ring-1 ring-black"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {/* FITUR OWNER: EDIT */}
-                        {isOwner && (
-                          <>
-                            <li>
-                              <button
-                                onClick={() => {
-                                  onEdit(watchlist);
-                                  setOpenMenuId(null);
-                                }}
-                                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-left hover:bg-[#3E3E3E]"
-                              >
-                                <HiPencil size={18} className="text-gray-400" />
-                                Edit details
-                              </button>
-                            </li>
-                            <div className="mx-2 my-1 h-px bg-[#3E3E3E]"></div>
-                          </>
-                        )}
-
-                        {/* FITUR OWNER: PRIVACY TOGGLE */}
-                        {isOwner && (
+                      {isOwner && (
+                        <>
+                          <li>
+                            <button
+                              onClick={() => {
+                                onEdit(watchlist);
+                                setOpenMenuId(null);
+                              }}
+                              className="gap-3 py-2 hover:bg-white/10"
+                            >
+                              <HiPencil size={14} className="text-gray-400" />{" "}
+                              Edit details
+                            </button>
+                          </li>
+                          <div className="my-0.5 h-px bg-white/10"></div>
                           <li>
                             <button
                               onClick={() =>
@@ -175,87 +172,78 @@ const WatchlistCard = ({ watchlists = [], username, onEdit }) => {
                                   watchlist.isPublic,
                                 )
                               }
-                              className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-left hover:bg-[#3E3E3E]"
+                              className="gap-3 py-2 hover:bg-white/10"
                             >
                               {watchlist.isPublic ? (
-                                <>
-                                  <HiLockClosed
-                                    size={18}
-                                    className="text-gray-400"
-                                  />
-                                  Make private
-                                </>
+                                <HiLockClosed
+                                  size={14}
+                                  className="text-gray-400"
+                                />
                               ) : (
-                                <>
-                                  <HiGlobeAlt
-                                    size={18}
-                                    className="text-gray-400"
-                                  />
-                                  Make public
-                                </>
+                                <HiGlobeAlt
+                                  size={14}
+                                  className="text-gray-400"
+                                />
                               )}
+                              {watchlist.isPublic
+                                ? "Make private"
+                                : "Make public"}
                             </button>
                           </li>
-                        )}
+                        </>
+                      )}
 
-                        {/* Fitur Invite (Copy Link Invite) */}
-                        <li>
-                          <button
-                            onClick={() =>
-                              copyLink(
-                                `${window.location.origin}/watchlist/invite/${watchlist.inviteToken}`,
-                                "Collaborator invite",
-                              )
-                            }
-                            className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-left hover:bg-[#3E3E3E]"
-                          >
-                            <HiUserAdd size={18} className="text-gray-400" />
-                            Invite collaborators
-                          </button>
-                        </li>
+                      <li>
+                        <button
+                          onClick={() =>
+                            copyLink(
+                              `${window.location.origin}/watchlist/invite/${watchlist.inviteToken}`,
+                              "Invite",
+                            )
+                          }
+                          className="gap-3 py-2 hover:bg-white/10"
+                        >
+                          <HiUserAdd size={14} className="text-gray-400" />{" "}
+                          Invite
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() =>
+                            copyLink(
+                              `${window.location.origin}/watchlist/${watchlist.token}`,
+                              "Watchlist",
+                            )
+                          }
+                          className="gap-3 py-2 hover:bg-white/10"
+                        >
+                          <HiShare size={14} className="text-gray-400" /> Share
+                        </button>
+                      </li>
 
-                        {/* Fitur Share (Copy Link View) */}
-                        <li>
-                          <button
-                            onClick={() =>
-                              copyLink(
-                                `${window.location.origin}/watchlist/${watchlist.token}`,
-                                "Watchlist",
-                              )
-                            }
-                            className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-left hover:bg-[#3E3E3E]"
-                          >
-                            <HiShare size={18} className="text-gray-400" />
-                            Share
-                          </button>
-                        </li>
-
-                        {/* GRUP 3: DELETE (Hanya Owner, dan warna merah) */}
-                        {isOwner && (
-                          <>
-                            <div className="mx-2 my-1 h-px bg-[#3E3E3E]"></div>
-                            <li>
-                              <button
-                                onClick={() => onRequestDelete(watchlist.id)}
-                                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-left text-red-400 hover:bg-[#3E3E3E] hover:text-red-400"
-                              >
-                                <HiTrash size={18} />
-                                Delete
-                              </button>
-                            </li>
-                          </>
-                        )}
-                      </ul>
-                    )}
-                  </div>
+                      {isOwner && (
+                        <>
+                          <div className="my-0.5 h-px bg-white/10"></div>
+                          <li>
+                            <button
+                              onClick={() => onRequestDelete(watchlist.id)}
+                              className="gap-3 py-2 text-red-400 hover:bg-white/10 hover:text-red-400"
+                            >
+                              <HiTrash size={14} /> Delete
+                            </button>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  )}
                 </div>
               </div>
             );
           })
         ) : (
-          <p className="absolute top-10 left-0 text-white/30">
-            No watchlists yet.
-          </p>
+          <div className="col-span-full py-10 text-center text-sm text-gray-500">
+            No watchlists found. Start by creating one!
+          </div>
         )}
       </div>
     </>

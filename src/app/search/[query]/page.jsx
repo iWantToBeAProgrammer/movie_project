@@ -27,14 +27,14 @@ export default function SearchResultsPage({ params }) {
     return <Loading />;
   }
 
-
   return (
     <>
       <Navbar />
       <div className="mx-auto mt-28 w-full max-w-(--breakpoint-xl) overflow-hidden">
         <div className="mb-12 flex border-b border-slate-600 pb-1">
           <h1 className="flex border-l-8 border-primary pl-2 text-4xl tracking-wider">
-            Results for: "{query}"
+            {/* PERBAIKAN DI SINI: Gunakan &quot; pengganti " */}
+            Results for: &quot;{query}&quot;
           </h1>
         </div>
 
