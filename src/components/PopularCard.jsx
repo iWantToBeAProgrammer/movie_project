@@ -9,19 +9,27 @@ import Header from "./Header";
 import { IoPlayCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
 
 const PopularCard = ({ results = [] }) => {
   const [movieDetails, setMovieDetails] = useState([]);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
+      // Use a cache-first approach for genres to avoid repeated API calls
       const movieData = await Promise.all(
-        results.map(async (movie) => {
-          const details = await getMovieData(
-            movie.id,
-            "&append_to_response=genres",
-          );
-          return { ...movie, genres: details.genres || [] };
+        results.slice(0, 10).map(async (movie) => {
+          try {
+            const details = await queryClient.fetchQuery({
+              queryKey: ["movie-detail", movie.id],
+              queryFn: () => getMovieData(movie.id, "&append_to_response=genres"),
+              staleTime: 1000 * 60 * 30, // Cache for 30 mins
+            });
+            return { ...movie, genres: details.genres || [] };
+          } catch (error) {
+            return { ...movie, genres: [] };
+          }
         }),
       );
       setMovieDetails(movieData);
@@ -30,7 +38,16 @@ const PopularCard = ({ results = [] }) => {
     if (results.length > 0) {
       fetchMovieDetails();
     }
-  }, [results]);
+  }, [results, queryClient]);
+
+  // Prefetch full movie details when user hovers over a card
+  const prefetchMovie = (id) => {
+    queryClient.prefetchQuery({
+      queryKey: ["movie-detail", id],
+      queryFn: () => getMovieData(id, "&append_to_response=release_dates,videos,credits,recommendations"),
+      staleTime: 1000 * 60 * 5,
+    });
+  };
 
   if (!results || results.length === 0) {
     return (
@@ -59,6 +76,7 @@ const PopularCard = ({ results = [] }) => {
           return (
             <div
               key={id}
+              onMouseEnter={() => prefetchMovie(id)}
               className="group relative overflow-hidden rounded-lg bg-neutral-900 shadow-md transition-all duration-300 hover:shadow-xl"
             >
               <div className="relative aspect-[2/3] w-full overflow-hidden">
