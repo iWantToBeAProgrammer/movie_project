@@ -27,7 +27,7 @@ async function signInWithGoogle() {
         access_type: "offline",
         prompt: "consent",
       },
-      redirectTo: "http://localhost:3000/auth/v1/callback",
+      redirectTo: "https://cinematix-movie.vercel.app/auth/v1/callback",
     },
   });
 
