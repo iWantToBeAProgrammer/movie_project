@@ -83,7 +83,7 @@ const SearchMovieCard = ({ results }) => {
                 : "transparent",
             }}
             // RESPONSIVE FIX: Padding lebih kecil di mobile, rounded lebih rapi
-            className="group flex items-center gap-3 rounded-lg p-2 transition-all duration-300 ease-in-out hover:bg-white/50"
+            className="group flex items-center gap-3 rounded-xl p-2.5 transition-all duration-300 ease-in-out hover:bg-white/10"
             onClick={() => {
               if (document.activeElement instanceof HTMLElement) {
                 document.activeElement.blur();
@@ -91,7 +91,7 @@ const SearchMovieCard = ({ results }) => {
             }}
           >
             {/* Poster Thumbnail */}
-            <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md shadow-sm md:h-16 md:w-12">
+            <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-lg shadow-lg md:h-20 md:w-14">
               <Image
                 src={
                   result.poster_path
@@ -100,34 +100,34 @@ const SearchMovieCard = ({ results }) => {
                 }
                 alt={result.title}
                 fill
-                className="object-cover"
-                sizes="48px"
+                className="object-cover transition-transform group-hover:scale-110"
+                sizes="56px"
               />
             </div>
 
             {/* Info Wrapper: min-w-0 penting agar truncate jalan di flex item */}
             <div className="flex min-w-0 flex-1 flex-col justify-center">
-              <h3 className="truncate text-sm font-bold text-black md:text-base">
+              <h3 className="truncate text-sm font-bold text-white transition-colors group-hover:text-primary md:text-base">
                 {result.title}
               </h3>
 
-              <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-black/70">
-                <span>{releaseYear}</span>
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/50">
+                <span className="font-medium">{releaseYear}</span>
 
-                <span className="hidden text-black/30 sm:inline">•</span>
+                <span className="text-white/20">•</span>
 
                 <div className="flex items-center gap-1">
-                  <Star weight="fill" className="text-yellow-500" size={12} />
-                  <span className="font-semibold">
+                  <Star weight="fill" className="text-yellow-500" size={14} />
+                  <span className="font-bold text-white/80">
                     {result.vote_average?.toFixed(1)}
                   </span>
                 </div>
 
                 {/* Hide certification on very small screens if needed, or keep it */}
-                {result.certification && (
+                {result.certification && result.certification !== "N/A" && (
                   <>
-                    <span className="text-black/30">•</span>
-                    <span className="rounded border border-black/20 px-1 text-[10px] font-bold">
+                    <span className="text-white/20">•</span>
+                    <span className="rounded border border-white/20 px-1.5 text-[10px] font-extrabold tracking-wider text-white/40">
                       {result.certification}
                     </span>
                   </>

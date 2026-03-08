@@ -11,8 +11,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { getMovieData } from "@/libs/api-libs";
+
 const Card = ({ results = [] }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Prefetch full movie details when user hovers over a card
+  const prefetchMovie = (id) => {
+    queryClient.prefetchQuery({
+      queryKey: ["movie-detail", id],
+      queryFn: () => getMovieData(id, "&append_to_response=release_dates,videos,credits,recommendations"),
+      staleTime: 1000 * 60 * 5,
+    });
+  };
 
   // FIX: Hook moved here, BEFORE the conditional return
   const router = useRouter();
@@ -98,6 +111,7 @@ const Card = ({ results = [] }) => {
 
                     <Link
                       href={`/movies/${result.id}`}
+                      onMouseEnter={() => prefetchMovie(result.id)}
                       className="inline-flex items-center gap-1 rounded-full bg-linear-to-r from-primary to-secondary px-3 py-1.5 text-xs font-bold transition-transform hover:scale-105 md:gap-2 md:px-4 md:py-2 md:text-sm"
                     >
                       View Details

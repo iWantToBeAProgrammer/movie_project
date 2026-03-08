@@ -8,6 +8,7 @@ import Trailer from "@/components/Trailer";
 import { getRecDetails } from "@/services/movie-rec";
 import { getMovieDetails } from "@/services/movie-service";
 import Image from "next/image";
+import WatchProviders from "@/components/Common/WatchProviders";
 
 // Header Section Responsive (Text size & Border size)
 const SectionHeader = ({ title }) => (
@@ -80,7 +81,9 @@ export default async function MovieDetails({ params }) {
                 </p>
               </div>
 
-              <p className="text-sm md:text-base">
+              <WatchProviders movieId={movie.tmdbId} />
+
+              <p className="text-sm md:text-base mt-2">
                 Duration {formatRuntime(movie.runtime)}
               </p>
               <p className="text-sm leading-relaxed text-pretty text-gray-200 md:text-base">

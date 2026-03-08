@@ -28,7 +28,7 @@ const PersonalizedRecommendations = () => {
   }, []);
 
   if (isLoading || recommendations.length === 0) {
-    return null; // Return nothing if still loading or no recommendations
+    return null;
   }
 
   return (
