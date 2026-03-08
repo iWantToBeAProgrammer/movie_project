@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import PrintDesc from "@/components/Homepage/PrintDesc";
 import Faq from "@/components/Homepage/Faq";
 import { getMovieData } from "@/libs/api-libs";
+import PersonalizedRecommendations from "@/components/Homepage/PersonalizedRecommendations";
 
 export const revalidate = 3600;
 
@@ -37,6 +38,7 @@ export default async function Home() {
 
       <div className="container mx-auto max-w-(--breakpoint-xl) overflow-hidden px-4 sm:px-6 lg:px-8">
         <div className="movie-list-wrapper flex flex-col gap-10 md:gap-16 lg:gap-20">
+          <PersonalizedRecommendations />
           <div className="now-playing flex flex-col gap-4">
             <Header title="Now Playing" linkHref="/movies/now-playing" />
             <Card results={nowPlaying.results} />

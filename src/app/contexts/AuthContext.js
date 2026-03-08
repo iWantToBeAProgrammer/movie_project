@@ -1,6 +1,7 @@
 "use client";
 import { createBrowserClient } from "@supabase/ssr";
 import { createContext, useContext, useEffect, useState } from "react";
+import Loading from "@/app/loading";
 
 const AuthContext = createContext();
 
@@ -75,11 +76,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

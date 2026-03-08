@@ -186,7 +186,7 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
 
                 {/* Play Overlay (Desktop) */}
                 <Link
-                  href={`/movies/${item?.id}`}
+                  href={`/movies/${item?.tmdbId || item?.id}`}
                   className="absolute inset-0 hidden items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:flex"
                 >
                   <IoPlayCircleOutline className="text-4xl text-white drop-shadow-lg" />
@@ -198,7 +198,7 @@ const WatchlistItemCard = ({ watchlistItem = [], token }) => {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex flex-col">
                     <Link
-                      href={`/movies/${item?.id}`}
+                      href={`/movies/${item?.tmdbId || item?.id}`}
                       className="transition-colors hover:text-primary"
                     >
                       <h3 className="line-clamp-1 font-raleway text-base leading-tight font-bold text-white md:text-xl">
